@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from .models import (
-    Profile, Skill, Education, CareerGoal,
+    Profile, SocialMedia, Skill, Education, CareerGoal,
     Experience, Project, Language
 )
 
 def portfolio_view(request):
+    profile = Profile.objects.first()
+    
     context = {
-        'profile': Profile.objects.first(),
+        'profile': profile,
+        'social_media_links': SocialMedia.objects.filter(profile=profile, is_active=True) if profile else [],
         'skills': Skill.objects.all(),
         'education_list': Education.objects.filter(is_active=True),
         'career_goal': CareerGoal.objects.first(),
