@@ -1,120 +1,472 @@
-/* ============================================
-   PORTFOLIO JAVASCRIPT - Optimized
-   Fast & Smooth Performance
-   ============================================ */
+/* ============================================================
+   PORTFOLIO JAVASCRIPT
+   Production Ready
+   Lightweight / Accessible / Mobile Friendly
+   ============================================================ */
 
-/**
- * Tab Switching System - Instant response
- */
-function switchTab(tab) {
-    const eduContent = document.getElementById('education-content');
-    const expContent = document.getElementById('experience-content');
-    const eduTab = document.getElementById('edu-tab');
-    const expTab = document.getElementById('exp-tab');
-    const tabIcon = document.getElementById('tab-icon');
-    const tabTitle = document.getElementById('tab-title');
+"use strict";
 
-    if (!eduContent || !expContent || !eduTab || !expTab) return;
 
-    if (tab === 'education') {
-        eduContent.classList.add('active');
-        expContent.classList.remove('active');
-        eduTab.classList.add('active');
-        expTab.classList.remove('active');
-        if (tabIcon) {
-            tabIcon.className = 'fas fa-graduation-cap';
+/* ============================================================
+   TAB SYSTEM
+   ============================================================ */
+
+function switchTab(tabName) {
+
+    const tabs = {
+        education: {
+            button: document.getElementById("edu-tab"),
+            content: document.getElementById("education-content"),
+            title: "Education",
+            icon: "fas fa-graduation-cap"
+        },
+
+        experience: {
+            button: document.getElementById("exp-tab"),
+            content: document.getElementById("experience-content"),
+            title: "Experience",
+            icon: "fas fa-briefcase"
         }
-        if (tabTitle) {
-            tabTitle.textContent = 'Education';
+    };
+
+    const selected = tabs[tabName];
+
+    if (!selected) {
+        return;
+    }
+
+    const tabIcon = document.getElementById("tab-icon");
+    const tabTitle = document.getElementById("tab-title");
+
+    Object.values(tabs).forEach(tab => {
+
+        if (!tab.button || !tab.content) {
+            return;
         }
-    } else {
-        expContent.classList.add('active');
-        eduContent.classList.remove('active');
-        expTab.classList.add('active');
-        eduTab.classList.remove('active');
-        if (tabIcon) {
-            tabIcon.className = 'fas fa-briefcase';
-        }
-        if (tabTitle) {
-            tabTitle.textContent = 'Experience';
-        }
+
+        const isActive = tab === selected;
+
+        tab.button.classList.toggle("active", isActive);
+        tab.button.setAttribute(
+            "aria-selected",
+            String(isActive)
+        );
+
+        tab.content.classList.toggle(
+            "active",
+            isActive
+        );
+
+        tab.content.hidden = !isActive;
+    });
+
+    if (tabIcon) {
+        tabIcon.className = selected.icon;
+    }
+
+    if (tabTitle) {
+        tabTitle.textContent = selected.title;
     }
 }
 
-/**
- * Counter Animation for Project Count
- */
-function animateProjectCounter() {
-    const counter = document.querySelector('.project-count');
-    if (!counter) return;
 
-    const text = counter.textContent.trim();
-    const match = text.match(/\d+/);
-    if (!match || counter.dataset.animated === 'true') return;
+/* ============================================================
+   INITIALIZE TABS
+   ============================================================ */
 
-    counter.dataset.animated = 'true';
-    const targetNumber = parseInt(match[0]);
-    const suffix = text.replace(match[0], '');
-    let currentNumber = 0;
-    const steps = 10;
-    const increment = Math.ceil(targetNumber / steps);
+function initializeTabs() {
 
-    const timer = setInterval(() => {
-        currentNumber += increment;
-        if (currentNumber >= targetNumber) {
-            currentNumber = targetNumber;
-            clearInterval(timer);
-        }
-        counter.textContent = `${currentNumber}${suffix}`;
-    }, 50);
+    const buttons = document.querySelectorAll(
+        ".tab-btn[data-tab]"
+    );
+
+    if (!buttons.length) {
+        return;
+    }
+
+    buttons.forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const tabName = button.dataset.tab;
+
+            switchTab(tabName);
+
+        });
+
+    });
+
+
+    /* Keyboard navigation */
+
+    buttons.forEach(button => {
+
+        button.addEventListener("keydown", event => {
+
+            if (
+                event.key !== "ArrowLeft" &&
+                event.key !== "ArrowRight"
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const currentIndex =
+                Array.from(buttons).indexOf(button);
+
+            let nextIndex;
+
+            if (event.key === "ArrowRight") {
+                nextIndex =
+                    (currentIndex + 1) % buttons.length;
+            } else {
+                nextIndex =
+                    (currentIndex - 1 + buttons.length) %
+                    buttons.length;
+            }
+
+            const nextButton = buttons[nextIndex];
+
+            if (!nextButton) {
+                return;
+            }
+
+            nextButton.focus();
+
+            switchTab(nextButton.dataset.tab);
+
+        });
+
+    });
+
 }
 
-/**
- * Initialize Everything
- */
-document.addEventListener('DOMContentLoaded', function() {
-    // Remove all tooltips
-    document.querySelectorAll('.tooltip').forEach(el => el.remove());
 
-    // Animate counter with delay
-    setTimeout(animateProjectCounter, 300);
+/* ============================================================
+   PROJECT COUNTER
+   ============================================================ */
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+function animateProjectCounter() {
 
-        switch(e.key.toLowerCase()) {
-            case '1':
-            case 'e':
-                e.preventDefault();
-                switchTab('education');
-                break;
-            case '2':
-            case 'x':
-                e.preventDefault();
-                switchTab('experience');
-                break;
+    const counter =
+        document.querySelector(".project-count");
+
+    if (!counter) {
+        return;
+    }
+
+    if (counter.dataset.animated === "true") {
+        return;
+    }
+
+    const originalText =
+        counter.textContent.trim();
+
+    const match =
+        originalText.match(/\d+/);
+
+    if (!match) {
+        return;
+    }
+
+    const target =
+        Number.parseInt(
+            match[0],
+            10
+        );
+
+    if (
+        Number.isNaN(target) ||
+        target <= 0
+    ) {
+        return;
+    }
+
+    const suffix =
+        originalText
+            .replace(match[0], "")
+            .trim();
+
+    counter.dataset.animated = "true";
+
+    let current = 0;
+
+    const duration = 450;
+    const startTime = performance.now();
+
+    function updateCounter(timestamp) {
+
+        const elapsed =
+            timestamp - startTime;
+
+        const progress =
+            Math.min(
+                elapsed / duration,
+                1
+            );
+
+        const eased =
+            1 - Math.pow(1 - progress, 3);
+
+        current =
+            Math.floor(target * eased);
+
+        counter.textContent =
+            `${current} ${suffix}`;
+
+        if (progress < 1) {
+
+            requestAnimationFrame(
+                updateCounter
+            );
+
+        } else {
+
+            counter.textContent =
+                `${target} ${suffix}`;
         }
+    }
+
+    requestAnimationFrame(updateCounter);
+}
+
+
+/* ============================================================
+   EXTERNAL LINKS
+   ============================================================ */
+
+function initializeExternalLinks() {
+
+    const links =
+        document.querySelectorAll(
+            'a[target="_blank"]'
+        );
+
+    links.forEach(link => {
+
+        if (!link.rel.includes("noopener")) {
+            link.rel = "noopener noreferrer";
+        }
+
     });
 
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+
+/* ============================================================
+   IMAGE FALLBACK
+   ============================================================ */
+
+function initializeImageFallback() {
+
+    const images =
+        document.querySelectorAll(
+            ".profile-image"
+        );
+
+    images.forEach(image => {
+
+        image.addEventListener(
+            "error",
+            function handleImageError() {
+
+                if (
+                    this.dataset.fallbackApplied === "true"
+                ) {
+                    return;
+                }
+
+                this.dataset.fallbackApplied = "true";
+
+                const name =
+                    this.alt || "User";
+
+                this.src =
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=101820&color=79d9ee&size=256&font-size=0.38&bold=true&format=png`;
+
+            },
+            {
+                once: true
             }
-        });
+        );
+
     });
 
-    // Handle image loading errors
-    window.addEventListener('error', function(e) {
-        if (e.target.tagName === 'IMG') {
-            const name = e.target.alt || 'User';
-            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00b4d8&color=fff&size=200`;
-        }
-    }, true);
+}
 
-    console.log('✨ Portfolio loaded');
-});
+
+/* ============================================================
+   INTERNAL HASH LINKS
+   ============================================================ */
+
+function initializeHashLinks() {
+
+    const links =
+        document.querySelectorAll(
+            'a[href^="#"]'
+        );
+
+    links.forEach(link => {
+
+        link.addEventListener(
+            "click",
+            event => {
+
+                const selector =
+                    link.getAttribute("href");
+
+                if (
+                    !selector ||
+                    selector === "#"
+                ) {
+                    return;
+                }
+
+                const target =
+                    document.querySelector(selector);
+
+                if (!target) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                });
+
+            }
+        );
+
+    });
+
+}
+
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+
+function initializeKeyboardShortcuts() {
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            const target =
+                event.target;
+
+            if (
+                target instanceof HTMLInputElement ||
+                target instanceof HTMLTextAreaElement ||
+                target instanceof HTMLSelectElement ||
+                target.isContentEditable
+            ) {
+                return;
+            }
+
+            if (
+                event.ctrlKey ||
+                event.metaKey ||
+                event.altKey
+            ) {
+                return;
+            }
+
+            switch (
+                event.key.toLowerCase()
+            ) {
+
+                case "1":
+                case "e":
+
+                    switchTab("education");
+                    break;
+
+                case "2":
+                case "x":
+
+                    switchTab("experience");
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   CONTACT LINK FEEDBACK
+   ============================================================ */
+
+function initializeContactLinks() {
+
+    const contactLinks =
+        document.querySelectorAll(
+            ".contact-card[href]"
+        );
+
+    contactLinks.forEach(link => {
+
+        link.addEventListener(
+            "click",
+            () => {
+
+                link.classList.add(
+                    "contact-clicked"
+                );
+
+                window.setTimeout(
+                    () => {
+                        link.classList.remove(
+                            "contact-clicked"
+                        );
+                    },
+                    350
+                );
+
+            }
+        );
+
+    });
+
+}
+
+
+/* ============================================================
+   INITIALIZATION
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        initializeTabs();
+
+        initializeExternalLinks();
+
+        initializeImageFallback();
+
+        initializeHashLinks();
+
+        initializeKeyboardShortcuts();
+
+        initializeContactLinks();
+
+        /*
+         * Counter is intentionally delayed slightly
+         * so it does not compete with initial rendering.
+         */
+        window.setTimeout(
+            animateProjectCounter,
+            250
+        );
+
+    }
+);
