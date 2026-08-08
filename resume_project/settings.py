@@ -102,9 +102,8 @@ WSGI_APPLICATION = "resume_project.wsgi.application"
 
 DATABASE_PATH = os.getenv(
     "DATABASE_PATH",
-    "/data/db.sqlite3",
+    str(BASE_DIR / "db.sqlite3"),
 )
-
 
 DATABASES = {
     "default": {
