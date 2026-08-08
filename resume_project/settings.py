@@ -1,7 +1,12 @@
 from pathlib import Path
 import os
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+
+# Security
 
 
 SECRET_KEY = os.getenv(
@@ -9,7 +14,10 @@ SECRET_KEY = os.getenv(
     "django-insecure-development-only-change-me"
 )
 
-DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "yes")
+DEBUG = os.getenv(
+    "DEBUG",
+    "False"
+).lower() in ("true", "1", "yes")
 
 
 ALLOWED_HOSTS = [
@@ -20,6 +28,10 @@ ALLOWED_HOSTS = [
     ).split(",")
     if host.strip()
 ]
+
+
+
+# Applications
 
 
 INSTALLED_APPS = [
@@ -34,16 +46,31 @@ INSTALLED_APPS = [
 ]
 
 
+
+# Middleware
+
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.middleware.common.CommonMiddleware",
+
     "django.middleware.csrf.CsrfViewMiddleware",
+
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
     "django.contrib.messages.middleware.MessageMiddleware",
+
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+
+
+# URLs / Templates
 
 
 ROOT_URLCONF = "resume_project.urls"
@@ -52,8 +79,11 @@ ROOT_URLCONF = "resume_project.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
+
         "DIRS": [],
+
         "APP_DIRS": True,
+
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
@@ -68,40 +98,54 @@ TEMPLATES = [
 WSGI_APPLICATION = "resume_project.wsgi.application"
 
 
+
+# Database
+
+
+DATABASE_PATH = os.getenv(
+    "DATABASE_PATH",
+    str(BASE_DIR / "db.sqlite3")
+)
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": DATABASE_PATH,
     }
 }
 
 
+
+# Password validation
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": (
+        "NAME":
             "django.contrib.auth.password_validation."
-            "UserAttributeSimilarityValidator"
-        ),
+            "UserAttributeSimilarityValidator",
     },
     {
-        "NAME": (
+        "NAME":
             "django.contrib.auth.password_validation."
-            "MinimumLengthValidator"
-        ),
+            "MinimumLengthValidator",
     },
     {
-        "NAME": (
+        "NAME":
             "django.contrib.auth.password_validation."
-            "CommonPasswordValidator"
-        ),
+            "CommonPasswordValidator",
     },
     {
-        "NAME": (
+        "NAME":
             "django.contrib.auth.password_validation."
-            "NumericPasswordValidator"
-        ),
+            "NumericPasswordValidator",
     },
 ]
+
+
+
+# Internationalization
 
 
 LANGUAGE_CODE = "en-us"
@@ -113,15 +157,33 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = '/static/'
+
+# Static files
+
+
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+
+    "staticfiles": {
+        "BACKEND":
+            "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
+
+
+# Media
+
 
 MEDIA_URL = "/media/"
 
@@ -129,11 +191,17 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 
+# Reverse Proxy / HTTPS
+
 
 SECURE_PROXY_SSL_HEADER = (
     "HTTP_X_FORWARDED_PROTO",
     "https",
 )
+
+
+
+# Email
 
 
 EMAIL_BACKEND = (

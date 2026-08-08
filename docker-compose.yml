@@ -1,19 +1,72 @@
 services:
+
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+
     container_name: django_web
-    command: gunicorn resume_project.wsgi:application --bind 0.0.0.0:8000
-    volumes:
-      - .:/app
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    expose:
-      - "8000"
-    restart: unless-stopped
+
+    command:
+      - gunicorn
+      - resume_project.wsgi:application
+      - --bind
+      - 0.0.0.0:8000
+      - --workers
+      - "2"
+      - --timeout
+      - "120"
 
     env_file:
       - .env
 
+    expose:
+      - "8000"
+
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - db_volume:/data
+
+    restart: unless-stopped
+
+    networks:
+      - resume_network
+
+
+  caddy:
+    image: caddy:2-alpine
+
+    container_name: resume_caddy
+
+    depends_on:
+      - web
+
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - static_volume:/srv/static:ro
+      - media_volume:/srv/media:ro
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+
+    restart: unless-stopped
+
+    networks:
+      - resume_network
+
+
+networks:
+  resume_network:
+
+
 volumes:
   static_volume:
   media_volume:
+  db_volume:
+  caddy_data:
+  caddy_config:

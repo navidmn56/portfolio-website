@@ -3,18 +3,22 @@
 }
 
 {$DOMAIN} {
+
     encode gzip
 
+    # Static files
     handle /static/* {
         root * /srv/static
         file_server
     }
 
+    # Uploaded media
     handle /media/* {
         root * /srv/media
         file_server
     }
 
+    # Django
     handle {
         reverse_proxy web:8000
     }
