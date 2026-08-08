@@ -1,21 +1,25 @@
+.env
+.env.*
+!.env.example
+
 .git
 .gitignore
-.github
 
 venv
 .venv
-env
 
 __pycache__
-*.py[cod]
-
-.env
-.env.*
+*.pyc
+*.pyo
+*.pyd
 
 db.sqlite3
-
-staticfiles/*
+db.sqlite3-journal
 
 screenshots
 
+staticfiles
+
 *.log
+
+.DS_Store
