@@ -84,32 +84,45 @@
 
                 </div>
 
-                <!-- Quick Contact Bar - Icons + Values Only -->
-                <div class="contact-quick-bar">
+                <!-- Contact Links - Professional Style -->
+                <div class="contact-links">
                     {% if profile.email %}
-                    <a href="mailto:{{ profile.email }}" class="contact-quick-item" aria-label="Email">
-                        <i class="fas fa-envelope"></i>
-                        <span>{{ profile.email }}</span>
+                    <a href="mailto:{{ profile.email }}" class="contact-item" aria-label="Email">
+                        <span class="contact-icon-wrapper">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <div class="contact-text">
+                            <span class="contact-label">Email</span>
+                            <span class="contact-value">{{ profile.email }}</span>
+                        </div>
                     </a>
-                    <span class="contact-divider"></span>
                     {% endif %}
 
                     {% if profile.phone %}
-                    <a href="tel:{{ profile.phone|cut:' ' }}" class="contact-quick-item" aria-label="Phone">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>{{ profile.phone }}</span>
+                    <a href="tel:{{ profile.phone|cut:' ' }}" class="contact-item" aria-label="Phone">
+                        <span class="contact-icon-wrapper">
+                            <i class="fas fa-phone-alt"></i>
+                        </span>
+                        <div class="contact-text">
+                            <span class="contact-label">Phone</span>
+                            <span class="contact-value">{{ profile.phone }}</span>
+                        </div>
                     </a>
-                    <span class="contact-divider"></span>
                     {% endif %}
 
                     {% if profile.location %}
                     <a href="{% if profile.location_url %}{{ profile.location_url }}{% else %}https://maps.google.com/?q={{ profile.location|urlencode }}{% endif %}" 
                        target="_blank" 
                        rel="noopener noreferrer" 
-                       class="contact-quick-item location-item" 
+                       class="contact-item" 
                        aria-label="Location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>{{ profile.location }}</span>
+                        <span class="contact-icon-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </span>
+                        <div class="contact-text">
+                            <span class="contact-label">Location</span>
+                            <span class="contact-value">{{ profile.location }}</span>
+                        </div>
                     </a>
                     {% endif %}
                 </div>

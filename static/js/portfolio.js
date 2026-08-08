@@ -8,40 +8,48 @@
  * Switches between Education and Experience tabs with instant response
  */
 function switchTab(tab) {
-    var eduContent = document.getElementById('education-content');
-    var expContent = document.getElementById('experience-content');
-    var eduTab = document.getElementById('edu-tab');
-    var expTab = document.getElementById('exp-tab');
-    var tabIcon = document.getElementById('tab-icon');
-    var tabTitle = document.getElementById('tab-title');
+    const eduContent = document.getElementById('education-content');
+    const expContent = document.getElementById('experience-content');
+    const eduTab = document.getElementById('edu-tab');
+    const expTab = document.getElementById('exp-tab');
+    const tabIcon = document.getElementById('tab-icon');
+    const tabTitle = document.getElementById('tab-title');
 
+    // Validate elements exist
     if (!eduContent || !expContent || !eduTab || !expTab) {
         return;
     }
 
+    // Handle Education tab
     if (tab === 'education') {
         eduContent.classList.add('active');
         expContent.classList.remove('active');
         eduTab.classList.add('active');
         expTab.classList.remove('active');
         
+        // Update icon
         if (tabIcon) {
             tabIcon.className = 'fas fa-graduation-cap';
         }
         
+        // Update title
         if (tabTitle) {
             tabTitle.textContent = 'Education';
         }
-    } else {
+    } 
+    // Handle Experience tab
+    else {
         expContent.classList.add('active');
         eduContent.classList.remove('active');
         expTab.classList.add('active');
         eduTab.classList.remove('active');
         
+        // Update icon
         if (tabIcon) {
             tabIcon.className = 'fas fa-briefcase';
         }
         
+        // Update title
         if (tabTitle) {
             tabTitle.textContent = 'Experience';
         }
@@ -53,38 +61,45 @@ function switchTab(tab) {
  * Creates a smooth counting animation for the project number
  */
 function animateProjectCounter() {
-    var counter = document.querySelector('.project-count');
+    const counter = document.querySelector('.project-count');
     
+    // Validate counter exists
     if (!counter) {
         return;
     }
 
-    var text = counter.textContent.trim();
-    var match = text.match(/\d+/);
+    // Get the current text and extract the number
+    const text = counter.textContent.trim();
+    const match = text.match(/\d+/);
     
+    // If no number found or already animated, skip
     if (!match || counter.dataset.animated === 'true') {
         return;
     }
 
+    // Mark as animated to prevent re-animation
     counter.dataset.animated = 'true';
     
-    var targetNumber = parseInt(match[0]);
-    var suffix = text.replace(match[0], '');
+    const targetNumber = parseInt(match[0]);
+    const suffix = text.replace(match[0], '');
     
-    var currentNumber = 0;
-    var steps = 10;
-    var increment = Math.ceil(targetNumber / steps);
-    var stepTime = 50;
+    let currentNumber = 0;
+    const steps = 10;
+    const increment = Math.ceil(targetNumber / steps);
+    const stepTime = 50;
 
-    var timer = setInterval(function() {
+    // Start counting animation
+    const timer = setInterval(() => {
         currentNumber += increment;
         
+        // Stop when target reached
         if (currentNumber >= targetNumber) {
             currentNumber = targetNumber;
             clearInterval(timer);
         }
         
-        counter.textContent = currentNumber + suffix;
+        // Update counter text
+        counter.textContent = `${currentNumber}${suffix}`;
     }, stepTime);
 }
 
@@ -93,17 +108,22 @@ function animateProjectCounter() {
  */
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Remove all tooltip elements
     document.querySelectorAll('.tooltip').forEach(function(el) {
         el.remove();
     });
 
+    // Start counter animation after a short delay
     setTimeout(animateProjectCounter, 300);
 
+    // Keyboard shortcuts for tab switching
     document.addEventListener('keydown', function(e) {
+        // Ignore if user is typing in an input field
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
             return;
         }
 
+        // Check for shortcuts
         switch(e.key.toLowerCase()) {
             case '1':
             case 'e':
@@ -118,12 +138,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Smooth scroll behavior for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             
-            var targetId = this.getAttribute('href');
-            var target = document.querySelector(targetId);
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
             
             if (target) {
                 target.scrollIntoView({
@@ -134,13 +155,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Handle image loading errors - fallback to generated avatar
     window.addEventListener('error', function(e) {
         if (e.target.tagName === 'IMG') {
-            var name = e.target.alt || 'User';
+            const name = e.target.alt || 'User';
             e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=00b4d8&color=fff&size=200';
         }
     }, true);
 
+    // Log successful initialization
     console.log('✨ Portfolio loaded successfully');
     console.log('⌨️  Keyboard shortcuts: Press 1/E for Education, 2/X for Experience');
 });

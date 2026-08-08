@@ -169,7 +169,7 @@ body::after {
 }
 
 /* ============================================================
-   NAME & TITLE - TITLE BADGE ALWAYS IN ONE LINE
+   NAME & TITLE
    ============================================================ */
 .name-section {
     flex: 1;
@@ -193,29 +193,27 @@ body::after {
 .title-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
+    gap: 5px;
+    padding: 3px 8px;
     border-radius: 999px;
-    background: rgba(102, 210, 235, 0.08);
-    border: 1px solid rgba(102, 210, 235, 0.2);
+    background: rgba(102, 210, 235, 0.07);
+    border: 1px solid rgba(102, 210, 235, 0.18);
     color: #8ddced;
-    font-size: 0.64rem;
+    font-size: 0.62rem;
     font-weight: 600;
     line-height: 1.3;
     width: fit-content;
     max-width: 100%;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .title-badge i {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     flex-shrink: 0;
 }
 
 /* ============================================================
-   SOCIAL LINKS
+   SOCIAL LINKS - NO TOOLTIP
    ============================================================ */
 .social-links-row {
     display: flex;
@@ -242,91 +240,137 @@ body::after {
     flex-shrink: 0;
 }
 
+/* Hide tooltip completely */
 .tooltip {
     display: none !important;
 }
 
 /* ============================================================
-   QUICK CONTACT BAR - ICONS ONLY, ICON + VALUE
+   CONTACT LINKS - PROFESSIONAL STYLE
    ============================================================ */
-.contact-quick-bar {
+.contact-links {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    background: rgba(15, 18, 28, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
+    gap: 8px;
+    padding: 8px;
+    background: rgba(15, 18, 28, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     order: 1;
     width: 100%;
 }
 
-.contact-quick-item {
-    display: inline-flex;
+.contact-item {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    color: #b0b8c5;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    color: #bfc8d4;
     text-decoration: none;
-    font-size: 0.7rem;
-    font-weight: 500;
-    padding: 4px 8px;
-    border-radius: 8px;
     transition: all 0.2s ease;
-    white-space: nowrap;
-    flex-shrink: 0;
+    min-width: 0;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
 }
 
-.contact-quick-item i {
+/* Glow effect on hover */
+.contact-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(110, 211, 235, 0.05), transparent);
+    transition: left 0.4s ease;
+}
+
+.contact-item:hover::before {
+    left: 100%;
+}
+
+.contact-item:hover {
+    background: rgba(110, 211, 235, 0.06);
+    border-color: rgba(110, 211, 235, 0.2);
+    color: #e8edf3;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(110, 211, 235, 0.08);
+}
+
+.contact-item:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Icon wrapper */
+.contact-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(110, 211, 235, 0.1);
+    border: 1px solid rgba(110, 211, 235, 0.15);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.contact-item:hover .contact-icon-wrapper {
+    background: rgba(110, 211, 235, 0.18);
+    border-color: rgba(110, 211, 235, 0.3);
+    box-shadow: 0 0 15px rgba(110, 211, 235, 0.15);
+}
+
+.contact-icon-wrapper i {
     color: #79d8ed;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-    width: 20px;
-    text-align: center;
+    font-size: 0.85rem;
+    transition: transform 0.2s ease;
 }
 
-.contact-quick-item span {
+.contact-item:hover .contact-icon-wrapper i {
+    transform: scale(1.1);
+}
+
+/* Text content */
+.contact-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.contact-label {
+    font-size: 0.55rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1;
+}
+
+.contact-value {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #d1d5db;
+    line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.contact-quick-item:hover {
-    background: rgba(110, 211, 235, 0.08);
-    color: #dde3ed;
+.contact-item:hover .contact-value {
+    color: #e8edf3;
 }
 
-.contact-quick-item:hover i {
-    color: #8de2f5;
-}
-
-/* Divider between contact items */
-.contact-divider {
-    width: 1px;
-    height: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    flex-shrink: 0;
-}
-
-/* Location with map icon */
-.contact-quick-item.location-item i {
-    color: #f07167;
-}
-
-.contact-quick-item.location-item:hover i {
-    color: #f79489;
-}
-
-/* ============================================================
-   CONTACT LINKS - PROFESSIONAL CARDS (HIDDEN ON MOBILE)
-   ============================================================ */
-.contact-links {
-    display: none;
-}
-
-.contact-links-desktop {
-    display: none;
+.contact-item:hover .contact-label {
+    color: #79d8ed;
 }
 
 /* ============================================================
@@ -885,21 +929,20 @@ body::after {
     }
 
     .title-badge {
-        font-size: 0.68rem;
-        padding: 5px 12px;
+        font-size: 0.66rem;
+        padding: 4px 9px;
     }
 
-    .contact-quick-bar {
-        gap: 16px;
-        padding: 10px 16px;
+    .contact-links {
+        gap: 8px;
     }
 
-    .contact-quick-item {
-        font-size: 0.73rem;
+    .contact-item {
+        padding: 8px 12px;
     }
 
-    .contact-quick-item i {
-        font-size: 0.85rem;
+    .contact-value {
+        font-size: 0.72rem;
     }
 
     .summary {
@@ -988,20 +1031,21 @@ body::after {
 
     .title-badge {
         font-size: 0.7rem;
-        padding: 5px 14px;
+        padding: 5px 11px;
     }
 
-    /* Quick contact bar stays horizontal */
-    .contact-quick-bar {
+    /* CONTACTS RIGHT SIDE */
+    .contact-links {
         order: 1;
         width: auto;
         flex-shrink: 0;
-        gap: 14px;
-        padding: 8px 16px;
+        flex-direction: column;
+        gap: 6px;
     }
 
-    .contact-quick-item {
-        font-size: 0.75rem;
+    .contact-item {
+        flex: none;
+        min-width: 220px;
     }
 
     .summary {
@@ -1070,6 +1114,11 @@ body::after {
         color: #8de2f5;
         transform: translateY(-2px);
     }
+
+    .contact-links a:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #edf2f7;
+    }
 }
 
 /* ============================================================
@@ -1085,8 +1134,8 @@ body::after {
     }
 
     .title-badge {
-        font-size: 0.73rem;
-        padding: 6px 16px;
+        font-size: 0.72rem;
+        padding: 6px 12px;
     }
 
     .grid-2col {
@@ -1134,30 +1183,32 @@ body::after {
 
     .title-badge {
         font-size: 0.56rem;
-        padding: 3px 8px;
-    }
-
-    .contact-quick-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 10px 12px;
-    }
-
-    .contact-divider {
-        display: none;
-    }
-
-    .contact-quick-item {
-        font-size: 0.68rem;
-        width: 100%;
-        padding: 6px 8px;
+        padding: 3px 7px;
     }
 
     .social-icon-circle {
         width: 28px;
         height: 28px;
         font-size: 0.68rem;
+    }
+
+    .contact-links {
+        flex-direction: column;
+    }
+
+    .contact-item {
+        padding: 12px 14px;
+        flex: none;
+        width: 100%;
+    }
+
+    .contact-icon-wrapper {
+        width: 36px;
+        height: 36px;
+    }
+
+    .contact-value {
+        font-size: 0.72rem;
     }
 
     .summary {
@@ -1212,8 +1263,8 @@ body::after {
         height: 40px;
     }
 
-    .contact-quick-item {
-        min-height: 40px;
+    .contact-item {
+        min-height: 48px;
     }
 
     .project-card:hover {
@@ -1250,7 +1301,7 @@ body::after {
     .view,
     .card-style,
     .project-card,
-    .contact-quick-bar {
+    .contact-links {
         border-color: rgba(255, 255, 255, 0.25);
     }
 
