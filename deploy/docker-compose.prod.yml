@@ -17,16 +17,13 @@ services:
       - --timeout
       - "120"
 
-    expose:
-      - "8000"
-
     env_file:
       - .env
 
     volumes:
-      - .:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+      - db_volume:/data
 
     restart: unless-stopped
 
@@ -38,8 +35,6 @@ services:
     image: caddy:2-alpine
 
     container_name: resume_caddy
-
-    restart: unless-stopped
 
     depends_on:
       - web
@@ -56,27 +51,23 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-
-      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
-
       - static_volume:/srv/static:ro
       - media_volume:/srv/media:ro
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+
+    restart: unless-stopped
 
     networks:
       - resume_network
 
 
 networks:
-
   resume_network:
 
 
 volumes:
-
   static_volume:
-
   media_volume:
-
+  db_volume:
   caddy_data:
-
   caddy_config:

@@ -112,6 +112,31 @@ log "Domain: ${DOMAIN}"
 
 
 # ============================================================
+# Admin username
+# ============================================================
+
+while true; do
+
+    read -rp "Enter admin username: " ADMIN_USERNAME
+
+    if [[ -z "${ADMIN_USERNAME}" ]]; then
+        warn "Username cannot be empty."
+        continue
+    fi
+
+    if [[ "${ADMIN_USERNAME}" =~ [[:space:]] ]]; then
+        warn "Username cannot contain spaces."
+        continue
+    fi
+
+    break
+
+done
+
+log "Admin username: ${ADMIN_USERNAME}"
+
+
+# ============================================================
 # Admin email
 # ============================================================
 
@@ -464,6 +489,7 @@ DOMAIN=${DOMAIN}
 
 SERVER_IP=${SERVER_IP}
 
+ADMIN_USERNAME=${ADMIN_USERNAME}
 ADMIN_EMAIL=${ADMIN_EMAIL}
 
 CADDY_EMAIL=${ADMIN_EMAIL}
@@ -473,6 +499,8 @@ DEBUG=False
 SECRET_KEY=${SECRET_KEY}
 
 ALLOWED_HOSTS=${DOMAIN},www.${DOMAIN},${SERVER_IP},localhost,127.0.0.1
+
+DATABASE_PATH=/data/db.sqlite3
 EOF
 
 chmod 600 "${ENV_FILE}"
@@ -569,6 +597,7 @@ docker compose \
     -f docker-compose.yml \
     -f deploy/docker-compose.prod.yml \
     exec -T \
+    -e DJANGO_ADMIN_USERNAME="${ADMIN_USERNAME}" \
     -e DJANGO_ADMIN_EMAIL="${ADMIN_EMAIL}" \
     -e DJANGO_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
     web \
@@ -581,10 +610,10 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
+username = os.environ["DJANGO_ADMIN_USERNAME"]
 email = os.environ["DJANGO_ADMIN_EMAIL"]
 password = os.environ["DJANGO_ADMIN_PASSWORD"]
-
-username = email
 
 
 user = User.objects.filter(username=username).first()
@@ -598,7 +627,9 @@ if user is None:
         password=password,
     )
 
-    print("Superuser created successfully.")
+    print(
+        f"Superuser '{username}' created successfully."
+    )
 
 else:
 
@@ -617,9 +648,12 @@ else:
         changed = True
 
     if changed:
+        user.set_password(password)
         user.save()
 
-    print("Superuser already exists.")
+    print(
+        f"Superuser '{username}' already exists."
+    )
 
 PY
 
@@ -640,7 +674,39 @@ docker compose \
 
 log "Static files collected."
 
+# ============================================================
+# Verify static files
+# ============================================================
 
+info "Verifying collected static files..."
+
+STATIC_ADMIN_FILE="/app/staticfiles/admin/css/base.css"
+
+if ! docker compose \
+    -f docker-compose.yml \
+    -f deploy/docker-compose.prod.yml \
+    exec -T web \
+    test -f "${STATIC_ADMIN_FILE}"
+then
+
+    fail "Django admin static files were not collected correctly."
+fi
+
+log "Django admin static files verified."
+
+STATIC_MAIN_FILE="/app/staticfiles/css/portfolio.css"
+
+if ! docker compose \
+    -f docker-compose.yml \
+    -f deploy/docker-compose.prod.yml \
+    exec -T web \
+    test -f "${STATIC_MAIN_FILE}"
+then
+
+    fail "Main website CSS was not collected correctly."
+fi
+
+log "Main website CSS verified."
 # ============================================================
 # Start Caddy
 # ============================================================

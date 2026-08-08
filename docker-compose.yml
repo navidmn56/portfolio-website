@@ -20,9 +20,6 @@ services:
     env_file:
       - .env
 
-    expose:
-      - "8000"
-
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -46,6 +43,10 @@ services:
       - "80:80"
       - "443:443"
       - "443:443/udp"
+
+    environment:
+      DOMAIN: ${DOMAIN}
+      CADDY_EMAIL: ${CADDY_EMAIL}
 
     volumes:
       - caddy_data:/data

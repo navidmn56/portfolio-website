@@ -5,18 +5,18 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
+# ============================================================
 # Security
-
+# ============================================================
 
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
-    "django-insecure-development-only-change-me"
+    "django-insecure-development-only-change-me",
 )
 
 DEBUG = os.getenv(
     "DEBUG",
-    "False"
+    "False",
 ).lower() in ("true", "1", "yes")
 
 
@@ -24,15 +24,15 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         "ALLOWED_HOSTS",
-        "localhost,127.0.0.1"
+        "localhost,127.0.0.1",
     ).split(",")
     if host.strip()
 ]
 
 
-
+# ============================================================
 # Applications
-
+# ============================================================
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -46,16 +46,14 @@ INSTALLED_APPS = [
 ]
 
 
-
+# ============================================================
 # Middleware
-
+# ============================================================
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
-
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 
     "django.middleware.common.CommonMiddleware",
 
@@ -69,9 +67,9 @@ MIDDLEWARE = [
 ]
 
 
-
+# ============================================================
 # URLs / Templates
-
+# ============================================================
 
 ROOT_URLCONF = "resume_project.urls"
 
@@ -98,13 +96,13 @@ TEMPLATES = [
 WSGI_APPLICATION = "resume_project.wsgi.application"
 
 
-
+# ============================================================
 # Database
-
+# ============================================================
 
 DATABASE_PATH = os.getenv(
     "DATABASE_PATH",
-    str(BASE_DIR / "db.sqlite3")
+    "/data/db.sqlite3",
 )
 
 
@@ -116,9 +114,9 @@ DATABASES = {
 }
 
 
-
+# ============================================================
 # Password validation
-
+# ============================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -144,9 +142,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-
+# ============================================================
 # Internationalization
-
+# ============================================================
 
 LANGUAGE_CODE = "en-us"
 
@@ -157,9 +155,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-
+# ============================================================
 # Static files
-
+# ============================================================
 
 STATIC_URL = "/static/"
 
@@ -169,30 +167,19 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
 
-    "staticfiles": {
-        "BACKEND":
-            "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
-
-
-# Media
-
+# ============================================================
+# Media files
+# ============================================================
 
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-
+# ============================================================
 # Reverse Proxy / HTTPS
-
+# ============================================================
 
 SECURE_PROXY_SSL_HEADER = (
     "HTTP_X_FORWARDED_PROTO",
@@ -200,9 +187,9 @@ SECURE_PROXY_SSL_HEADER = (
 )
 
 
-
+# ============================================================
 # Email
-
+# ============================================================
 
 EMAIL_BACKEND = (
     "django.core.mail.backends.console.EmailBackend"
