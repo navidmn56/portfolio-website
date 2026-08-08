@@ -78,41 +78,33 @@
                                     <i class="{{ social.icon_class }}"></i>
                                 </a>
                             {% endfor %}
+
+                            <!-- Contact Icons - Inline with Social Links -->
+                            {% if profile.email %}
+                            <a href="mailto:{{ profile.email }}" class="social-icon-circle contact-inline-icon" aria-label="Email" title="Email">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            {% endif %}
+
+                            {% if profile.phone %}
+                            <a href="tel:{{ profile.phone|cut:' ' }}" class="social-icon-circle contact-inline-icon" aria-label="Phone" title="Phone">
+                                <i class="fas fa-phone-alt"></i>
+                            </a>
+                            {% endif %}
+
+                            {% if profile.location %}
+                            <a href="{% if profile.location_url %}{{ profile.location_url }}{% else %}https://maps.google.com/?q={{ profile.location|urlencode }}{% endif %}" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="social-icon-circle contact-inline-icon" 
+                               aria-label="Location"
+                               title="Location">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
 
-                </div>
-
-                <!-- Contact Links - Icon Only Style -->
-                <div class="contact-links contact-links-icon-only">
-                    {% if profile.email %}
-                    <a href="mailto:{{ profile.email }}" class="contact-item contact-item-icon-only" aria-label="Email" title="Email">
-                        <span class="contact-icon-wrapper">
-                            <i class="fas fa-envelope"></i>
-                        </span>
-                    </a>
-                    {% endif %}
-
-                    {% if profile.phone %}
-                    <a href="tel:{{ profile.phone|cut:' ' }}" class="contact-item contact-item-icon-only" aria-label="Phone" title="Phone">
-                        <span class="contact-icon-wrapper">
-                            <i class="fas fa-phone-alt"></i>
-                        </span>
-                    </a>
-                    {% endif %}
-
-                    {% if profile.location %}
-                    <a href="{% if profile.location_url %}{{ profile.location_url }}{% else %}https://maps.google.com/?q={{ profile.location|urlencode }}{% endif %}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="contact-item contact-item-icon-only" 
-                       aria-label="Location"
-                       title="Location">
-                        <span class="contact-icon-wrapper">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </span>
-                    </a>
-                    {% endif %}
                 </div>
 
             </div>

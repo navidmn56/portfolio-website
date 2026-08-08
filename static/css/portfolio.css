@@ -109,12 +109,12 @@ body::after {
 }
 
 /* ============================================================
-   PROFILE HEADER - IMAGE LEFT, NAME CENTER, CONTACTS RIGHT
+   PROFILE HEADER - IMAGE LEFT, NAME CENTER
    ============================================================ */
 .profile-header {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 0;
     margin-bottom: 18px;
 }
 
@@ -216,12 +216,13 @@ body::after {
 }
 
 /* ============================================================
-   SOCIAL LINKS - NO TOOLTIP
+   SOCIAL LINKS - INCLUDES CONTACT ICONS INLINE
    ============================================================ */
 .social-links-row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: center;
     gap: 4px;
     margin-top: 3px;
     order: 2;
@@ -243,106 +244,28 @@ body::after {
     flex-shrink: 0;
 }
 
+/* Contact inline icons - same style, different hover color */
+.contact-inline-icon {
+    background: rgba(110, 211, 235, 0.05);
+    border-color: rgba(110, 211, 235, 0.12);
+    color: #79d8ed;
+}
+
+.contact-inline-icon:hover {
+    background: rgba(110, 211, 235, 0.12);
+    border-color: rgba(110, 211, 235, 0.3);
+    color: #8de2f5;
+    transform: translateY(-2px);
+}
+
+/* Hide old contact container */
+.contact-links {
+    display: none;
+}
+
 /* Hide tooltip completely */
 .tooltip {
     display: none !important;
-}
-
-/* ============================================================
-   CONTACT LINKS - ICON ONLY STYLE
-   ============================================================ */
-.contact-links-icon-only {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 6px 8px;
-    background: rgba(15, 18, 28, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    order: 1;
-    width: 100%;
-    overflow: hidden;
-}
-
-.contact-item-icon-only {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border-radius: 10px;
-    color: #bfc8d4;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid transparent;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Glow effect on hover */
-.contact-item-icon-only::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(110, 211, 235, 0.05), transparent);
-    transition: left 0.4s ease;
-}
-
-.contact-item-icon-only:hover::before {
-    left: 100%;
-}
-
-.contact-item-icon-only:hover {
-    background: rgba(110, 211, 235, 0.06);
-    border-color: rgba(110, 211, 235, 0.2);
-    color: #e8edf3;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(110, 211, 235, 0.08);
-}
-
-.contact-item-icon-only:active {
-    transform: translateY(0) scale(0.98);
-}
-
-/* Icon wrapper */
-.contact-item-icon-only .contact-icon-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    background: rgba(110, 211, 235, 0.1);
-    border: 1px solid rgba(110, 211, 235, 0.15);
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-}
-
-.contact-item-icon-only:hover .contact-icon-wrapper {
-    background: rgba(110, 211, 235, 0.18);
-    border-color: rgba(110, 211, 235, 0.3);
-    box-shadow: 0 0 15px rgba(110, 211, 235, 0.15);
-}
-
-.contact-item-icon-only .contact-icon-wrapper i {
-    color: #79d8ed;
-    font-size: 0.9rem;
-    transition: transform 0.2s ease;
-}
-
-.contact-item-icon-only:hover .contact-icon-wrapper i {
-    transform: scale(1.1);
 }
 
 /* ============================================================
@@ -887,10 +810,6 @@ body::after {
         border-radius: 18px;
     }
 
-    .profile-header {
-        gap: 12px;
-    }
-
     .profile-info {
         gap: 10px;
     }
@@ -909,34 +828,14 @@ body::after {
         padding: 3px 7px;
     }
 
+    .social-links-row {
+        gap: 3px;
+    }
+
     .social-icon-circle {
-        width: 26px;
-        height: 26px;
-        font-size: 0.6rem;
-    }
-
-    /* CONTACT ICONS - SINGLE ROW, CENTERED, COMPACT */
-    .contact-links-icon-only {
-        flex-direction: row;
-        justify-content: center;
-        gap: 6px;
-        padding: 5px 8px;
-        border-radius: 12px;
-        width: 100%;
-    }
-
-    .contact-item-icon-only {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper {
-        border-radius: 8px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.7rem;
+        width: 28px;
+        height: 28px;
+        font-size: 0.62rem;
     }
 
     .summary {
@@ -1019,34 +918,14 @@ body::after {
         padding: 2px 6px;
     }
 
+    .social-links-row {
+        gap: 2px;
+    }
+
     .social-icon-circle {
-        width: 24px;
-        height: 24px;
-        font-size: 0.55rem;
-    }
-
-    /* CONTACT ICONS - EXTRA COMPACT, PERFECTLY CENTERED */
-    .contact-links-icon-only {
-        flex-direction: row;
-        justify-content: center;
-        gap: 5px;
-        padding: 4px 6px;
-        border-radius: 10px;
-        width: 100%;
-    }
-
-    .contact-item-icon-only {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper {
-        border-radius: 7px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.6rem;
+        width: 26px;
+        height: 26px;
+        font-size: 0.58rem;
     }
 
     .summary {
@@ -1100,10 +979,6 @@ body::after {
         border-radius: 24px;
     }
 
-    .profile-header {
-        gap: 16px;
-    }
-
     .profile-image-wrapper {
         width: 70px;
         height: 70px;
@@ -1118,34 +993,14 @@ body::after {
         padding: 4px 9px;
     }
 
+    .social-links-row {
+        gap: 4px;
+    }
+
     .social-icon-circle {
-        width: 30px;
-        height: 30px;
-        font-size: 0.7rem;
-    }
-
-    /* CONTACT ICONS - SINGLE ROW, CENTERED, MEDIUM */
-    .contact-links-icon-only {
-        flex-direction: row;
-        justify-content: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-radius: 14px;
-        width: 100%;
-    }
-
-    .contact-item-icon-only {
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper {
-        border-radius: 9px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.78rem;
+        width: 32px;
+        height: 32px;
+        font-size: 0.72rem;
     }
 
     .summary {
@@ -1208,17 +1063,7 @@ body::after {
         border-radius: 28px;
     }
 
-    /* HEADER: IMAGE | NAME | CONTACTS */
-    .profile-header {
-        flex-direction: row;
-        align-items: center;
-        gap: 25px;
-        margin-bottom: 24px;
-    }
-
     .profile-info {
-        flex: 1;
-        order: 0;
         gap: 15px;
     }
 
@@ -1237,6 +1082,10 @@ body::after {
         padding: 5px 11px;
     }
 
+    .social-links-row {
+        gap: 5px;
+    }
+
     .social-icon-circle {
         width: 36px;
         height: 36px;
@@ -1250,30 +1099,10 @@ body::after {
         transform: translateY(-2px);
     }
 
-    /* CONTACTS RIGHT SIDE - HORIZONTAL ROW */
-    .contact-links-icon-only {
-        order: 1;
-        width: auto;
-        flex-shrink: 0;
-        flex-direction: row;
-        justify-content: center;
-        gap: 8px;
-        padding: 5px 7px;
-        border-radius: 14px;
-    }
-
-    .contact-item-icon-only {
-        width: 38px;
-        height: 38px;
-        border-radius: 9px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper {
-        border-radius: 9px;
-    }
-
-    .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.82rem;
+    .contact-inline-icon:hover {
+        background: rgba(110, 211, 235, 0.15);
+        border-color: rgba(110, 211, 235, 0.4);
+        color: #a0e8f5;
     }
 
     .summary {
@@ -1378,11 +1207,6 @@ body::after {
         height: 36px;
     }
 
-    .contact-item-icon-only {
-        min-width: 32px;
-        min-height: 32px;
-    }
-
     .project-card:hover {
         transform: none;
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
@@ -1416,8 +1240,7 @@ body::after {
 @media (prefers-contrast: high) {
     .view,
     .card-style,
-    .project-card,
-    .contact-links-icon-only {
+    .project-card {
         border-color: rgba(255, 255, 255, 0.25);
     }
 
