@@ -255,15 +255,17 @@ body::after {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 4px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 8px;
     background: rgba(15, 18, 28, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 14px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     order: 1;
-    width: fit-content;
+    width: 100%;
     overflow: hidden;
 }
 
@@ -908,23 +910,33 @@ body::after {
     }
 
     .social-icon-circle {
-        width: 28px;
-        height: 28px;
-        font-size: 0.65rem;
+        width: 26px;
+        height: 26px;
+        font-size: 0.6rem;
     }
 
+    /* CONTACT ICONS - SINGLE ROW, CENTERED, COMPACT */
     .contact-links-icon-only {
-        gap: 5px;
-        padding: 3px;
+        flex-direction: row;
+        justify-content: center;
+        gap: 6px;
+        padding: 5px 8px;
+        border-radius: 12px;
+        width: 100%;
     }
 
     .contact-item-icon-only {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+    }
+
+    .contact-item-icon-only .contact-icon-wrapper {
+        border-radius: 8px;
     }
 
     .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .summary {
@@ -1008,23 +1020,33 @@ body::after {
     }
 
     .social-icon-circle {
-        width: 26px;
-        height: 26px;
-        font-size: 0.6rem;
+        width: 24px;
+        height: 24px;
+        font-size: 0.55rem;
     }
 
+    /* CONTACT ICONS - EXTRA COMPACT, PERFECTLY CENTERED */
     .contact-links-icon-only {
-        gap: 4px;
-        padding: 2px;
+        flex-direction: row;
+        justify-content: center;
+        gap: 5px;
+        padding: 4px 6px;
+        border-radius: 10px;
+        width: 100%;
     }
 
     .contact-item-icon-only {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+    }
+
+    .contact-item-icon-only .contact-icon-wrapper {
+        border-radius: 7px;
     }
 
     .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.72rem;
+        font-size: 0.6rem;
     }
 
     .summary {
@@ -1097,23 +1119,33 @@ body::after {
     }
 
     .social-icon-circle {
-        width: 34px;
-        height: 34px;
-        font-size: 0.75rem;
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
     }
 
+    /* CONTACT ICONS - SINGLE ROW, CENTERED, MEDIUM */
     .contact-links-icon-only {
-        gap: 7px;
-        padding: 4px;
+        flex-direction: row;
+        justify-content: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 14px;
+        width: 100%;
     }
 
     .contact-item-icon-only {
-        width: 42px;
-        height: 42px;
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+    }
+
+    .contact-item-icon-only .contact-icon-wrapper {
+        border-radius: 9px;
     }
 
     .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.9rem;
+        font-size: 0.78rem;
     }
 
     .summary {
@@ -1218,23 +1250,30 @@ body::after {
         transform: translateY(-2px);
     }
 
-    /* CONTACTS RIGHT SIDE - ICON ONLY */
+    /* CONTACTS RIGHT SIDE - HORIZONTAL ROW */
     .contact-links-icon-only {
         order: 1;
         width: auto;
         flex-shrink: 0;
         flex-direction: row;
+        justify-content: center;
         gap: 8px;
-        padding: 4px 5px;
+        padding: 5px 7px;
+        border-radius: 14px;
     }
 
     .contact-item-icon-only {
-        width: 44px;
-        height: 44px;
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+    }
+
+    .contact-item-icon-only .contact-icon-wrapper {
+        border-radius: 9px;
     }
 
     .contact-item-icon-only .contact-icon-wrapper i {
-        font-size: 0.95rem;
+        font-size: 0.82rem;
     }
 
     .summary {
@@ -1335,13 +1374,13 @@ body::after {
     }
 
     .social-icon-circle {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
     }
 
     .contact-item-icon-only {
-        min-width: 44px;
-        min-height: 44px;
+        min-width: 32px;
+        min-height: 32px;
     }
 
     .project-card:hover {
