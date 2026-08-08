@@ -1,98 +1,88 @@
 # Developer Resume Website
 
-A personal resume and portfolio website built with **Django**, designed specifically for developers and programmers.
+A personal resume and portfolio website built with **Django**, designed for developers and programmers.
 
-The website provides a clean way to present personal information, skills, projects, and other professional details. Content can be managed through the **Django Admin Panel**, making it possible to customize the resume without directly editing the website templates.
+The website provides a simple way to present personal information, skills, projects, profile information, and contact details. The available content can be managed through the **Django Admin Panel**.
 
-> Currently, the website is available in English.
+> Currently available in English.
 
----
-
-## 📸 Screenshots
-
-### Homepage
+## Screenshot
 
 ![Homepage](screenshots/home.png)
 
+## Features
 
-## ✨ Features
-
-* Developer-focused resume and portfolio
-* Responsive website layout
-* Personal profile information
-* Profile image management
-* Projects section
-* Skills and technologies section
+* Developer-focused resume website
+* Responsive design
+* Profile information
+* Profile image
+* Skills and technologies
+* Projects
+* Career information
+* Education information
+* Social and contact information
 * Content management through Django Admin
 * Image upload support
-* Social and contact information
 * Docker support
-* English language interface
+* Production deployment with Gunicorn and Caddy
+* Automatic HTTPS with Caddy
+* Automated server installation script
 
----
+## Built With
 
-## 🛠️ Built With
+* Python
+* Django
+* HTML
+* CSS
+* JavaScript
+* Docker
+* Gunicorn
+* Caddy
 
-* **Python**
-* **Django**
-* **HTML**
-* **CSS**
-* **JavaScript**
-* **Docker**
-* **Git**
-
----
-
-## ⚙️ Django Admin
-
-The website uses Django Admin to manage the resume content.
-
-Administrators can update the available information through the admin panel instead of changing the source code manually.
-
-For example, profile information, projects, skills, and other available content can be managed from:
+## Project Structure
 
 ```text
-/admin/
-```
-
-To create an administrator account:
-
-```bash
-python manage.py createsuperuser
-```
-
-## 📁 Project Structure
-
-```text
-resume_site/
+resume-website/
+│
+├── deploy/
+│   ├── Caddyfile
+│   ├── docker-compose.prod.yml
+│   └── install.sh
+│
+├── media/
+│   └── profile_images/
 │
 ├── resume_app/
 │   ├── migrations/
 │   ├── templates/
+│   │   └── portfolio.html
 │   ├── admin.py
 │   ├── apps.py
 │   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
 │   └── views.py
 │
 ├── resume_project/
+│   ├── asgi.py
 │   ├── settings.py
 │   ├── urls.py
-│   ├── asgi.py
 │   └── wsgi.py
 │
 ├── screenshots/
 │   ├── home.png
-│   ├── projects.png
-│   ├── skills.png
-│   └── admin.png
+│   ├── download (3).png
+│   ├── download (4).png
+│   ├── download (6).png
+│   └── download (7).png
 │
 ├── static/
 │   ├── css/
+│   │   └── portfolio.css
 │   ├── images/
+│   │   └── profile.jpg
 │   └── js/
-│
-├── media/
-│   └── profile_images/
+│       └── portfolio.js
 │
 ├── Dockerfile
 ├── docker-compose.yml
@@ -102,32 +92,172 @@ resume_site/
 └── README.md
 ```
 
----
+## Admin Panel
 
-## 🔧 Customization
+The website uses Django Admin to manage the available resume content.
 
-The resume content is designed to be managed through Django Admin.
-
-After creating a superuser, open:
+After deployment, the admin panel is available at:
 
 ```text
-http://127.0.0.1:8000/admin/
+https://your-domain.com/admin/
 ```
 
-From there, you can manage the content provided by the application.
+From the admin panel, you can manage the content provided by the application without directly editing the HTML templates.
 
-The website is currently focused on an English-language resume and portfolio experience.
+## Server Deployment
 
----
+The project includes an automated installer for deploying the website on a Linux server.
 
-## 📌 Project Status
+### Requirements
+
+* Linux server
+* A domain or subdomain
+* DNS pointing to the server
+* Ports `80` and `443` available
+
+Docker and Docker Compose can be installed automatically by the installer if they are not already available.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/navidmn56/resume-website.git
+cd resume-website
+```
+
+### 2. Run the Installer
+
+```bash
+chmod +x deploy/install.sh
+sudo ./deploy/install.sh
+```
+
+The installer asks for the domain and automatically handles the main deployment steps, including:
+
+* Detecting the server IP
+* Checking DNS
+* Creating the production environment
+* Building the Docker image
+* Starting Django
+* Running migrations
+* Collecting static files
+* Starting Gunicorn
+* Starting Caddy
+* Obtaining the SSL certificate
+* Enabling HTTPS
+
+After installation, the website will be available at:
+
+```text
+https://your-domain.com
+```
+
+And the admin panel:
+
+```text
+https://your-domain.com/admin/
+```
+
+## Creating an Admin Account
+
+After the installation is complete, create a Django superuser:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  exec web python manage.py createsuperuser
+```
+
+Follow the prompts to create the administrator account.
+
+## Updating the Website
+
+After making changes and pushing them to GitHub, update the server:
+
+```bash
+cd ~/resume-website
+git pull
+```
+
+Rebuild the Docker container:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  up -d --build
+```
+
+Apply new migrations if required:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  exec web python manage.py migrate
+```
+
+Collect static files:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  exec web python manage.py collectstatic --noinput
+```
+
+## Useful Commands
+
+Check the running containers:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  ps
+```
+
+View logs:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  logs -f
+```
+
+Restart the application:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  restart
+```
+
+Stop the application:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  down
+```
+
+## Environment Variables
+
+Production configuration is generated on the server.
+
+Sensitive values such as the Django secret key should not be committed to GitHub.
+
+The `.env` file should remain on the server and should be excluded from Git using `.gitignore`.
+
+## Project Status
 
 The project is currently under development.
 
-More customization options and features may be added in future updates.
+The current version focuses on an English-language developer resume and portfolio experience. Additional customization options and features may be added in future versions.
 
----
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
