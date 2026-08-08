@@ -125,6 +125,7 @@ body::after {
     gap: 13px;
     flex: 1;
     min-width: 0;
+    overflow: hidden;
 }
 
 /* ============================================================
@@ -178,16 +179,21 @@ body::after {
     flex-direction: column;
     gap: 5px;
     order: 1;
+    overflow: hidden;
 }
 
 .name-section h1 {
     color: #f5f7fa;
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 4vw, 1.2rem);
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.2;
     overflow-wrap: anywhere;
+    word-break: break-word;
     margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .title-badge {
@@ -199,12 +205,14 @@ body::after {
     background: rgba(102, 210, 235, 0.07);
     border: 1px solid rgba(102, 210, 235, 0.18);
     color: #8ddced;
-    font-size: 0.62rem;
+    font-size: clamp(0.55rem, 1.5vw, 0.62rem);
     font-weight: 600;
     line-height: 1.3;
     width: fit-content;
     max-width: 100%;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .title-badge i {
@@ -219,14 +227,14 @@ body::after {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
     margin-top: 3px;
     order: 2;
 }
 
 .social-icon-circle {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -235,7 +243,7 @@ body::after {
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #aeb8c6;
     text-decoration: none;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
     flex-shrink: 0;
 }
@@ -252,8 +260,8 @@ body::after {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px;
+    gap: 6px;
+    padding: 8px 6px;
     background: rgba(15, 18, 28, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
@@ -261,19 +269,20 @@ body::after {
     -webkit-backdrop-filter: blur(10px);
     order: 1;
     width: 100%;
+    overflow: hidden;
 }
 
 .contact-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
+    gap: 8px;
+    padding: 8px 10px;
     border-radius: 12px;
     color: #bfc8d4;
     text-decoration: none;
     transition: all 0.2s ease;
     min-width: 0;
-    flex: 1;
+    flex: 1 1 auto;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid transparent;
     position: relative;
@@ -310,8 +319,8 @@ body::after {
 
 /* Icon wrapper */
 .contact-icon-wrapper {
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -330,7 +339,7 @@ body::after {
 
 .contact-icon-wrapper i {
     color: #79d8ed;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     transition: transform 0.2s ease;
 }
 
@@ -344,25 +353,28 @@ body::after {
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    overflow: hidden;
 }
 
 .contact-label {
-    font-size: 0.55rem;
+    font-size: 0.52rem;
     font-weight: 500;
     color: #6b7280;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     line-height: 1;
+    white-space: nowrap;
 }
 
 .contact-value {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 500;
     color: #d1d5db;
     line-height: 1.3;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    word-break: break-all;
 }
 
 .contact-item:hover .contact-value {
@@ -903,9 +915,230 @@ body::after {
 }
 
 /* ============================================================
-   TABLET OPTIMIZATION (600px+)
+   MOBILE OPTIMIZATION (max-width: 599px)
    ============================================================ */
-@media (min-width: 600px) {
+@media (max-width: 599px) {
+    body {
+        padding: 8px;
+    }
+
+    .view {
+        padding: 12px;
+        border-radius: 18px;
+    }
+
+    .profile-header {
+        gap: 12px;
+    }
+
+    .profile-info {
+        gap: 10px;
+    }
+
+    .profile-image-wrapper {
+        width: 52px;
+        height: 52px;
+    }
+
+    .name-section h1 {
+        font-size: clamp(0.95rem, 3.8vw, 1.15rem);
+    }
+
+    .title-badge {
+        font-size: clamp(0.5rem, 1.4vw, 0.58rem);
+        padding: 3px 7px;
+    }
+
+    .social-icon-circle {
+        width: 28px;
+        height: 28px;
+        font-size: 0.65rem;
+    }
+
+    .contact-links {
+        flex-direction: column;
+        gap: 5px;
+        padding: 6px;
+    }
+
+    .contact-item {
+        padding: 8px 10px;
+        min-height: 42px;
+        flex: none;
+        width: 100%;
+    }
+
+    .contact-icon-wrapper {
+        width: 30px;
+        height: 30px;
+    }
+
+    .contact-icon-wrapper i {
+        font-size: 0.72rem;
+    }
+
+    .contact-value {
+        font-size: 0.68rem;
+    }
+
+    .contact-label {
+        font-size: 0.48rem;
+    }
+
+    .summary {
+        padding: 12px;
+        font-size: 0.76rem;
+    }
+
+    .grid-2col {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .card-style {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    .card-style h2 {
+        font-size: 0.85rem;
+    }
+
+    .skill-tag {
+        font-size: 0.66rem;
+        padding: 5px 8px;
+    }
+
+    .project-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .project-card {
+        min-height: 140px;
+        padding: 12px;
+    }
+
+    .project-card h4 {
+        font-size: 0.8rem;
+    }
+
+    .project-card p {
+        font-size: 0.68rem;
+    }
+
+    .projects-hint {
+        font-size: 0.58rem;
+        margin-top: 5px;
+        opacity: 0.5;
+    }
+}
+
+/* ============================================================
+   VERY SMALL PHONES (360px-)
+   ============================================================ */
+@media (max-width: 360px) {
+    body {
+        padding: 6px;
+    }
+
+    .view {
+        padding: 10px;
+        border-radius: 16px;
+    }
+
+    .profile-info {
+        gap: 8px;
+    }
+
+    .profile-image-wrapper {
+        width: 46px;
+        height: 46px;
+    }
+
+    .name-section h1 {
+        font-size: clamp(0.85rem, 3.5vw, 1rem);
+    }
+
+    .title-badge {
+        font-size: clamp(0.45rem, 1.3vw, 0.52rem);
+        padding: 2px 6px;
+    }
+
+    .social-icon-circle {
+        width: 26px;
+        height: 26px;
+        font-size: 0.6rem;
+    }
+
+    .contact-links {
+        padding: 5px;
+        gap: 4px;
+    }
+
+    .contact-item {
+        padding: 8px 10px;
+    }
+
+    .contact-icon-wrapper {
+        width: 28px;
+        height: 28px;
+    }
+
+    .contact-icon-wrapper i {
+        font-size: 0.68rem;
+    }
+
+    .contact-value {
+        font-size: 0.62rem;
+    }
+
+    .contact-label {
+        font-size: 0.45rem;
+    }
+
+    .summary {
+        padding: 10px;
+        font-size: 0.7rem;
+    }
+
+    .card-style {
+        padding: 10px;
+    }
+
+    .skill-tag {
+        font-size: 0.6rem;
+        padding: 4px 6px;
+    }
+
+    .project-grid {
+        gap: 6px;
+    }
+
+    .project-card {
+        min-height: 120px;
+        padding: 10px;
+    }
+
+    .project-card h4 {
+        font-size: 0.74rem;
+    }
+
+    .project-card p {
+        font-size: 0.62rem;
+    }
+
+    .projects-hint {
+        font-size: 0.54rem;
+        margin-top: 4px;
+        opacity: 0.45;
+    }
+}
+
+/* ============================================================
+   TABLET OPTIMIZATION (600px - 899px)
+   ============================================================ */
+@media (min-width: 600px) and (max-width: 899px) {
     body {
         padding: 20px;
     }
@@ -925,7 +1158,7 @@ body::after {
     }
 
     .name-section h1 {
-        font-size: 1.5rem;
+        font-size: clamp(1.1rem, 3vw, 1.5rem);
     }
 
     .title-badge {
@@ -933,21 +1166,36 @@ body::after {
         padding: 4px 9px;
     }
 
+    .social-icon-circle {
+        width: 34px;
+        height: 34px;
+        font-size: 0.75rem;
+    }
+
     .contact-links {
-        gap: 8px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px;
     }
 
     .contact-item {
+        flex: 1 1 0;
+        min-width: 130px;
         padding: 8px 12px;
     }
 
     .contact-value {
-        font-size: 0.72rem;
+        font-size: 0.65rem;
     }
 
     .summary {
         font-size: 0.85rem;
         padding: 16px 18px;
+    }
+
+    .grid-2col {
+        gap: 12px;
     }
 
     .card-style {
@@ -985,11 +1233,6 @@ body::after {
         margin-top: 8px;
         opacity: 0.55;
     }
-
-    .social-icon-circle {
-        width: 34px;
-        height: 34px;
-    }
 }
 
 /* ============================================================
@@ -1026,12 +1269,26 @@ body::after {
     }
 
     .name-section h1 {
-        font-size: 1.8rem;
+        font-size: clamp(1.5rem, 3vw, 1.8rem);
+        white-space: nowrap;
     }
 
     .title-badge {
         font-size: 0.7rem;
         padding: 5px 11px;
+    }
+
+    .social-icon-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.82rem;
+    }
+
+    .social-icon-circle:hover {
+        background: rgba(110, 211, 235, 0.09);
+        border-color: rgba(110, 211, 235, 0.3);
+        color: #8de2f5;
+        transform: translateY(-2px);
     }
 
     /* CONTACTS RIGHT SIDE */
@@ -1040,12 +1297,19 @@ body::after {
         width: auto;
         flex-shrink: 0;
         flex-direction: column;
-        gap: 6px;
+        gap: 5px;
+        padding: 6px;
     }
 
     .contact-item {
         flex: none;
-        min-width: 220px;
+        min-width: 200px;
+        max-width: 260px;
+        padding: 8px 12px;
+    }
+
+    .contact-value {
+        font-size: 0.7rem;
     }
 
     .summary {
@@ -1101,24 +1365,6 @@ body::after {
         margin-top: 10px;
         opacity: 0.5;
     }
-
-    .social-icon-circle {
-        width: 36px;
-        height: 36px;
-        font-size: 0.82rem;
-    }
-
-    .social-icon-circle:hover {
-        background: rgba(110, 211, 235, 0.09);
-        border-color: rgba(110, 211, 235, 0.3);
-        color: #8de2f5;
-        transform: translateY(-2px);
-    }
-
-    .contact-links a:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: #edf2f7;
-    }
 }
 
 /* ============================================================
@@ -1152,101 +1398,6 @@ body::after {
 
     .projects-hint {
         font-size: 0.7rem;
-    }
-}
-
-/* ============================================================
-   VERY SMALL PHONES (360px-)
-   ============================================================ */
-@media (max-width: 360px) {
-    body {
-        padding: 6px;
-    }
-
-    .view {
-        padding: 12px;
-        border-radius: 16px;
-    }
-
-    .profile-info {
-        gap: 10px;
-    }
-
-    .profile-image-wrapper {
-        width: 52px;
-        height: 52px;
-    }
-
-    .name-section h1 {
-        font-size: 1.1rem;
-    }
-
-    .title-badge {
-        font-size: 0.56rem;
-        padding: 3px 7px;
-    }
-
-    .social-icon-circle {
-        width: 28px;
-        height: 28px;
-        font-size: 0.68rem;
-    }
-
-    .contact-links {
-        flex-direction: column;
-    }
-
-    .contact-item {
-        padding: 12px 14px;
-        flex: none;
-        width: 100%;
-    }
-
-    .contact-icon-wrapper {
-        width: 36px;
-        height: 36px;
-    }
-
-    .contact-value {
-        font-size: 0.72rem;
-    }
-
-    .summary {
-        padding: 12px;
-        font-size: 0.74rem;
-    }
-
-    .card-style {
-        padding: 12px;
-    }
-
-    .skill-tag {
-        font-size: 0.63rem;
-        padding: 5px 7px;
-    }
-
-    .project-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .project-card {
-        min-height: 130px;
-        padding: 11px;
-    }
-
-    .project-card h4 {
-        font-size: 0.78rem;
-    }
-
-    .project-card p {
-        font-size: 0.64rem;
-    }
-
-    .projects-hint {
-        font-size: 0.58rem;
-        margin-top: 5px;
-        opacity: 0.5;
     }
 }
 
