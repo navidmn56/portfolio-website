@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>{% block title %}{{ profile.full_name|default:'My Portfolio' }} · AI Engineer Portfolio{% endblock %}</title>
 
-    <!-- Preconnect Fonts -->
+    <!-- Preconnect to Google Fonts for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Preload Font Awesome -->
+    <!-- Preload Font Awesome for performance -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"></noscript>
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts - Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Custom CSS -->
@@ -65,7 +65,7 @@
                             {{ profile.title|default:'Developer' }}
                         </span>
 
-                        <!-- Social Links - No Tooltip -->
+                        <!-- Social Links -->
                         <div class="social-links-row">
                             {% for social in social_media_links %}
                                 <a
@@ -84,28 +84,46 @@
 
                 </div>
 
-                <!-- Contact Links - Right Side on Desktop -->
+                <!-- Contact Links - Professional Style -->
                 <div class="contact-links">
-                    <a href="mailto:{{ profile.email }}" aria-label="Email">
-                        <i class="fas fa-envelope"></i>
-                        <span>{{ profile.email }}</span>
+                    {% if profile.email %}
+                    <a href="mailto:{{ profile.email }}" class="contact-item" aria-label="Email">
+                        <span class="contact-icon-wrapper">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <div class="contact-text">
+                            <span class="contact-label">Email</span>
+                            <span class="contact-value">{{ profile.email }}</span>
+                        </div>
                     </a>
+                    {% endif %}
 
-                    <a href="tel:{{ profile.phone }}" aria-label="Phone">
-                        <i class="fas fa-phone-alt"></i>
-                        <span>{{ profile.phone }}</span>
+                    {% if profile.phone %}
+                    <a href="tel:{{ profile.phone|cut:' ' }}" class="contact-item" aria-label="Phone">
+                        <span class="contact-icon-wrapper">
+                            <i class="fas fa-phone-alt"></i>
+                        </span>
+                        <div class="contact-text">
+                            <span class="contact-label">Phone</span>
+                            <span class="contact-value">{{ profile.phone }}</span>
+                        </div>
                     </a>
+                    {% endif %}
 
-                    {% if profile.location_url %}
-                        <a href="{{ profile.location_url }}" target="_blank" rel="noopener noreferrer" aria-label="Location">
-                            <i class="fas fa-map-pin"></i>
-                            <span>{{ profile.location }}</span>
-                        </a>
-                    {% else %}
-                        <a href="#" aria-label="Location">
-                            <i class="fas fa-map-pin"></i>
-                            <span>{{ profile.location }}</span>
-                        </a>
+                    {% if profile.location %}
+                    <a href="{% if profile.location_url %}{{ profile.location_url }}{% else %}https://maps.google.com/?q={{ profile.location|urlencode }}{% endif %}" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="contact-item" 
+                       aria-label="Location">
+                        <span class="contact-icon-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </span>
+                        <div class="contact-text">
+                            <span class="contact-label">Location</span>
+                            <span class="contact-value">{{ profile.location }}</span>
+                        </div>
+                    </a>
                     {% endif %}
                 </div>
 
@@ -141,13 +159,16 @@
                     <!-- Skill Legend -->
                     <div class="legend">
                         <span class="legend-item">
-                            <span class="legend-dot" style="background:#69dc99;"></span> Advanced
+                            <span class="legend-dot" style="background:#69dc99;"></span>
+                            Advanced
                         </span>
                         <span class="legend-item">
-                            <span class="legend-dot" style="background:#73b7ee;"></span> Intermediate
+                            <span class="legend-dot" style="background:#73b7ee;"></span>
+                            Intermediate
                         </span>
                         <span class="legend-item">
-                            <span class="legend-dot" style="background:#e4bd68;"></span> Beginner
+                            <span class="legend-dot" style="background:#e4bd68;"></span>
+                            Beginner
                         </span>
                     </div>
                 </div>
@@ -161,11 +182,24 @@
 
                     <!-- Tabs -->
                     <div class="tabs-container">
-                        <button type="button" class="tab-btn active" onclick="switchTab('education')" id="edu-tab">
+                        <button 
+                            type="button" 
+                            class="tab-btn active" 
+                            onclick="switchTab('education')" 
+                            id="edu-tab" 
+                            aria-label="Education tab"
+                        >
                             <i class="fas fa-graduation-cap"></i>
                             <span>Education</span>
                         </button>
-                        <button type="button" class="tab-btn" onclick="switchTab('experience')" id="exp-tab">
+
+                        <button 
+                            type="button" 
+                            class="tab-btn" 
+                            onclick="switchTab('experience')" 
+                            id="exp-tab" 
+                            aria-label="Experience tab"
+                        >
                             <i class="fas fa-briefcase"></i>
                             <span>Experience</span>
                         </button>
@@ -178,9 +212,16 @@
                                 <i class="fas fa-university"></i>
                                 <div class="min-w-0">
                                     <h3>{{ edu.degree }}</h3>
-                                    <div class="meta">{{ edu.university }}{% if edu.location %}, {{ edu.location }}{% endif %}</div>
-                                    <div class="meta"><i class="far fa-calendar-alt"></i> {{ edu.start_date }} – {{ edu.end_date }}</div>
-                                    {% if edu.description %}<p class="mt-1-5 text-muted">{{ edu.description }}</p>{% endif %}
+                                    <div class="meta">
+                                        {{ edu.university }}{% if edu.location %}, {{ edu.location }}{% endif %}
+                                    </div>
+                                    <div class="meta">
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ edu.start_date }} – {{ edu.end_date }}
+                                    </div>
+                                    {% if edu.description %}
+                                        <p class="mt-1-5 text-muted">{{ edu.description }}</p>
+                                    {% endif %}
                                 </div>
                             </div>
                         {% empty %}
@@ -189,7 +230,10 @@
 
                         {% if career_goal %}
                             <div class="career-goal">
-                                <p><i class="fas {{ career_goal.icon }}"></i> {{ career_goal.description|safe }}</p>
+                                <p>
+                                    <i class="fas {{ career_goal.icon }}"></i>
+                                    {{ career_goal.description|safe }}
+                                </p>
                             </div>
                         {% endif %}
                     </div>
@@ -202,7 +246,10 @@
                                 <div class="min-w-0">
                                     <h3>{{ exp.job_title }}</h3>
                                     <div class="meta">{{ exp.company }}</div>
-                                    <div class="meta"><i class="far fa-calendar-alt"></i> {{ exp.start_date }} – {{ exp.end_date }}</div>
+                                    <div class="meta">
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ exp.start_date }} – {{ exp.end_date }}
+                                    </div>
                                     {% if exp.bullets.all %}
                                         <ul>
                                             {% for bullet in exp.bullets.all %}
@@ -227,17 +274,29 @@
             <!-- ==================== PROJECTS ==================== -->
             <div class="card-style" style="margin-top:0;">
                 <h2 class="project-header">
-                    <span><i class="fas fa-rocket"></i> My Projects</span>
-                    <span class="project-count">{{ projects.count }} Project{{ projects.count|pluralize }}</span>
+                    <span>
+                        <i class="fas fa-rocket"></i>
+                        My Projects
+                    </span>
+                    <span class="project-count">
+                        {{ projects.count }} Project{{ projects.count|pluralize }}
+                    </span>
                 </h2>
 
                 <div class="project-grid">
                     {% for project in projects %}
-                        <a href="{{ project.github_url }}" target="_blank" rel="noopener noreferrer" class="project-card">
+                        <a
+                            href="{{ project.github_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="project-card"
+                            aria-label="View {{ project.title }} on GitHub"
+                        >
                             <i class="fas {{ project.icon_class }} card-icon"></i>
                             <i class="fas fa-external-link-alt external-icon"></i>
                             <h4>{{ project.title }}</h4>
                             <p>{{ project.description }}</p>
+
                             {% if project.tags.all %}
                                 <div class="project-tags">
                                     {% for tag in project.tags.all %}
@@ -247,7 +306,9 @@
                             {% endif %}
                         </a>
                     {% empty %}
-                        <p class="text-muted" style="text-align:center; grid-column:1/-1;">No projects added yet.</p>
+                        <p class="text-muted" style="text-align:center; grid-column:1/-1;">
+                            No projects added yet.
+                        </p>
                     {% endfor %}
                 </div>
 
@@ -267,6 +328,7 @@
                         Persian (Native) · English (Intermediate)
                     {% endfor %}
                 </div>
+
                 <div>
                     <i class="fas fa-heart text-accent"></i>
                     Open Source Contributor
