@@ -1,6 +1,6 @@
 /* ============================================
    PORTFOLIO JAVASCRIPT - Optimized
-   Fast & Smooth Performance
+   Fast & Smooth Performance • Minimal Design
    ============================================ */
 
 /**
@@ -104,17 +104,183 @@ function animateProjectCounter() {
 }
 
 /**
+ * Add ripple effect to icon-only contact buttons
+ */
+function initContactRipple() {
+    const contactButtons = document.querySelectorAll('.contact-item-icon-only');
+    
+    contactButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Create ripple element
+            const ripple = document.createElement('span');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+            
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                border-radius: 50%;
+                background: rgba(110, 211, 235, 0.2);
+                transform: scale(0);
+                animation: contactRipple 0.6s ease-out;
+                pointer-events: none;
+            `;
+            
+            button.appendChild(ripple);
+            
+            // Remove ripple after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
+}
+
+/**
+ * Add hover tooltip to contact buttons (shows on desktop)
+ */
+function initContactTooltips() {
+    // Only add tooltips on non-touch devices
+    if (!('ontouchstart' in window)) {
+        const contactButtons = document.querySelectorAll('.contact-item-icon-only');
+        
+        contactButtons.forEach(button => {
+            const tooltipText = button.getAttribute('title');
+            if (!tooltipText) return;
+            
+            button.addEventListener('mouseenter', function() {
+                // Remove existing tooltip
+                const existingTooltip = document.querySelector('.contact-tooltip-dynamic');
+                if (existingTooltip) existingTooltip.remove();
+                
+                const tooltip = document.createElement('div');
+                tooltip.className = 'contact-tooltip-dynamic';
+                tooltip.textContent = tooltipText;
+                tooltip.style.cssText = `
+                    position: absolute;
+                    bottom: -30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(15, 18, 28, 0.95);
+                    color: #e8edf3;
+                    padding: 4px 10px;
+                    border-radius: 6px;
+                    font-size: 0.65rem;
+                    white-space: nowrap;
+                    border: 1px solid rgba(110, 211, 235, 0.2);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    z-index: 999;
+                    pointer-events: none;
+                    animation: fadeInTooltip 0.2s ease;
+                `;
+                
+                button.style.position = button.style.position || 'relative';
+                button.appendChild(tooltip);
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                const tooltip = button.querySelector('.contact-tooltip-dynamic');
+                if (tooltip) {
+                    tooltip.style.opacity = '0';
+                    setTimeout(() => tooltip.remove(), 200);
+                }
+            });
+        });
+    }
+}
+
+/**
+ * Add copy-to-clipboard for email on long press (mobile)
+ */
+function initLongPressCopy() {
+    const emailButton = document.querySelector('.contact-item-icon-only[aria-label="Email"]');
+    
+    if (!emailButton) return;
+    
+    let pressTimer;
+    const emailAddress = emailButton.getAttribute('href')?.replace('mailto:', '') || '';
+    
+    if (!emailAddress) return;
+    
+    // Touch events for mobile
+    emailButton.addEventListener('touchstart', function(e) {
+        pressTimer = setTimeout(() => {
+            navigator.clipboard.writeText(emailAddress).then(() => {
+                // Show brief feedback
+                const feedback = document.createElement('div');
+                feedback.textContent = 'Email copied!';
+                feedback.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(88, 214, 141, 0.95);
+                    color: #111;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    z-index: 9999;
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+                    animation: slideUpFadeIn 0.3s ease, slideUpFadeOut 0.3s ease 1.5s forwards;
+                `;
+                document.body.appendChild(feedback);
+                
+                setTimeout(() => feedback.remove(), 2000);
+            }).catch(() => {
+                // Silent fail
+            });
+        }, 800);
+    });
+    
+    emailButton.addEventListener('touchend', function() {
+        clearTimeout(pressTimer);
+    });
+    
+    emailButton.addEventListener('touchmove', function() {
+        clearTimeout(pressTimer);
+    });
+    
+    // Click events for desktop (right-click to copy)
+    emailButton.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        navigator.clipboard.writeText(emailAddress).then(() => {
+            // Visual feedback on button
+            emailButton.style.background = 'rgba(88, 214, 141, 0.15)';
+            emailButton.style.borderColor = 'rgba(88, 214, 141, 0.3)';
+            setTimeout(() => {
+                emailButton.style.background = '';
+                emailButton.style.borderColor = '';
+            }, 800);
+        }).catch(() => {
+            // Silent fail
+        });
+    });
+}
+
+/**
  * Initialize all functionality when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Remove all tooltip elements
+    // Remove all tooltip elements (old tooltips)
     document.querySelectorAll('.tooltip').forEach(function(el) {
         el.remove();
     });
 
     // Start counter animation after a short delay
     setTimeout(animateProjectCounter, 300);
+
+    // Initialize contact button effects
+    initContactRipple();
+    initContactTooltips();
+    initLongPressCopy();
 
     // Keyboard shortcuts for tab switching
     document.addEventListener('keydown', function(e) {
@@ -163,7 +329,81 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, true);
 
-    // Log successful initialization
-    console.log('✨ Portfolio loaded successfully');
-    console.log('⌨️  Keyboard shortcuts: Press 1/E for Education, 2/X for Experience');
+    // Log successful initialization with style
+    console.log('%c✨ Portfolio Loaded Successfully %c| %cNavid · AI Engineer',
+        'color: #79d8ed; font-size: 14px; font-weight: bold;',
+        'color: #6b7280;',
+        'color: #8ddced; font-weight: 500;'
+    );
+    console.log('%c⌨️  Keyboard Shortcuts:%c Press %c1/E %cfor Education, %c2/X %cfor Experience',
+        'color: #79d8ed;',
+        'color: #aeb8c6;',
+        'color: #fff; font-weight: bold;',
+        'color: #aeb8c6;',
+        'color: #fff; font-weight: bold;',
+        'color: #aeb8c6;'
+    );
+    console.log('%c📧 Right-click email icon to copy %c| %c📱 Long-press on mobile to copy',
+        'color: #79d8ed;',
+        'color: #6b7280;',
+        'color: #8ddced;'
+    );
 });
+
+// Add CSS for dynamic elements
+const dynamicStyles = document.createElement('style');
+dynamicStyles.textContent = `
+    @keyframes contactRipple {
+        from {
+            transform: scale(0);
+            opacity: 1;
+        }
+        to {
+            transform: scale(2.5);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes fadeInTooltip {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(5px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+    
+    @keyframes slideUpFadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+    
+    @keyframes slideUpFadeOut {
+        from {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-10px);
+        }
+    }
+    
+    .contact-item-icon-only {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .contact-tooltip-dynamic {
+        transition: opacity 0.2s ease;
+    }
+`;
+document.head.appendChild(dynamicStyles);
