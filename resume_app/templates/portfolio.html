@@ -9,582 +9,326 @@
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{% static 'css/portfolio.css' %}">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
 </head>
 <body>
   <div class="app-container">
     <div id="main-view" class="view">
       
       <!-- ==================== PROFILE HEADER ==================== -->
-
-<!-- ==================== PROFILE HEADER ==================== -->
-        <div class="profile-header">
-
-            <div class="profile-info">
-
-                <!-- Profile Image -->
-                <div class="profile-image-wrapper">
-
-                    {% if profile.profile_image %}
-                        <img
-                            src="{{ profile.profile_image.url }}"
-                            alt="{{ profile.full_name }}"
-                            class="profile-image"
-                        >
-                    {% else %}
-                        <img
-                            src="https://ui-avatars.com/api/?name={{ profile.full_name|default:'User'|urlencode }}&background=00b4d8&color=fff&size=256&font-size=0.45&bold=true&format=png"
-                            alt="Profile"
-                            class="profile-image"
-                        >
-                    {% endif %}
-
-                    {% if profile.is_available %}
-                        <div
-                            class="status-dot"
-                            title="Open to collaborate"
-                            aria-label="Available for collaboration"
-                        ></div>
-                    {% endif %}
-
-                </div>
-
-
-                <!-- Name / Title / Social -->
-                <div class="name-section">
-
-                    <h1>
-                        {{ profile.full_name|default:'Your Name' }}
-                    </h1>
-
-                    <span class="title-badge">
-                        <i class="fas fa-robot"></i>
-                        {{ profile.title|default:'Developer' }}
-                    </span>
-
-
-                    <!-- Social Links -->
-                    <div class="social-links-row">
-
-                        {% for social in social_media_links %}
-
-                            <a
-                                href="{{ social.url }}"
-                                class="social-icon-circle {% if 'telegram' in social.icon_class %}telegram{% endif %}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="{{ social.name }}"
-                                aria-label="{{ social.name }}"
-                            >
-
-                                <i class="{{ social.icon_class }}"></i>
-
-                                {% if social.show_tooltip and social.tooltip_text %}
-                                    <span class="tooltip">
-                                        {{ social.tooltip_text }}
-                                    </span>
-                                {% endif %}
-
-                            </a>
-
-                        {% endfor %}
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Contact Links -->
-            <div class="contact-links">
-
-                <a href="mailto:{{ profile.email }}">
-                    <i class="fas fa-envelope"></i>
-                    <span>{{ profile.email }}</span>
-                </a>
-
-                <a href="tel:{{ profile.phone }}">
-                    <i class="fas fa-phone-alt"></i>
-                    <span>{{ profile.phone }}</span>
-                </a>
-
-                {% if profile.location_url %}
-
-                    <a
-                        href="{{ profile.location_url }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <i class="fas fa-map-pin"></i>
-                        <span>{{ profile.location }}</span>
-                    </a>
-
-                {% else %}
-
-                    <a href="#">
-                        <i class="fas fa-map-pin"></i>
-                        <span>{{ profile.location }}</span>
-                    </a>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-
-        <!-- ==================== SUMMARY ==================== -->
-        <div class="summary">
-
-            <i class="fas fa-brain"></i>
-
-            {{ profile.summary|default:'Your professional summary goes here...' }}
-
-        </div>
-
-
-        <!-- ==================== SKILLS + EDUCATION / EXPERIENCE ==================== -->
-        <div class="grid-2col">
-
-
-            <!-- ==================== SKILLS ==================== -->
-            <div class="card-style">
-
-                <h2>
-                    <i class="fas fa-code"></i>
-                    Technical Skills
-                </h2>
-
-                <div class="skills-list">
-
-                    {% for skill in skills %}
-
-                        <span class="skill-tag">
-
-                            <span class="skill-name">
-                                {{ skill.name }}
-                            </span>
-
-                            <span class="level-badge level-{{ skill.level }}">
-                                {{ skill.get_level_display }}
-                            </span>
-
-                        </span>
-
-                    {% empty %}
-
-                        <p class="text-muted">
-                            No skills added yet.
-                        </p>
-
-                    {% endfor %}
-
-                </div>
-
-
-                <!-- Skill Legend -->
-                <div class="legend">
-
-                    <span class="legend-item">
-                        <span
-                            class="legend-dot"
-                            style="background:#4ade80;"
-                        ></span>
-                        Advanced
-                    </span>
-
-                    <span class="legend-item">
-                        <span
-                            class="legend-dot"
-                            style="background:#60a5fa;"
-                        ></span>
-                        Intermediate
-                    </span>
-
-                    <span class="legend-item">
-                        <span
-                            class="legend-dot"
-                            style="background:#fbbf24;"
-                        ></span>
-                        Beginner
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- ==================== EDUCATION / EXPERIENCE ==================== -->
-            <div class="card-style">
-
-                <h2>
-
-                    <i
-                        class="fas fa-graduation-cap"
-                        id="tab-icon"
-                    ></i>
-
-                    <span id="tab-title">
-                        Education
-                    </span>
-
-                </h2>
-
-
-                <!-- Tabs -->
-                <div class="tabs-container">
-
-                    <button
-                        type="button"
-                        class="tab-btn active"
-                        onclick="switchTab('education')"
-                        id="edu-tab"
-                    >
-
-                        <i class="fas fa-graduation-cap"></i>
-
-                        <span>
-                            Education
-                        </span>
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="tab-btn"
-                        onclick="switchTab('experience')"
-                        id="exp-tab"
-                    >
-
-                        <i class="fas fa-briefcase"></i>
-
-                        <span>
-                            Experience
-                        </span>
-
-                    </button>
-
-                </div>
-
-
-                <!-- ==================== EDUCATION ==================== -->
-                <div
-                    class="tab-content active"
-                    id="education-content"
+      <div class="profile-header">
+
+        <div class="profile-info">
+
+          <!-- Profile Image -->
+          <div class="profile-image-wrapper">
+            {% if profile.profile_image %}
+              <img
+                src="{{ profile.profile_image.url }}"
+                alt="{{ profile.full_name }}"
+                class="profile-image"
+                loading="lazy"
+              >
+            {% else %}
+              <img
+                src="https://ui-avatars.com/api/?name={{ profile.full_name|default:'User'|urlencode }}&background=00b4d8&color=fff&size=256&font-size=0.45&bold=true&format=png"
+                alt="Profile"
+                class="profile-image"
+                loading="lazy"
+              >
+            {% endif %}
+
+            {% if profile.is_available %}
+              <div
+                class="status-dot"
+                title="Open to collaborate"
+                aria-label="Available for collaboration"
+              ></div>
+            {% endif %}
+          </div>
+
+          <!-- Name / Title / Social -->
+          <div class="name-section">
+            <h1>{{ profile.full_name|default:'Your Name' }}</h1>
+            
+            <span class="title-badge">
+              <i class="fas fa-robot"></i>
+              {{ profile.title|default:'Developer' }}
+            </span>
+
+            <!-- Social Links -->
+            <div class="social-links-row">
+              {% for social in social_media_links %}
+                <a
+                  href="{{ social.url }}"
+                  class="social-icon-circle {% if 'telegram' in social.icon_class %}telegram{% endif %}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="{{ social.name }}"
+                  aria-label="{{ social.name }}"
                 >
-
-                    {% for edu in education_list %}
-
-                        <div class="education-item">
-
-                            <i class="fas fa-university"></i>
-
-                            <div class="min-w-0">
-
-                                <h3>
-                                    {{ edu.degree }}
-                                </h3>
-
-                                <div class="meta">
-                                    {{ edu.university }}
-
-                                    {% if edu.location %}
-                                        , {{ edu.location }}
-                                    {% endif %}
-                                </div>
-
-                                <div class="meta">
-
-                                    <i class="far fa-calendar-alt"></i>
-
-                                    {{ edu.start_date }}
-                                    –
-                                    {{ edu.end_date }}
-
-                                </div>
-
-                                {% if edu.description %}
-
-                                    <p class="mt-1-5 text-muted">
-                                        {{ edu.description }}
-                                    </p>
-
-                                {% endif %}
-
-                            </div>
-
-                        </div>
-
-                    {% empty %}
-
-                        <p class="text-muted">
-                            No education added yet.
-                        </p>
-
-                    {% endfor %}
-
-
-                    <!-- Career Goal -->
-                    {% if career_goal %}
-
-                        <div class="career-goal">
-
-                            <p>
-
-                                <i class="fas {{ career_goal.icon }}"></i>
-
-                                {{ career_goal.description|safe }}
-
-                            </p>
-
-                        </div>
-
-                    {% endif %}
-
-                </div>
-
-
-                <!-- ==================== EXPERIENCE ==================== -->
-                <div
-                    class="tab-content"
-                    id="experience-content"
-                >
-
-                    {% for exp in experiences %}
-
-                        <div class="experience-item">
-
-                            <i class="fas fa-building"></i>
-
-                            <div class="min-w-0">
-
-                                <h3>
-                                    {{ exp.job_title }}
-                                </h3>
-
-                                <div class="meta">
-                                    {{ exp.company }}
-                                </div>
-
-                                <div class="meta">
-
-                                    <i class="far fa-calendar-alt"></i>
-
-                                    {{ exp.start_date }}
-                                    –
-                                    {{ exp.end_date }}
-
-                                </div>
-
-
-                                {% if exp.bullets.all %}
-
-                                    <ul>
-
-                                        {% for bullet in exp.bullets.all %}
-
-                                            <li>
-                                                {{ bullet.text }}
-                                            </li>
-
-                                        {% endfor %}
-
-                                    </ul>
-
-                                {% endif %}
-
-                            </div>
-
-                        </div>
-
-                    {% empty %}
-
-                        <div class="empty-state">
-
-                            <i class="fas fa-briefcase"></i>
-
-                            <p>
-                                Experience section coming soon!
-                            </p>
-
-                            <p>
-                                Currently focused on studies
-                                and building projects.
-                            </p>
-
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
+                  <i class="{{ social.icon_class }}"></i>
+                  {% if social.show_tooltip and social.tooltip_text %}
+                    <span class="tooltip">{{ social.tooltip_text }}</span>
+                  {% endif %}
+                </a>
+              {% endfor %}
             </div>
+          </div>
 
         </div>
 
+        <!-- Contact Links -->
+        <div class="contact-links">
+          <a href="mailto:{{ profile.email }}" aria-label="Email">
+            <i class="fas fa-envelope"></i>
+            <span>{{ profile.email }}</span>
+          </a>
 
-        <!-- ==================== PROJECTS ==================== -->
-        <div
-            class="card-style"
-            style="margin-top:0;"
-        >
+          <a href="tel:{{ profile.phone }}" aria-label="Phone">
+            <i class="fas fa-phone-alt"></i>
+            <span>{{ profile.phone }}</span>
+          </a>
 
-            <h2 class="project-header">
+          {% if profile.location_url %}
+            <a href="{{ profile.location_url }}" target="_blank" rel="noopener noreferrer" aria-label="Location">
+              <i class="fas fa-map-pin"></i>
+              <span>{{ profile.location }}</span>
+            </a>
+          {% else %}
+            <a href="#" aria-label="Location">
+              <i class="fas fa-map-pin"></i>
+              <span>{{ profile.location }}</span>
+            </a>
+          {% endif %}
+        </div>
 
-                <span>
-                    <i class="fas fa-rocket"></i>
-                    My Projects
-                </span>
+      </div>
 
-                <span class="project-count">
+      <!-- ==================== SUMMARY ==================== -->
+      <div class="summary">
+        <i class="fas fa-brain"></i>
+        {{ profile.summary|default:'Your professional summary goes here...' }}
+      </div>
 
-                    {{ projects.count }}
-                    Project{{ projects.count|pluralize }}
+      <!-- ==================== SKILLS + EDUCATION / EXPERIENCE ==================== -->
+      <div class="grid-2col">
 
-                </span>
+        <!-- ==================== SKILLS ==================== -->
+        <div class="card-style">
+          <h2>
+            <i class="fas fa-code"></i>
+            Technical Skills
+          </h2>
 
-            </h2>
+          <div class="skills-list">
+            {% for skill in skills %}
+              <span class="skill-tag">
+                <span class="skill-name">{{ skill.name }}</span>
+                <span class="level-badge level-{{ skill.level }}">{{ skill.get_level_display }}</span>
+              </span>
+            {% empty %}
+              <p class="text-muted">No skills added yet.</p>
+            {% endfor %}
+          </div>
 
+          <!-- Skill Legend -->
+          <div class="legend">
+            <span class="legend-item">
+              <span class="legend-dot" style="background:#69dc99;"></span>
+              Advanced
+            </span>
+            <span class="legend-item">
+              <span class="legend-dot" style="background:#73b7ee;"></span>
+              Intermediate
+            </span>
+            <span class="legend-item">
+              <span class="legend-dot" style="background:#e4bd68;"></span>
+              Beginner
+            </span>
+          </div>
+        </div>
 
-            <div class="project-grid">
+        <!-- ==================== EDUCATION / EXPERIENCE ==================== -->
+        <div class="card-style">
+          <h2>
+            <i class="fas fa-graduation-cap" id="tab-icon"></i>
+            <span id="tab-title">Education</span>
+          </h2>
 
-                {% for project in projects %}
+          <!-- Tabs -->
+          <div class="tabs-container">
+            <button
+              type="button"
+              class="tab-btn active"
+              onclick="switchTab('education')"
+              id="edu-tab"
+              aria-label="Education tab"
+            >
+              <i class="fas fa-graduation-cap"></i>
+              <span>Education</span>
+            </button>
 
-                    <a
-                        href="{{ project.github_url }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="project-card"
-                    >
+            <button
+              type="button"
+              class="tab-btn"
+              onclick="switchTab('experience')"
+              id="exp-tab"
+              aria-label="Experience tab"
+            >
+              <i class="fas fa-briefcase"></i>
+              <span>Experience</span>
+            </button>
+          </div>
 
-                        <i
-                            class="fas {{ project.icon_class }} card-icon"
-                        ></i>
+          <!-- ==================== EDUCATION ==================== -->
+          <div class="tab-content active" id="education-content">
+            {% for edu in education_list %}
+              <div class="education-item">
+                <i class="fas fa-university"></i>
+                <div class="min-w-0">
+                  <h3>{{ edu.degree }}</h3>
+                  <div class="meta">
+                    {{ edu.university }}{% if edu.location %}, {{ edu.location }}{% endif %}
+                  </div>
+                  <div class="meta">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ edu.start_date }} – {{ edu.end_date }}
+                  </div>
+                  {% if edu.description %}
+                    <p class="mt-1-5 text-muted">{{ edu.description }}</p>
+                  {% endif %}
+                </div>
+              </div>
+            {% empty %}
+              <p class="text-muted">No education added yet.</p>
+            {% endfor %}
 
+            {% if career_goal %}
+              <div class="career-goal">
+                <p>
+                  <i class="fas {{ career_goal.icon }}"></i>
+                  {{ career_goal.description|safe }}
+                </p>
+              </div>
+            {% endif %}
+          </div>
 
-                        <i
-                            class="fas fa-external-link-alt external-icon"
-                        ></i>
+          <!-- ==================== EXPERIENCE ==================== -->
+          <div class="tab-content" id="experience-content">
+            {% for exp in experiences %}
+              <div class="experience-item">
+                <i class="fas fa-building"></i>
+                <div class="min-w-0">
+                  <h3>{{ exp.job_title }}</h3>
+                  <div class="meta">{{ exp.company }}</div>
+                  <div class="meta">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ exp.start_date }} – {{ exp.end_date }}
+                  </div>
+                  {% if exp.bullets.all %}
+                    <ul>
+                      {% for bullet in exp.bullets.all %}
+                        <li>{{ bullet.text }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </div>
+              </div>
+            {% empty %}
+              <div class="empty-state">
+                <i class="fas fa-briefcase"></i>
+                <p>Experience section coming soon!</p>
+                <p>Currently focused on studies and building projects.</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
 
+      </div>
 
-                        <h4>
-                            {{ project.title }}
-                        </h4>
+      <!-- ==================== PROJECTS ==================== -->
+      <div class="card-style" style="margin-top:0;">
+        <h2 class="project-header">
+          <span>
+            <i class="fas fa-rocket"></i>
+            My Projects
+          </span>
+          <span class="project-count">
+            {{ projects.count }} Project{{ projects.count|pluralize }}
+          </span>
+        </h2>
 
+        <div class="project-grid">
+          {% for project in projects %}
+            <a
+              href="{{ project.github_url }}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="project-card"
+              aria-label="View {{ project.title }} on GitHub"
+            >
+              <i class="fas {{ project.icon_class }} card-icon"></i>
+              <i class="fas fa-external-link-alt external-icon"></i>
+              <h4>{{ project.title }}</h4>
+              <p>{{ project.description }}</p>
 
-                        <p>
-                            {{ project.description }}
-                        </p>
-
-
-                        {% if project.tags.all %}
-
-                            <div class="project-tags">
-
-                                {% for tag in project.tags.all %}
-
-                                    <span class="project-tag">
-                                        {{ tag.name }}
-                                    </span>
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% endif %}
-
-                    </a>
-
-                {% empty %}
-
-                    <p
-                        class="text-muted"
-                        style="text-align:center; grid-column:1/-1;"
-                    >
-                        No projects added yet.
-                    </p>
-
-                {% endfor %}
-
-            </div>
-
-
-            <p class="projects-hint">
-
-                <i class="fas fa-external-link-alt"></i>
-
-                Click on any project to open
-                its GitHub repository
-
+              {% if project.tags.all %}
+                <div class="project-tags">
+                  {% for tag in project.tags.all %}
+                    <span class="project-tag">{{ tag.name }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </a>
+          {% empty %}
+            <p class="text-muted" style="text-align:center; grid-column:1/-1;">
+              No projects added yet.
             </p>
-
+          {% endfor %}
         </div>
 
+        <p class="projects-hint">
+          <i class="fas fa-external-link-alt"></i>
+          Click on any project to open its GitHub repository
+        </p>
+      </div>
 
-        <!-- ==================== LANGUAGES / FOOTER ==================== -->
-
-        <div class="flex-wrap mt-2">
-
-            <div>
-
-                <i class="fas fa-language text-accent"></i>
-
-                {% for lang in languages %}
-
-                    {{ lang.name }}
-
-                    {% if not forloop.last %}
-                        ·
-                    {% endif %}
-
-                {% empty %}
-
-                    Persian (Native)
-                    ·
-                    English (Intermediate)
-
-                {% endfor %}
-
-            </div>
-
-
-            <div>
-
-                <i class="fas fa-heart text-accent"></i>
-
-                Open Source Contributor
-
-            </div>
-
+      <!-- ==================== LANGUAGES / FOOTER ==================== -->
+      <div class="flex-wrap mt-2">
+        <div>
+          <i class="fas fa-language text-accent"></i>
+          {% for lang in languages %}
+            {{ lang.name }}{% if not forloop.last %} · {% endif %}
+          {% empty %}
+            Persian (Native) · English (Intermediate)
+          {% endfor %}
         </div>
 
-
-        <hr class="divider">
-
-
-        <div class="footer-note">
-
-            <span>
-
-                <i class="fas fa-handshake"></i>
-
-                {{ profile.collaboration_text|default:'Ready to collaborate on AI & Python projects' }}
-
-            </span>
-
-
-            <span>
-
-                Last updated:
-                {% now "F Y" %}
-
-            </span>
-
+        <div>
+          <i class="fas fa-heart text-accent"></i>
+          Open Source Contributor
         </div>
+      </div>
 
+      <hr class="divider">
+
+      <div class="footer-note">
+        <span>
+          <i class="fas fa-handshake"></i>
+          {{ profile.collaboration_text|default:'Ready to collaborate on AI & Python projects' }}
+        </span>
+        <span>Last updated: {% now "F Y" %}</span>
+      </div>
       
     </div>
   </div>
