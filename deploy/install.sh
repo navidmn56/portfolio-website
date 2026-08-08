@@ -2,9 +2,9 @@
 
 set -Eeuo pipefail
 
-# ============================================================
+
 # Django Resume Website - Production Installer
-# ============================================================
+
 
 APP_NAME="resume-website"
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -42,18 +42,18 @@ fail() {
 trap 'error "Installation failed at line $LINENO."' ERR
 
 
-# ============================================================
+
 # Root check
-# ============================================================
+
 
 if [[ "${EUID}" -ne 0 ]]; then
     fail "Run this installer as root or with sudo."
 fi
 
 
-# ============================================================
+
 # Banner
-# ============================================================
+
 
 clear
 
@@ -64,9 +64,9 @@ echo "============================================================"
 echo
 
 
-# ============================================================
+
 # Check project
-# ============================================================
+
 
 cd "${BASE_DIR}"
 
@@ -82,9 +82,9 @@ cd "${BASE_DIR}"
 log "Project directory detected: ${BASE_DIR}"
 
 
-# ============================================================
+
 # Ask for domain
-# ============================================================
+
 
 while true; do
 
@@ -110,9 +110,9 @@ done
 log "Domain: ${DOMAIN}"
 
 
-# ============================================================
+
 # Detect public IP
-# ============================================================
+
 
 info "Detecting public IPv4 address..."
 
@@ -139,9 +139,9 @@ done
 log "Server public IP: ${SERVER_IP}"
 
 
-# ============================================================
+
 # DNS check
-# ============================================================
+
 
 info "Checking DNS for ${DOMAIN}..."
 
@@ -196,9 +196,9 @@ else
 fi
 
 
-# ============================================================
+
 # Cloudflare detection
-# ============================================================
+
 
 info "Checking whether Cloudflare proxy is enabled..."
 
@@ -296,9 +296,9 @@ else
 fi
 
 
-# ============================================================
+
 # Port checks
-# ============================================================
+
 
 check_port() {
 
@@ -329,9 +329,9 @@ check_port 443 \
 log "Ports 80 and 443 are available."
 
 
-# ============================================================
+
 # Docker installation
-# ============================================================
+
 
 if command -v docker >/dev/null 2>&1; then
 
@@ -350,9 +350,9 @@ else
 fi
 
 
-# ============================================================
+
 # Docker Compose check
-# ============================================================
+
 
 docker compose version >/dev/null 2>&1 \
     || fail "Docker Compose is not available."
@@ -360,9 +360,9 @@ docker compose version >/dev/null 2>&1 \
 log "Docker Compose is available."
 
 
-# ============================================================
+
 # Generate .env
-# ============================================================
+
 
 if [[ -f "${ENV_FILE}" ]]; then
 
@@ -403,9 +403,9 @@ chmod 600 "${ENV_FILE}"
 log ".env created."
 
 
-# ============================================================
+
 # Create production compose file
-# ============================================================
+
 
 cat > "${PROD_COMPOSE}" <<'EOF'
 services:
@@ -452,9 +452,9 @@ volumes:
 EOF
 
 
-# ============================================================
+
 # Create Caddyfile
-# ============================================================
+
 
 mkdir -p "${BASE_DIR}/deploy"
 
@@ -473,9 +473,9 @@ EOF
 log "Caddy configuration created."
 
 
-# ============================================================
+
 # Validate Docker Compose
-# ============================================================
+
 
 cd "${BASE_DIR}"
 
@@ -487,9 +487,9 @@ docker compose \
 log "Docker Compose configuration is valid."
 
 
-# ============================================================
+
 # Build application
-# ============================================================
+
 
 info "Building Docker containers..."
 
@@ -501,9 +501,9 @@ docker compose \
 log "Docker image built."
 
 
-# ============================================================
+
 # Start Django
-# ============================================================
+
 
 info "Starting Django container..."
 
@@ -515,9 +515,9 @@ docker compose \
 log "Django container started."
 
 
-# ============================================================
+
 # Wait for Django container
-# ============================================================
+
 
 info "Waiting for Django container..."
 
@@ -537,9 +537,9 @@ for i in {1..30}; do
 done
 
 
-# ============================================================
+
 # Django migrations
-# ============================================================
+
 
 info "Running Django migrations..."
 
@@ -551,9 +551,44 @@ docker compose \
 log "Django migrations completed."
 
 
-# ============================================================
+#creat superuser
+echo "[INFO] Creating Django superuser..."
+
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  exec -T web python manage.py shell -c "
+from django.contrib.auth import get_user_model
+import os
+
+User = get_user_model()
+
+username = os.environ.get('DJANGO_SUPERUSER_USERNAME')
+email = os.environ.get('DJANGO_SUPERUSER_EMAIL')
+password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+
+if username and password:
+    user, created = User.objects.get_or_create(
+        username=username,
+        defaults={
+            'email': email or '',
+            'is_staff': True,
+            'is_superuser': True,
+        }
+    )
+
+    if created:
+        user.set_password(password)
+        user.save()
+        print('Superuser created successfully.')
+    else:
+        print('Superuser already exists.')
+else:
+    print('Superuser credentials are not configured.')
+"
+
 # Collect static
-# ============================================================
+
 
 info "Collecting static files..."
 
@@ -563,9 +598,9 @@ docker compose \
     exec -T web python manage.py collectstatic --noinput \
     || warn "collectstatic failed or is not configured."
 
-# ============================================================
+
 # Start Caddy
-# ============================================================
+
 
 info "Starting Caddy..."
 
@@ -577,9 +612,9 @@ docker compose \
 log "Caddy started."
 
 
-# ============================================================
+
 # Wait for HTTPS
-# ============================================================
+
 
 info "Waiting for HTTPS certificate..."
 
@@ -604,9 +639,9 @@ for i in {1..30}; do
 done
 
 
-# ============================================================
+
 # Final output
-# ============================================================
+
 
 echo
 echo "============================================================"
