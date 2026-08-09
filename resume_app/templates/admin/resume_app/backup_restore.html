@@ -1,112 +1,41 @@
 {% extends "admin/base_site.html" %}
 
-{% load i18n %}
-
 {% block content %}
-
 <div id="content-main">
-
     <form method="post">
-
         {% csrf_token %}
-
-        <fieldset class="module aligned">
-
-            <h2>Restore SQLite Backup</h2>
-
-            <div
-                style="
-                    padding:16px;
-                    margin-bottom:20px;
-                    border:1px solid #ba2121;
-                    border-radius:6px;
-                    background:rgba(186,33,33,.08);
-                "
-            >
-
-                <strong>Warning</strong>
-
-                <p>
-                    Restoring this backup will replace the
-                    current SQLite database.
-                </p>
-
-                <p>
-                    Make sure this is the correct backup
-                    before continuing.
-                </p>
-
-            </div>
-
-            <div class="module">
-
-                <table>
-
-                    <tr>
-                        <th>Backup</th>
-                        <td>
-                            {{ backup.name }}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>Status</th>
-                        <td>
-                            {{ backup.get_status_display }}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>Size</th>
-                        <td>
-                            {{ backup.get_human_size }}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>Created</th>
-                        <td>
-                            {{ backup.created_at|date:"Y-m-d H:i:s" }}
-                        </td>
-                    </tr>
-
+        
+        <div>
+            <fieldset class="module aligned">
+                <h2 style="color: #ba2121;">⚠️ Restore Database</h2>
+                
+                <div class="form-row" style="background: #fff5f5; padding: 15px; border-radius: 4px; border: 1px solid #f5c6cb;">
+                    <p style="margin: 0; color: #721c24;">
+                        <strong>WARNING:</strong> This will overwrite your current database!
+                    </p>
+                </div>
+                
+                <div class="form-row" style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 10px 0;">
+                    <p><strong>Backup:</strong> {{ backup.name }}</p>
+                    <p><strong>Created:</strong> {{ backup.created_at|date:"Y-m-d H:i:s" }}</p>
+                    <p><strong>Size:</strong> {{ backup.get_human_size }}</p>
                     {% if backup.description %}
-
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            {{ backup.description }}
-                        </td>
-                    </tr>
-
+                        <p><strong>Description:</strong> {{ backup.description }}</p>
                     {% endif %}
-
-                </table>
-
+                </div>
+                
+                <div class="form-row">
+                    <p style="color: #6c757d; font-size: 0.9rem;">
+                        💡 <strong>Tip:</strong> A backup of your current database will be created before restoring.
+                    </p>
+                </div>
+            </fieldset>
+            
+            <div class="submit-row">
+                <input type="submit" value="Restore Now" class="default" style="background: #ba2121; border: none; color: #fff;">
+                <a href="{% url 'admin:resume_app_backup_changelist' %}" class="button">Cancel</a>
             </div>
-
-        </fieldset>
-
-        <div class="submit-row">
-
-            <input
-                type="submit"
-                value="Restore Database"
-                class="default"
-                style="background:#ba2121;"
-            >
-
-            <a
-                href="{% url 'admin:resume_app_backup_changelist' %}"
-                class="button"
-            >
-                Cancel
-            </a>
-
         </div>
-
     </form>
-
 </div>
-
 {% endblock %}
