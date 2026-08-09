@@ -32,7 +32,7 @@
 
                 <div class="profile-info">
 
-                    <!-- Profile Image -->
+                    <!-- Profile Image with 3D Tilt Effect -->
                     <div class="profile-image-wrapper">
                         {% if profile.profile_image and profile.profile_image.url %}
                             <img
@@ -140,6 +140,24 @@
                             <p class="text-muted">No skills added yet.</p>
                         {% endfor %}
                     </div>
+
+                    <!-- Skill Level Legend -->
+                    {% if skills %}
+                    <div class="legend">
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #69dc99;"></span>
+                            Advanced
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #73b7ee;"></span>
+                            Intermediate
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background: #e4bd68;"></span>
+                            Beginner
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <!-- ==================== EDUCATION / EXPERIENCE ==================== -->
@@ -157,6 +175,7 @@
                             onclick="switchTab('education')" 
                             id="edu-tab" 
                             aria-label="Education tab"
+                            aria-pressed="true"
                         >
                             <i class="fas fa-graduation-cap"></i>
                             <span>Education</span>
@@ -168,6 +187,7 @@
                             onclick="switchTab('experience')" 
                             id="exp-tab" 
                             aria-label="Experience tab"
+                            aria-pressed="false"
                         >
                             <i class="fas fa-briefcase"></i>
                             <span>Experience</span>
@@ -247,7 +267,7 @@
                         <i class="fas fa-rocket"></i>
                         My Projects
                     </span>
-                    <span class="project-count">
+                    <span class="project-count" data-animated="false">
                         {{ projects.count }} Project{{ projects.count|pluralize }}
                     </span>
                 </h2>
