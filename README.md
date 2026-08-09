@@ -19,13 +19,11 @@ All portfolio content can be managed through the **Django Admin Panel**, allowin
   <img src="https://img.shields.io/badge/GitHub-Portfolio%20Website-181717?style=for-the-badge&logo=github" alt="GitHub Repository">
 </a>
 
-<br><br>
+<img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12">
 
-<a href="https://github.com/navidmn56/portfolio-website">
-  github.com/navidmn56/portfolio-website
-</a>
 
 </div>
+
 
 ---
 
