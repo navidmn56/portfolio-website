@@ -129,7 +129,12 @@
                         {% for skill in skills %}
                             <span class="skill-tag">
                                 <span class="skill-name">{{ skill.name }}</span>
-                                <span class="level-badge level-{{ skill.level }}">{{ skill.get_level_display }}</span>
+                                <span class="level-badge level-{{ skill.level }}">
+                                    {% if skill.level == 'advanced' %}Advanced
+                                    {% elif skill.level == 'intermediate' %}Intermediate
+                                    {% elif skill.level == 'beginner' %}Beginner
+                                    {% endif %}
+                                </span>
                             </span>
                         {% empty %}
                             <p class="text-muted">No skills added yet.</p>
