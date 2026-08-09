@@ -5,16 +5,16 @@
     // 1. TAB SWITCHING
     // ============================================================
     window.switchTab = function (tab) {
-        const eduContent = document.getElementById("education-content");
-        const expContent = document.getElementById("experience-content");
-        const eduTab = document.getElementById("edu-tab");
-        const expTab = document.getElementById("exp-tab");
-        const tabIcon = document.getElementById("tab-icon");
-        const tabTitle = document.getElementById("tab-title");
+        var eduContent = document.getElementById("education-content");
+        var expContent = document.getElementById("experience-content");
+        var eduTab = document.getElementById("edu-tab");
+        var expTab = document.getElementById("exp-tab");
+        var tabIcon = document.getElementById("tab-icon");
+        var tabTitle = document.getElementById("tab-title");
         
         if (!eduContent || !expContent || !eduTab || !expTab) return;
         
-        const isEducation = tab === "education";
+        var isEducation = tab === "education";
         eduContent.classList.toggle("active", isEducation);
         expContent.classList.toggle("active", !isEducation);
         eduTab.classList.toggle("active", isEducation);
@@ -28,53 +28,55 @@
     // 2. ANIMATE PROJECT COUNTER
     // ============================================================
     function animateProjectCounter() {
-        const counter = document.querySelector(".project-count");
+        var counter = document.querySelector(".project-count");
         if (!counter || counter.dataset.animated === "true") return;
         counter.dataset.animated = "true";
         
-        const text = counter.textContent.trim();
-        const match = text.match(/\d+/);
+        var text = counter.textContent.trim();
+        var match = text.match(/\d+/);
         if (!match) return;
         
-        const target = parseInt(match[0], 10);
-        const suffix = text.replace(match[0], "");
-        let current = 0;
+        var target = parseInt(match[0], 10);
+        var suffix = text.replace(match[0], "");
+        var current = 0;
         
-        const timer = setInterval(() => {
+        var timer = setInterval(function() {
             current += Math.ceil(target / 10);
             if (current >= target) { 
                 current = target; 
                 clearInterval(timer); 
             }
-            counter.textContent = `${current}${suffix}`;
+            counter.textContent = current + suffix;
         }, 50);
     }
 
     // ============================================================
-    // 3. PROFILE 3D TILT - فقط در دسکتاپ
+    // 3. PROFILE 3D TILT - فقط دسکتاپ
     // ============================================================
     function initProfileTilt() {
-        const wrapper = document.querySelector(".profile-image-wrapper");
-        const image = document.querySelector(".profile-image");
+        var wrapper = document.querySelector(".profile-image-wrapper");
+        var image = document.querySelector(".profile-image");
         if (!wrapper || !image) return;
 
-        // تشخیص دستگاه لمسی یا موبایل
-        const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-        const isMobile = window.innerWidth < 600;
+        // تشخیص دستگاه لمسی
+        var isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+        var isMobile = window.innerWidth < 600;
         
         if (isTouchDevice || isMobile) {
-            // غیرفعال کردن تیلت در موبایل - اما حفظ بوردر و ظاهر
+            // غیرفعال کردن تیلت در موبایل
             image.style.transform = 'none';
-            image.style.border = '2px solid rgba(125, 211, 232, 0.35)';
+            image.style.webkitTransform = 'none';
+            image.style.border = '2.5px solid rgba(125, 211, 232, 0.4)';
             wrapper.style.perspective = 'none';
+            wrapper.style.webkitPerspective = 'none';
             return;
         }
 
-        const MAX_TILT = 12;
-        const MAX_TRANSLATE = 6;
-        let targetX = 0, targetY = 0, targetRotX = 0, targetRotY = 0;
-        let currentX = 0, currentY = 0, currentRotX = 0, currentRotY = 0;
-        let rafId = null;
+        var MAX_TILT = 12;
+        var MAX_TRANSLATE = 6;
+        var targetX = 0, targetY = 0, targetRotX = 0, targetRotY = 0;
+        var currentX = 0, currentY = 0, currentRotX = 0, currentRotY = 0;
+        var rafId = null;
 
         function animate() {
             currentRotY += (targetRotY - currentRotY) * 0.12;
@@ -83,104 +85,93 @@
             currentY += (targetY - currentY) * 0.12;
 
             if (image) {
-                image.style.transform = `translate3d(${currentX}px, ${currentY}px, 8px) rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
-                image.style.boxShadow = `${currentRotY * -0.8}px ${currentRotX * 0.8}px 30px rgba(0,0,0,0.42), 0 0 0 1px rgba(125,211,232,0.22), 0 0 24px rgba(0,180,216,0.10)`;
+                image.style.transform = 'translate3d(' + currentX + 'px, ' + currentY + 'px, 8px) rotateX(' + currentRotX + 'deg) rotateY(' + currentRotY + 'deg)';
+                image.style.boxShadow = currentRotY * -0.8 + 'px ' + currentRotX * 0.8 + 'px 30px rgba(0,0,0,0.42), 0 0 0 1px rgba(125,211,232,0.22), 0 0 24px rgba(0,180,216,0.10)';
             }
             rafId = requestAnimationFrame(animate);
         }
 
-        wrapper.addEventListener("mouseenter", () => {
+        wrapper.addEventListener("mouseenter", function() {
             if (!rafId) rafId = requestAnimationFrame(animate);
         });
 
-        wrapper.addEventListener("mousemove", (e) => {
-            const rect = wrapper.getBoundingClientRect();
+        wrapper.addEventListener("mousemove", function(e) {
+            var rect = wrapper.getBoundingClientRect();
             if (!rect.width || !rect.height) return;
             
-            const mx = (e.clientX - rect.left) / rect.width;
-            const my = (e.clientY - rect.top) / rect.height;
-            const nx = mx - 0.5;
-            const ny = my - 0.5;
+            var mx = (e.clientX - rect.left) / rect.width;
+            var my = (e.clientY - rect.top) / rect.height;
+            var nx = mx - 0.5;
+            var ny = my - 0.5;
             
             targetRotY = nx * MAX_TILT;
             targetRotX = -ny * MAX_TILT;
             targetX = nx * MAX_TRANSLATE;
             targetY = ny * MAX_TRANSLATE;
             
-            wrapper.style.setProperty("--mouse-x", `${mx * 100}%`);
-            wrapper.style.setProperty("--mouse-y", `${my * 100}%`);
+            wrapper.style.setProperty("--mouse-x", mx * 100 + '%');
+            wrapper.style.setProperty("--mouse-y", my * 100 + '%');
         });
 
-        wrapper.addEventListener("mouseleave", () => {
+        wrapper.addEventListener("mouseleave", function() {
             targetRotX = 0; targetRotY = 0; targetX = 0; targetY = 0;
-            wrapper.style.setProperty("--mouse-x", "50%");
-            wrapper.style.setProperty("--mouse-y", "50%");
+            wrapper.style.setProperty("--mouse-x", '50%');
+            wrapper.style.setProperty("--mouse-y", '50%');
         });
 
         if (!rafId) rafId = requestAnimationFrame(animate);
     }
 
     // ============================================================
-    // 4. CONTACT RIPPLE EFFECT
+    // 4. CONTACT RIPPLE
     // ============================================================
     function initContactRipple() {
         if (!document.getElementById("ripple-keyframes")) {
-            const style = document.createElement("style");
+            var style = document.createElement("style");
             style.id = "ripple-keyframes";
-            style.textContent = `
-                @keyframes contactRipple {
-                    from { transform: scale(0); opacity: 1; }
-                    to { transform: scale(2.5); opacity: 0; }
-                }
-            `;
+            style.textContent = '@keyframes contactRipple { from { transform: scale(0); opacity: 1; } to { transform: scale(2.5); opacity: 0; } }';
             document.head.appendChild(style);
         }
 
-        document.querySelectorAll(".contact-inline-icon").forEach(btn => {
-            btn.addEventListener("click", function(e) {
-                const rect = btn.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const ripple = document.createElement("span");
-                ripple.style.cssText = `
-                    position: absolute;
-                    width: ${size}px;
-                    height: ${size}px;
-                    left: ${e.clientX - rect.left - size/2}px;
-                    top: ${e.clientY - rect.top - size/2}px;
-                    border-radius: 50%;
-                    background: rgba(110, 211, 235, 0.25);
-                    transform: scale(0);
-                    animation: contactRipple 0.6s ease-out;
-                    pointer-events: none;
-                `;
-                btn.style.position = "relative";
-                btn.style.overflow = "hidden";
-                btn.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
-            });
-        });
+        var icons = document.querySelectorAll(".contact-inline-icon");
+        for (var i = 0; i < icons.length; i++) {
+            (function(btn) {
+                btn.addEventListener("click", function(e) {
+                    var rect = btn.getBoundingClientRect();
+                    var size = Math.max(rect.width, rect.height);
+                    var ripple = document.createElement("span");
+                    ripple.style.cssText = 'position: absolute; width: ' + size + 'px; height: ' + size + 'px; left: ' + (e.clientX - rect.left - size/2) + 'px; top: ' + (e.clientY - rect.top - size/2) + 'px; border-radius: 50%; background: rgba(110, 211, 235, 0.25); transform: scale(0); animation: contactRipple 0.6s ease-out; pointer-events: none;';
+                    btn.style.position = "relative";
+                    btn.style.overflow = "hidden";
+                    btn.appendChild(ripple);
+                    setTimeout(function() { ripple.remove(); }, 600);
+                });
+            })(icons[i]);
+        }
     }
 
     // ============================================================
-    // 5. EMAIL COPY ON RIGHT-CLICK
+    // 5. EMAIL COPY
     // ============================================================
     function initEmailCopy() {
-        const btn = document.querySelector('.contact-inline-icon[aria-label="Email"]');
+        var btn = document.querySelector('.contact-inline-icon[aria-label="Email"]');
         if (!btn) return;
         
-        const email = btn.getAttribute("href")?.replace("mailto:", "") || "";
+        var email = (btn.getAttribute("href") || "").replace("mailto:", "");
         if (!email) return;
         
         btn.addEventListener("contextmenu", function(e) {
             e.preventDefault();
-            navigator.clipboard.writeText(email).then(() => {
-                btn.style.background = "rgba(88,214,141,0.2)";
-                btn.style.borderColor = "rgba(88,214,141,0.4)";
-                setTimeout(() => { 
-                    btn.style.background = ""; 
-                    btn.style.borderColor = ""; 
-                }, 800);
-            }).catch(() => {});
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(email).then(function() {
+                    btn.style.background = "rgba(88,214,141,0.2)";
+                    btn.style.borderColor = "rgba(88,214,141,0.4)";
+                    setTimeout(function() { 
+                        btn.style.background = ""; 
+                        btn.style.borderColor = ""; 
+                    }, 800);
+                }).catch(function() {});
+            }
         });
     }
 
@@ -190,8 +181,8 @@
     function initImageFallback() {
         window.addEventListener("error", function(e) {
             if (e.target.tagName === "IMG") {
-                const name = encodeURIComponent(e.target.alt || "User");
-                e.target.src = `https://ui-avatars.com/api/?name=${name}&background=00b4d8&color=fff&size=200`;
+                var name = encodeURIComponent(e.target.alt || "User");
+                e.target.src = 'https://ui-avatars.com/api/?name=' + name + '&background=00b4d8&color=fff&size=200';
             }
         }, true);
     }
@@ -214,31 +205,44 @@
     }
 
     // ============================================================
-    // 8. RESIZE HANDLER - جلوگیری از مشکلات موبایل
+    // 8. RESIZE HANDLER
     // ============================================================
     function initResizeHandler() {
-        let resizeTimer;
+        var resizeTimer;
         window.addEventListener("resize", function() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function() {
-                const wrapper = document.querySelector(".profile-image-wrapper");
-                const image = document.querySelector(".profile-image");
-                const isMobile = window.innerWidth < 600;
-                const isTouch = window.matchMedia("(pointer: coarse)").matches;
+                var wrapper = document.querySelector(".profile-image-wrapper");
+                var image = document.querySelector(".profile-image");
+                var isMobile = window.innerWidth < 600;
+                var isTouch = window.matchMedia("(pointer: coarse)").matches;
                 
                 if ((isMobile || isTouch) && wrapper && image) {
                     image.style.transform = 'none';
-                    image.style.border = '2px solid rgba(125, 211, 232, 0.35)';
+                    image.style.webkitTransform = 'none';
+                    image.style.border = '2.5px solid rgba(125, 211, 232, 0.4)';
                     wrapper.style.perspective = 'none';
+                    wrapper.style.webkitPerspective = 'none';
                 }
             }, 300);
         });
     }
 
     // ============================================================
-    // 9. INITIALIZATION
+    // 9. FIX SAMSUNG BROWSER - اضافه کردن class برای تشخیص
+    // ============================================================
+    function detectSamsungBrowser() {
+        var ua = navigator.userAgent;
+        if (ua.indexOf('SamsungBrowser') > -1) {
+            document.body.classList.add('samsung-browser');
+        }
+    }
+
+    // ============================================================
+    // 10. INIT
     // ============================================================
     function init() {
+        detectSamsungBrowser();
         initProfileTilt();
         setTimeout(animateProjectCounter, 300);
         initContactRipple();
@@ -247,7 +251,7 @@
         initKeyboardNav();
         initResizeHandler();
 
-        console.log("%c✅ Portfolio Ready %c| %cMobile Issues Fixed", 
+        console.log("%c✅ Portfolio Ready %c| %cSamsung Fixed", 
             "color:#79d8ed;font-weight:bold;", 
             "color:#6b7280;", 
             "color:#8ddced;"
@@ -255,7 +259,7 @@
     }
 
     // ============================================================
-    // 10. DOM READY
+    // 11. DOM READY
     // ============================================================
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);

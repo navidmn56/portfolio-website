@@ -1,6 +1,6 @@
 /* ============================================================
    PORTFOLIO WEBSITE - PREMIUM LUXURY DARK THEME
-   FINAL VERSION - ALL MOBILE ISSUES FIXED
+   FINAL VERSION - MOBILE OPTIMIZED
    ============================================================ */
 
 *,
@@ -95,7 +95,7 @@ body::after {
 }
 
 /* ============================================================
-   PROFILE HEADER - با ساختار کاملاً پایدار
+   PROFILE HEADER - ساختار کاملاً پایدار
    ============================================================ */
 .profile-header {
     width: 100%;
@@ -114,13 +114,11 @@ body::after {
 }
 
 /* ============================================================
-   PROFILE IMAGE WRAPPER - با حالت 3D و بوردر ثابت
+   PROFILE IMAGE - با رویکرد کاملاً متفاوت برای موبایل
    ============================================================ */
 .profile-image-wrapper {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
     width: 60px;
     height: 60px;
     min-width: 60px;
@@ -128,15 +126,19 @@ body::after {
     flex: 0 0 60px;
     border-radius: 50%;
     overflow: visible;
+    /* فقط در دسکتاپ فعال می‌شود */
     perspective: 800px;
     transform-style: preserve-3d;
+    /* جلوگیری از overflow در موبایل */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 .profile-image {
     position: relative;
     display: block;
-    width: 60px;
-    height: 60px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid rgba(125, 211, 232, 0.3);
@@ -156,7 +158,7 @@ body::after {
     z-index: 2;
 }
 
-/* حلقه تزئینی اطراف عکس - همیشه نمایش داده می‌شود */
+/* حلقه تزئینی اطراف عکس */
 .profile-image-wrapper::before {
     content: "";
     position: absolute;
@@ -173,7 +175,7 @@ body::after {
         inset 0 0 20px rgba(80, 200, 225, 0.05);
 }
 
-/* نور تبعیت‌کننده از موس - فقط در دسکتاپ */
+/* نور تبعیت‌کننده - فقط دسکتاپ */
 .profile-image-wrapper::after {
     content: "";
     position: absolute;
@@ -259,7 +261,7 @@ body::after {
 }
 
 /* ============================================================
-   SOCIAL ICONS - دایره‌های کامل در همه دستگاه‌ها
+   SOCIAL ICONS - دایره‌های کامل
    ============================================================ */
 .social-links-row {
     display: flex;
@@ -643,10 +645,9 @@ body::after {
 .empty-state p { font-size: 0.7rem; line-height: 1.6; }
 
 /* ============================================================
-   RESPONSIVE DESIGN - کاملاً اصلاح شده
+   RESPONSIVE - دسکتاپ
    ============================================================ */
 
-/* ----- دسکتاپ بزرگ (1200+) ----- */
 @media (min-width: 1200px) {
     .view { padding: 36px; }
     .name-section h1 { font-size: 2rem; }
@@ -657,29 +658,14 @@ body::after {
     .projects-hint { font-size: 0.7rem; }
 }
 
-/* ----- دسکتاپ (900+) ----- */
 @media (min-width: 900px) and (max-width: 1199px) {
     body { align-items: center; padding: 30px; }
     .view { padding: 30px; border-radius: 28px; }
     .profile-info { gap: 15px; }
-
-    .profile-image-wrapper {
-        width: 85px; height: 85px;
-        min-width: 85px; max-width: 85px;
-        flex: 0 0 85px;
-    }
-
+    .profile-image-wrapper { width: 85px; height: 85px; min-width: 85px; max-width: 85px; flex: 0 0 85px; }
     .profile-image { width: 85px; height: 85px; }
-
     .profile-image-wrapper:hover::after { opacity: 1; }
-
-    .social-icon-circle {
-        width: 36px; height: 36px;
-        min-width: 36px; max-width: 36px;
-        flex: 0 0 36px;
-        font-size: 0.82rem;
-    }
-
+    .social-icon-circle { width: 36px; height: 36px; min-width: 36px; max-width: 36px; flex: 0 0 36px; font-size: 0.82rem; }
     .social-icon-circle:hover,
     .contact-inline-icon:hover {
         transform: translateY(-3px) scale(1.06);
@@ -688,11 +674,9 @@ body::after {
         color: #8de2f5;
         box-shadow: 0 8px 20px rgba(0, 180, 216, 0.12);
     }
-
     .summary { font-size: 0.9rem; line-height: 1.8; }
     .grid-2col { grid-template-columns: 0.85fr 1.15fr; gap: 18px; }
     .project-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    
     .project-card:hover {
         transform: translateY(-4px);
         background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.018));
@@ -701,119 +685,218 @@ body::after {
     }
 }
 
-/* ----- تبلت (600+) ----- */
 @media (min-width: 600px) and (max-width: 899px) {
     body { padding: 20px; }
     .view { padding: 22px; border-radius: 24px; }
-    
-    .profile-image-wrapper {
-        width: 70px; height: 70px;
-        min-width: 70px; max-width: 70px;
-        flex: 0 0 70px;
-    }
+    .profile-image-wrapper { width: 70px; height: 70px; min-width: 70px; max-width: 70px; flex: 0 0 70px; }
     .profile-image { width: 70px; height: 70px; }
-
-    .social-icon-circle {
-        width: 36px; height: 36px;
-        min-width: 36px; max-width: 36px;
-        flex: 0 0 36px;
-        font-size: 0.78rem;
-    }
+    .social-icon-circle { width: 36px; height: 36px; min-width: 36px; max-width: 36px; flex: 0 0 36px; font-size: 0.78rem; }
 }
 
 /* ============================================================
-   موبایل - با رفع کامل همه مشکلات
+   موبایل - کاملاً بازطراحی شده
    ============================================================ */
 @media (max-width: 599px) {
-    body { padding: 8px; }
-    .view { padding: 12px; border-radius: 18px; }
-
-    /* ===== حفظ ساختار پروفایل ===== */
-    .profile-info {
-        gap: 10px;
-        padding: 8px 3px;
+    body { 
+        padding: 8px; 
+        align-items: flex-start;
+    }
+    
+    .view { 
+        padding: 12px; 
+        border-radius: 18px;
+        overflow: visible;
     }
 
-    /* ===== عکس پروفایل با بوردر و اندازه ثابت ===== */
-    .profile-image-wrapper { 
-        perspective: none;
+    /* ===== پروفایل هدر - با استفاده از table-cell برای پایداری ===== */
+    .profile-header {
+        margin-bottom: 14px;
+        overflow: visible;
+    }
+
+    .profile-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 4px;
+        overflow: visible;
+        /* جلوگیری از مشکلات flex در مرورگر سامسونگ */
+        flex-wrap: nowrap;
+    }
+
+    /* ===== عکس پروفایل با اندازه ثابت و بوردر ===== */
+    .profile-image-wrapper {
+        display: block;
         width: 56px !important;
         height: 56px !important;
         min-width: 56px !important;
         max-width: 56px !important;
         flex: 0 0 56px !important;
+        border-radius: 50%;
         overflow: visible;
-    }
-    
-    .profile-image { 
-        width: 56px !important;
-        height: 56px !important;
+        perspective: none !important;
+        transform-style: flat !important;
+        -webkit-transform: none !important;
         transform: none !important;
-        border: 2px solid rgba(125, 211, 232, 0.35) !important;
-        box-shadow: 0 0 0 1px rgba(125, 211, 232, 0.18), 0 0 30px rgba(0, 180, 216, 0.10), 0 10px 30px rgba(0, 0, 0, 0.40) !important;
+        /* مهم: جلوگیری از overflow */
         position: relative;
         z-index: 2;
+        /* اطمینان از اینکه عکس دقیقاً در جای خود است */
+        margin: 0;
+        padding: 0;
     }
-    
-    /* حلقه تزئینی - همیشه نمایش داده می‌شود */
+
+    .profile-image {
+        display: block;
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 50% !important;
+        border: 2.5px solid rgba(125, 211, 232, 0.4) !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+        box-shadow: 
+            0 0 0 1px rgba(125, 211, 232, 0.2),
+            0 0 30px rgba(0, 180, 216, 0.12),
+            0 10px 30px rgba(0, 0, 0, 0.40) !important;
+        position: relative;
+        z-index: 2;
+        object-fit: cover;
+        background: #11151b;
+        /* جلوگیری از هرگونه تغییر اندازه */
+        flex-shrink: 0;
+        flex-grow: 0;
+    }
+
+    /* حلقه تزئینی - با اندازه دقیق */
     .profile-image-wrapper::before {
+        content: "";
+        position: absolute;
         top: -4px;
         left: -4px;
         right: -4px;
         bottom: -4px;
+        border-radius: 50%;
         border: 2px solid rgba(125, 211, 232, 0.2);
+        pointer-events: none;
+        z-index: 1;
         box-shadow: 0 0 20px rgba(80, 200, 225, 0.06);
     }
-    
-    .profile-image-wrapper::after { 
-        display: none; 
+
+    .profile-image-wrapper::after {
+        display: none !important;
     }
 
-    .status-dot { 
-        width: 11px; 
-        height: 11px; 
-        right: -1px; 
-        bottom: -1px;
-        border-width: 2px;
+    /* ===== نقطه وضعیت - موقعیت دقیق ===== */
+    .status-dot {
+        width: 11px !important;
+        height: 11px !important;
+        right: -1px !important;
+        bottom: -1px !important;
+        border: 2px solid #0b0d11 !important;
+        z-index: 10 !important;
+        position: absolute !important;
+        display: block !important;
+        background: #58d68d !important;
+        box-shadow: 0 0 0 2px rgba(88, 214, 141, 0.15) !important;
     }
-    
-    /* ===== دایره‌های سوشال - کاملاً گرد در موبایل ===== */
+
+    /* ===== نام و تایتل ===== */
+    .name-section {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .name-section h1 {
+        font-size: 0.95rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .title-badge {
+        font-size: 0.52rem !important;
+        padding: 2px 6px !important;
+    }
+
+    /* ===== دایره‌های سوشال - کاملاً گرد ===== */
+    .social-links-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 3px;
+    }
+
     .social-icon-circle {
-        width: 34px !important;
-        height: 34px !important;
-        min-width: 34px !important;
-        max-width: 34px !important;
-        flex: 0 0 34px !important;
-        font-size: 0.75rem !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        flex: 0 0 32px !important;
+        padding: 0 !important;
+        margin: 0 !important;
         border-radius: 50% !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         background: rgba(255, 255, 255, 0.04) !important;
+        font-size: 0.7rem !important;
+        line-height: 1 !important;
+        text-decoration: none !important;
+        box-sizing: border-box !important;
+        /* جلوگیری از تغییر شکل */
+        aspect-ratio: 1/1 !important;
+        overflow: visible !important;
     }
-    
+
+    .social-icon-circle i {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        height: 100% !important;
+        font-size: inherit !important;
+        line-height: 1 !important;
+    }
+
     .contact-inline-icon {
         background: rgba(110, 211, 235, 0.08) !important;
         border-color: rgba(110, 211, 235, 0.18) !important;
     }
+
+    /* ===== بقیه المان‌ها ===== */
+    .grid-2col { 
+        grid-template-columns: 1fr; 
+        gap: 10px; 
+    }
     
-    .grid-2col { grid-template-columns: 1fr; gap: 10px; }
-    .project-grid { grid-template-columns: 1fr; gap: 8px; }
-    .project-card { min-height: 140px; padding: 12px; }
+    .project-grid { 
+        grid-template-columns: 1fr; 
+        gap: 8px; 
+    }
     
-    /* دکمه‌های تب بزرگتر برای لمس */
-    .tab-btn { min-height: 44px; }
+    .project-card { 
+        min-height: 140px; 
+        padding: 12px; 
+    }
     
-    /* نام و تایتل */
-    .name-section h1 { font-size: 1rem; }
-    .title-badge { font-size: 0.55rem; padding: 2px 6px; }
+    .tab-btn { 
+        min-height: 44px; 
+        font-size: 0.65rem;
+    }
 }
 
-/* ----- موبایل خیلی کوچک (کمتر از 360) ----- */
+/* ===== موبایل خیلی کوچک ===== */
 @media (max-width: 360px) {
     body { padding: 6px; }
     .view { padding: 10px; }
     
     .profile-image-wrapper,
-    .profile-image { 
+    .profile-image {
         width: 46px !important;
         height: 46px !important;
         min-width: 46px !important;
@@ -822,24 +905,25 @@ body::after {
     }
     
     .social-icon-circle {
-        width: 30px !important;
-        height: 30px !important;
-        min-width: 30px !important;
-        max-width: 30px !important;
-        flex: 0 0 30px !important;
-        font-size: 0.65rem !important;
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        flex: 0 0 28px !important;
+        font-size: 0.6rem !important;
     }
     
-    .profile-info { gap: 8px; }
+    .name-section h1 { font-size: 0.85rem !important; }
+    .profile-info { gap: 8px; padding: 6px 2px; }
 }
 
 /* ============================================================
-   دسترسی‌پذیری و حالت‌های خاص
+   دسترسی‌پذیری
    ============================================================ */
 @media (hover: none) and (pointer: coarse) {
-    .profile-image-wrapper { perspective: none; }
+    .profile-image-wrapper { perspective: none !important; }
     .profile-image { transform: none !important; }
-    .profile-image-wrapper::after { display: none; }
+    .profile-image-wrapper::after { display: none !important; }
     .project-card:hover { transform: none; }
     .social-icon-circle:hover { transform: none !important; }
     .tab-btn { min-height: 44px; }
@@ -852,10 +936,6 @@ body::after {
     }
     .profile-image { transform: none !important; }
     .profile-image-wrapper::after { display: none; }
-}
-
-@media (prefers-contrast: high) {
-    .view, .card-style, .project-card { border-color: rgba(255, 255, 255, 0.25); }
 }
 
 @media print {
