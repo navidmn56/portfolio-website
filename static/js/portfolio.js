@@ -51,7 +51,7 @@
     }
 
     // ============================================================
-    // 3. PROFILE 3D TILT - PREMIUM VERSION
+    // 3. PROFILE 3D TILT - OPTIMIZED
     // ============================================================
     function initProfileTilt() {
         var wrapper = document.querySelector(".profile-image-wrapper");
@@ -69,28 +69,13 @@
             image.style.border = '2.5px solid rgba(125, 211, 232, 0.4)';
             wrapper.style.perspective = 'none';
             wrapper.style.webkitPerspective = 'none';
-            
-            // حذف glow effect
-            var glow = wrapper.querySelector('.glow-effect');
-            if (glow) glow.style.display = 'none';
             return;
         }
 
-        // ساخت glow effect
-        var glow = document.createElement('div');
-        glow.className = 'glow-effect';
-        wrapper.appendChild(glow);
-
-        var MAX_TILT = 15;
-        var MAX_TRANSLATE = 8;
-        var targetX = 0,
-            targetY = 0,
-            targetRotX = 0,
-            targetRotY = 0;
-        var currentX = 0,
-            currentY = 0,
-            currentRotX = 0,
-            currentRotY = 0;
+        var MAX_TILT = 12;
+        var MAX_TRANSLATE = 6;
+        var targetX = 0, targetY = 0, targetRotX = 0, targetRotY = 0;
+        var currentX = 0, currentY = 0, currentRotX = 0, currentRotY = 0;
         var rafId = null;
         var isHovering = false;
 
@@ -102,19 +87,19 @@
             currentY += (targetY - currentY) * speed;
 
             if (image) {
-                var transform = 'translate3d(' + currentX + 'px, ' + currentY + 'px, 12px) ' +
+                var transform = 'translate3d(' + currentX + 'px, ' + currentY + 'px, 10px) ' +
                     'rotateX(' + currentRotX + 'deg) ' +
                     'rotateY(' + currentRotY + 'deg)';
                 
                 image.style.transform = transform;
                 image.style.webkitTransform = transform;
                 
-                var shadowX = currentRotY * -1;
-                var shadowY = currentRotX * 1;
+                var shadowX = currentRotY * -0.8;
+                var shadowY = currentRotX * 0.8;
                 image.style.boxShadow = 
-                    shadowX + 'px ' + shadowY + 'px 40px rgba(0,0,0,0.5), ' +
-                    '0 0 0 2px rgba(125,211,232,' + (0.2 + Math.abs(currentRotY) * 0.01) + '), ' +
-                    '0 0 60px rgba(0,180,216,' + (0.08 + Math.abs(currentRotX) * 0.005) + ')';
+                    shadowX + 'px ' + shadowY + 'px 35px rgba(0,0,0,0.5), ' +
+                    '0 0 0 1px rgba(125,211,232,0.15), ' +
+                    '0 0 50px rgba(0,180,216,' + (0.08 + Math.abs(currentRotX) * 0.005) + ')';
             }
             
             if (isHovering) {
@@ -134,7 +119,6 @@
             var mx = (e.clientX - rect.left) / rect.width;
             var my = (e.clientY - rect.top) / rect.height;
             
-            // محدود کردن برای جلوگیری از نوسان
             var nx = Math.max(-0.5, Math.min(0.5, mx - 0.5));
             var ny = Math.max(-0.5, Math.min(0.5, my - 0.5));
 
@@ -142,14 +126,6 @@
             targetRotX = -ny * MAX_TILT;
             targetX = nx * MAX_TRANSLATE;
             targetY = ny * MAX_TRANSLATE;
-
-            wrapper.style.setProperty("--mouse-x", (mx * 100) + '%');
-            wrapper.style.setProperty("--mouse-y", (my * 100) + '%');
-            
-            // به‌روزرسانی glow
-            if (glow) {
-                glow.style.opacity = 0.6 + Math.abs(nx) * 0.3;
-            }
         });
 
         wrapper.addEventListener("mouseleave", function() {
@@ -158,16 +134,12 @@
             targetRotY = 0;
             targetX = 0;
             targetY = 0;
-            wrapper.style.setProperty("--mouse-x", '50%');
-            wrapper.style.setProperty("--mouse-y", '50%');
-            if (glow) glow.style.opacity = 0;
             
-            // ادامه انیمیشن تا بازگشت به حالت اولیه
             if (rafId) {
                 cancelAnimationFrame(rafId);
                 rafId = null;
             }
-            // یک بار دیگر برای بازگشت نرم
+            
             animateSmoothReturn();
         });
 
@@ -182,7 +154,7 @@
             function returnAnim() {
                 var elapsed = Date.now() - startTime;
                 var progress = Math.min(elapsed / duration, 1);
-                var ease = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+                var ease = 1 - Math.pow(1 - progress, 3);
 
                 currentRotX = startRotX * (1 - ease);
                 currentRotY = startRotY * (1 - ease);
@@ -190,16 +162,16 @@
                 currentY = startY * (1 - ease);
 
                 if (image) {
-                    var transform = 'translate3d(' + currentX + 'px, ' + currentY + 'px, 12px) ' +
+                    var transform = 'translate3d(' + currentX + 'px, ' + currentY + 'px, 10px) ' +
                         'rotateX(' + currentRotX + 'deg) ' +
                         'rotateY(' + currentRotY + 'deg)';
                     image.style.transform = transform;
                     image.style.webkitTransform = transform;
                     
                     image.style.boxShadow = 
-                        currentRotY * -1 + 'px ' + currentRotX * 1 + 'px 40px rgba(0,0,0,0.5), ' +
-                        '0 0 0 2px rgba(125,211,232,' + (0.2 + Math.abs(currentRotY) * 0.01) + '), ' +
-                        '0 0 60px rgba(0,180,216,' + (0.08 + Math.abs(currentRotX) * 0.005) + ')';
+                        currentRotY * -0.8 + 'px ' + currentRotX * 0.8 + 'px 35px rgba(0,0,0,0.5), ' +
+                        '0 0 0 1px rgba(125,211,232,0.15), ' +
+                        '0 0 50px rgba(0,180,216,' + (0.08 + Math.abs(currentRotX) * 0.005) + ')';
                 }
 
                 if (progress < 1) {
@@ -337,16 +309,16 @@
     }
 
     // ============================================================
-    // 9. SMOOTH SCROLL FOR PROJECT CARDS
+    // 9. PROJECT CARDS - PREVENT EMPTY LINKS
     // ============================================================
     function initProjectCards() {
         var cards = document.querySelectorAll('.project-card');
         for (var i = 0; i < cards.length; i++) {
             (function(card) {
                 card.addEventListener('click', function(e) {
-                    // فقط اگر لینک خارجی نباشد
                     if (!card.getAttribute('href') || 
-                        card.getAttribute('href') === '#') {
+                        card.getAttribute('href') === '#' ||
+                        card.getAttribute('href') === '') {
                         e.preventDefault();
                     }
                 });
@@ -355,9 +327,19 @@
     }
 
     // ============================================================
-    // 10. INIT
+    // 10. SAMSUNG BROWSER DETECTION
+    // ============================================================
+    function detectSamsungBrowser() {
+        if (navigator.userAgent.indexOf('SamsungBrowser') > -1) {
+            document.body.classList.add('samsung-browser');
+        }
+    }
+
+    // ============================================================
+    // 11. INIT
     // ============================================================
     function init() {
+        detectSamsungBrowser();
         initProfileTilt();
         setTimeout(animateProjectCounter, 400);
         initContactRipple();
@@ -372,7 +354,7 @@
     }
 
     // ============================================================
-    // 11. DOM READY
+    // 12. DOM READY
     // ============================================================
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", init);
