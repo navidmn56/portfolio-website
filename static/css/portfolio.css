@@ -1,6 +1,6 @@
 /* ============================================================
    PORTFOLIO WEBSITE - PREMIUM LUXURY DARK THEME
-   Final Version - All Issues Fixed & Fully Optimized
+   FINAL VERSION - ALL ISSUES FIXED
    ============================================================ */
 
 *,
@@ -146,12 +146,10 @@ body::after {
         0 0 30px rgba(0, 180, 216, 0.10),
         0 10px 30px rgba(0, 0, 0, 0.40);
     transition: box-shadow 0.15s ease;
-    /* اصلاح: جلوگیری از محو شدن پشت */
     -webkit-backface-visibility: visible;
     backface-visibility: visible;
 }
 
-/* حلقه تزئینی اطراف عکس */
 .profile-image-wrapper::before {
     content: "";
     position: absolute;
@@ -168,7 +166,6 @@ body::after {
         0 0 20px rgba(80, 200, 225, 0.08);
 }
 
-/* نور تبعیت‌کننده از موس (Glow) */
 .profile-image-wrapper::after {
     content: "";
     position: absolute;
@@ -272,6 +269,9 @@ body::after {
     justify-content: center;
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    max-width: 32px;
+    flex: 0 0 32px;
     padding: 0;
     margin: 0;
     border-radius: 50%;
@@ -636,7 +636,7 @@ body::after {
 .empty-state p { font-size: 0.7rem; line-height: 1.6; }
 
 /* ============================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - FIXED
    ============================================================ */
 
 /* ----- دسکتاپ بزرگ (1200+) ----- */
@@ -659,6 +659,7 @@ body::after {
     .profile-image-wrapper {
         width: 85px; height: 85px;
         min-width: 85px; max-width: 85px;
+        flex: 0 0 85px;
     }
 
     .profile-image { width: 85px; height: 85px; }
@@ -667,6 +668,8 @@ body::after {
 
     .social-icon-circle {
         width: 36px; height: 36px;
+        min-width: 36px; max-width: 36px;
+        flex: 0 0 36px;
         font-size: 0.82rem;
     }
 
@@ -699,42 +702,97 @@ body::after {
     .profile-image-wrapper {
         width: 70px; height: 70px;
         min-width: 70px; max-width: 70px;
+        flex: 0 0 70px;
     }
     .profile-image { width: 70px; height: 70px; }
 
-    .social-icon-circle { width: 36px; height: 36px; font-size: 0.78rem; }
+    .social-icon-circle {
+        width: 36px; height: 36px;
+        min-width: 36px; max-width: 36px;
+        flex: 0 0 36px;
+        font-size: 0.78rem;
+    }
 }
 
-/* ----- موبایل (کمتر از 600) ----- */
+/* ============================================================
+   موبایل - با رفع کامل مشکلات
+   ============================================================ */
 @media (max-width: 599px) {
     body { padding: 8px; }
     .view { padding: 12px; border-radius: 18px; }
 
-    /* غیرفعال کردن کامل Tilt و Glow در موبایل */
-    .profile-image-wrapper { perspective: none; }
-    .profile-image { transform: none !important; }
-    .profile-image-wrapper::after { display: none; }
+    /* ===== رفع مشکل عکس پروفایل ===== */
+    .profile-image-wrapper { 
+        perspective: none;
+        overflow: visible;
+        width: 60px;
+        height: 60px;
+        min-width: 60px;
+        max-width: 60px;
+        flex: 0 0 60px;
+    }
+    
+    .profile-image { 
+        transform: none !important;
+        position: relative;
+        z-index: 2;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0 0 0 1px rgba(125, 211, 232, 0.18), 0 0 30px rgba(0, 180, 216, 0.10), 0 10px 30px rgba(0, 0, 0, 0.40);
+    }
+    
+    .profile-image-wrapper::before {
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+    }
+    
+    .profile-image-wrapper::after { 
+        display: none; 
+    }
 
     .status-dot { width: 11px; height: 11px; right: -1px; bottom: -1px; }
     
-    /* دکمه‌های بزرگتر برای لمس راحت‌تر */
+    /* ===== رفع مشکل بیضی شدن دایره‌های سوشال ===== */
     .social-icon-circle {
-        width: 36px !important; height: 36px !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        flex: 0 0 36px !important;
         font-size: 0.78rem !important;
+        border-radius: 50% !important;
     }
     
     .grid-2col { grid-template-columns: 1fr; gap: 10px; }
     .project-grid { grid-template-columns: 1fr; gap: 8px; }
     .project-card { min-height: 140px; padding: 12px; }
+    
+    /* دکمه‌های تب بزرگتر برای لمس */
+    .tab-btn { min-height: 44px; }
 }
 
 /* ----- موبایل خیلی کوچک (کمتر از 360) ----- */
 @media (max-width: 360px) {
     body { padding: 6px; }
     .view { padding: 10px; }
-    .profile-image-wrapper, .profile-image { width: 46px; height: 46px; }
+    
+    .profile-image-wrapper,
+    .profile-image { 
+        width: 46px; 
+        height: 46px;
+        min-width: 46px;
+        max-width: 46px;
+        flex: 0 0 46px;
+    }
+    
     .social-icon-circle {
-        width: 32px !important; height: 32px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        flex: 0 0 32px !important;
         font-size: 0.7rem !important;
     }
 }
