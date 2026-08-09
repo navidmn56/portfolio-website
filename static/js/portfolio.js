@@ -1,6 +1,6 @@
 /* ============================================
-   PORTFOLIO JAVASCRIPT - Optimized
-   Fast & Smooth Performance • Minimal Design
+   PORTFOLIO JAVASCRIPT - Final Version
+   3D Tilt Effect + All Features
    ============================================ */
 
 /**
@@ -15,12 +15,8 @@ function switchTab(tab) {
     const tabIcon = document.getElementById('tab-icon');
     const tabTitle = document.getElementById('tab-title');
 
-    // Validate elements exist
-    if (!eduContent || !expContent || !eduTab || !expTab) {
-        return;
-    }
+    if (!eduContent || !expContent || !eduTab || !expTab) return;
 
-    // Handle Education tab
     if (tab === 'education') {
         eduContent.classList.add('active');
         expContent.classList.remove('active');
@@ -28,83 +24,47 @@ function switchTab(tab) {
         expTab.classList.remove('active');
         eduTab.setAttribute('aria-pressed', 'true');
         expTab.setAttribute('aria-pressed', 'false');
-        
-        // Update icon
-        if (tabIcon) {
-            tabIcon.className = 'fas fa-graduation-cap';
-        }
-        
-        // Update title
-        if (tabTitle) {
-            tabTitle.textContent = 'Education';
-        }
-    } 
-    // Handle Experience tab
-    else {
+        if (tabIcon) tabIcon.className = 'fas fa-graduation-cap';
+        if (tabTitle) tabTitle.textContent = 'Education';
+    } else {
         expContent.classList.add('active');
         eduContent.classList.remove('active');
         expTab.classList.add('active');
         eduTab.classList.remove('active');
         expTab.setAttribute('aria-pressed', 'true');
         eduTab.setAttribute('aria-pressed', 'false');
-        
-        // Update icon
-        if (tabIcon) {
-            tabIcon.className = 'fas fa-briefcase';
-        }
-        
-        // Update title
-        if (tabTitle) {
-            tabTitle.textContent = 'Experience';
-        }
+        if (tabIcon) tabIcon.className = 'fas fa-briefcase';
+        if (tabTitle) tabTitle.textContent = 'Experience';
     }
 }
 
 /**
  * Counter Animation for Project Count
- * Creates a smooth counting animation for the project number
  */
 function animateProjectCounter() {
     const counter = document.querySelector('.project-count');
+    if (!counter) return;
     
-    // Validate counter exists
-    if (!counter) {
-        return;
-    }
-
-    // Get the current text and extract the number
     const text = counter.textContent.trim();
     const match = text.match(/\d+/);
+    if (!match || counter.dataset.animated === 'true') return;
     
-    // If no number found or already animated, skip
-    if (!match || counter.dataset.animated === 'true') {
-        return;
-    }
-
-    // Mark as animated to prevent re-animation
     counter.dataset.animated = 'true';
-    
     const targetNumber = parseInt(match[0]);
     const suffix = text.replace(match[0], '');
     
     let currentNumber = 0;
     const steps = 10;
     const increment = Math.ceil(targetNumber / steps);
-    const stepTime = 50;
-
-    // Start counting animation
+    
     const timer = setInterval(() => {
         currentNumber += increment;
-        
-        // Stop when target reached
         if (currentNumber >= targetNumber) {
             currentNumber = targetNumber;
             clearInterval(timer);
         }
-        
-        // Update counter text
         counter.textContent = `${currentNumber}${suffix}`;
-    }, stepTime);
+    }, 50);
 }
 
 /**
@@ -112,67 +72,65 @@ function animateProjectCounter() {
  * Creates subtle rotation towards mouse position
  */
 function initProfileTilt() {
-    const profileWrapper = document.querySelector('.profile-image-wrapper');
-    const profileImage = document.querySelector('.profile-image');
+    const wrapper = document.querySelector('.profile-image-wrapper');
+    const image = document.querySelector('.profile-image');
     
-    if (!profileWrapper || !profileImage) {
-        console.warn('Profile tilt: elements not found');
+    if (!wrapper || !image) {
+        console.warn('⚠️ 3D Tilt: Profile image elements not found');
         return;
     }
     
-    // Don't apply on touch devices
+    // Skip on touch devices
     if ('ontouchstart' in window) {
-        console.log('Profile tilt: disabled on touch device');
+        console.log('📱 3D Tilt: Disabled on touch device');
         return;
     }
     
-    // Maximum rotation in degrees (subtle effect)
+    // Maximum rotation in degrees
     const maxTilt = 8;
     
-    console.log('Profile tilt: initialized with maxTilt =', maxTilt);
+    console.log('✅ 3D Tilt: Initialized successfully');
     
-    profileWrapper.addEventListener('mousemove', function(e) {
-        const rect = profileWrapper.getBoundingClientRect();
+    wrapper.addEventListener('mousemove', function(e) {
+        const rect = wrapper.getBoundingClientRect();
         
-        // Calculate mouse position relative to center (in percentage)
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+        // Calculate mouse position relative to center (-0.5 to 0.5)
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
         
-        // Calculate offset from center (-1 to 1)
-        const offsetX = (e.clientX - centerX) / (rect.width / 2);
-        const offsetY = (e.clientY - centerY) / (rect.height / 2);
+        // Apply rotation
+        const rotateY = x * (maxTilt * 2);
+        const rotateX = -y * (maxTilt * 2);
         
-        // Calculate rotation (clamped between -maxTilt and maxTilt)
-        const rotateY = offsetX * maxTilt;
-        const rotateX = -offsetY * maxTilt;
+        image.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
         
-        // Apply transform
-        profileImage.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-        
-        // Add subtle shadow shift
-        const shadowX = -offsetX * 5;
-        const shadowY = offsetY * 5;
-        profileImage.style.boxShadow = `
-            ${shadowX}px ${shadowY}px 20px rgba(0, 0, 0, 0.4),
+        // Dynamic shadow based on mouse position
+        const shadowX = -x * 10;
+        const shadowY = y * 10;
+        image.style.boxShadow = `
+            ${shadowX}px ${shadowY}px 25px rgba(0, 0, 0, 0.4),
+            0 0 0 8px rgba(0, 180, 216, 0.05),
             0 0 0 5px rgba(255, 255, 255, 0.02)
         `;
     });
     
-    profileWrapper.addEventListener('mouseleave', function() {
-        // Smooth reset to original position
-        profileImage.style.transform = 'rotateY(0deg) rotateX(0deg)';
-        profileImage.style.boxShadow = `
+    wrapper.addEventListener('mouseleave', function() {
+        // Reset to original position
+        image.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        image.style.boxShadow = `
             0 8px 25px rgba(0, 0, 0, 0.35),
+            0 0 0 8px rgba(0, 180, 216, 0.05),
             0 0 0 5px rgba(255, 255, 255, 0.02)
         `;
     });
     
-    // Reset on window blur (when user switches tabs)
+    // Reset on window blur
     window.addEventListener('blur', function() {
-        if (profileImage) {
-            profileImage.style.transform = 'rotateY(0deg) rotateX(0deg)';
-            profileImage.style.boxShadow = `
+        if (image) {
+            image.style.transform = 'rotateY(0deg) rotateX(0deg)';
+            image.style.boxShadow = `
                 0 8px 25px rgba(0, 0, 0, 0.35),
+                0 0 0 8px rgba(0, 180, 216, 0.05),
                 0 0 0 5px rgba(255, 255, 255, 0.02)
             `;
         }
@@ -185,16 +143,10 @@ function initProfileTilt() {
 function initContactRipple() {
     const contactButtons = document.querySelectorAll('.contact-inline-icon');
     
-    if (contactButtons.length === 0) {
-        console.warn('Contact ripple: no .contact-inline-icon elements found');
-        return;
-    }
-    
-    console.log('Contact ripple: initialized on', contactButtons.length, 'buttons');
+    if (contactButtons.length === 0) return;
     
     contactButtons.forEach(button => {
         button.addEventListener('click', function(e) {
-            // Create ripple element
             const ripple = document.createElement('span');
             const rect = button.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
@@ -218,39 +170,25 @@ function initContactRipple() {
             button.style.overflow = 'hidden';
             button.appendChild(ripple);
             
-            // Remove ripple after animation
-            setTimeout(() => {
-                ripple.remove();
-            }, 600);
+            setTimeout(() => ripple.remove(), 600);
         });
     });
 }
 
 /**
- * Add hover tooltip to contact buttons (shows on desktop)
+ * Add hover tooltip to contact buttons (desktop only)
  */
 function initContactTooltips() {
-    // Only add tooltips on non-touch devices
-    if ('ontouchstart' in window) {
-        console.log('Contact tooltips: disabled on touch device');
-        return;
-    }
+    if ('ontouchstart' in window) return;
     
     const contactButtons = document.querySelectorAll('.contact-inline-icon');
-    
-    if (contactButtons.length === 0) {
-        console.warn('Contact tooltips: no .contact-inline-icon elements found');
-        return;
-    }
-    
-    console.log('Contact tooltips: initialized on', contactButtons.length, 'buttons');
+    if (contactButtons.length === 0) return;
     
     contactButtons.forEach(button => {
         const tooltipText = button.getAttribute('title');
         if (!tooltipText) return;
         
         button.addEventListener('mouseenter', function() {
-            // Remove existing tooltip
             const existingTooltip = document.querySelector('.contact-tooltip-dynamic');
             if (existingTooltip) existingTooltip.remove();
             
@@ -291,28 +229,20 @@ function initContactTooltips() {
 }
 
 /**
- * Add copy-to-clipboard for email on long press (mobile)
+ * Add copy-to-clipboard for email (mobile: long press, desktop: right click)
  */
 function initLongPressCopy() {
     const emailButton = document.querySelector('.contact-inline-icon[aria-label="Email"]');
-    
-    if (!emailButton) {
-        console.warn('Long press copy: email button not found');
-        return;
-    }
-    
-    console.log('Long press copy: initialized');
+    if (!emailButton) return;
     
     let pressTimer;
     const emailAddress = emailButton.getAttribute('href')?.replace('mailto:', '') || '';
-    
     if (!emailAddress) return;
     
-    // Touch events for mobile
+    // Mobile: long press to copy
     emailButton.addEventListener('touchstart', function(e) {
         pressTimer = setTimeout(() => {
             navigator.clipboard.writeText(emailAddress).then(() => {
-                // Show brief feedback
                 const feedback = document.createElement('div');
                 feedback.textContent = 'Email copied!';
                 feedback.style.cssText = `
@@ -331,70 +261,55 @@ function initLongPressCopy() {
                     animation: slideUpFadeIn 0.3s ease, slideUpFadeOut 0.3s ease 1.5s forwards;
                 `;
                 document.body.appendChild(feedback);
-                
                 setTimeout(() => feedback.remove(), 2000);
-            }).catch(() => {
-                // Silent fail
-            });
+            }).catch(() => {});
         }, 800);
     });
     
-    emailButton.addEventListener('touchend', function() {
-        clearTimeout(pressTimer);
-    });
+    emailButton.addEventListener('touchend', () => clearTimeout(pressTimer));
+    emailButton.addEventListener('touchmove', () => clearTimeout(pressTimer));
     
-    emailButton.addEventListener('touchmove', function() {
-        clearTimeout(pressTimer);
-    });
-    
-    // Click events for desktop (right-click to copy)
+    // Desktop: right click to copy
     emailButton.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         navigator.clipboard.writeText(emailAddress).then(() => {
-            // Visual feedback on button
             emailButton.style.background = 'rgba(88, 214, 141, 0.15)';
             emailButton.style.borderColor = 'rgba(88, 214, 141, 0.3)';
             setTimeout(() => {
                 emailButton.style.background = '';
                 emailButton.style.borderColor = '';
             }, 800);
-        }).catch(() => {
-            // Silent fail
-        });
+        }).catch(() => {});
     });
 }
 
 /**
- * Initialize all functionality when DOM is ready
+ * Initialize everything when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', function() {
     
     console.log('%c🚀 Portfolio Initializing...', 'color: #79d8ed; font-size: 14px; font-weight: bold;');
     
-    // Remove all tooltip elements (old tooltips)
-    document.querySelectorAll('.tooltip').forEach(function(el) {
-        el.remove();
-    });
-
-    // Initialize 3D tilt effect on profile image
+    // Remove old tooltips
+    document.querySelectorAll('.tooltip').forEach(el => el.remove());
+    
+    // Initialize 3D tilt effect
     initProfileTilt();
-
-    // Start counter animation after a short delay
+    
+    // Initialize counter animation
     setTimeout(animateProjectCounter, 300);
-
+    
     // Initialize contact button effects
     initContactRipple();
     initContactTooltips();
     initLongPressCopy();
-
+    
     // Keyboard shortcuts for tab switching
     document.addEventListener('keydown', function(e) {
-        // Ignore if user is typing in an input field
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
             return;
         }
-
-        // Check for shortcuts
+        
         switch(e.key.toLowerCase()) {
             case '1':
             case 'e':
@@ -408,15 +323,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
         }
     });
-
-    // Smooth scroll behavior for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            const target = document.querySelector(targetId);
-            
+            const target = document.querySelector(this.getAttribute('href'));
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth',
@@ -425,85 +337,52 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    // Handle image loading errors - fallback to generated avatar
+    
+    // Handle image loading errors
     window.addEventListener('error', function(e) {
         if (e.target.tagName === 'IMG') {
             const name = e.target.alt || 'User';
             e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=00b4d8&color=fff&size=200';
         }
     }, true);
-
-    // Log successful initialization with style
-    console.log('%c✨ Portfolio Loaded Successfully %c| %cNavid · AI Engineer',
+    
+    // Success messages
+    console.log('%c✨ Portfolio Ready %c| %c3D Tilt Active',
         'color: #79d8ed; font-size: 14px; font-weight: bold;',
         'color: #6b7280;',
         'color: #8ddced; font-weight: 500;'
     );
-    console.log('%c⌨️  Keyboard Shortcuts:%c Press %c1/E %cfor Education, %c2/X %cfor Experience',
+    console.log('%c⌨️  Shortcuts:%c 1/E=Education %c2/X=Experience',
         'color: #79d8ed;',
         'color: #aeb8c6;',
-        'color: #fff; font-weight: bold;',
-        'color: #aeb8c6;',
-        'color: #fff; font-weight: bold;',
         'color: #aeb8c6;'
     );
-    console.log('%c📧 Right-click email icon to copy %c| %c📱 Long-press on mobile to copy',
-        'color: #79d8ed;',
-        'color: #6b7280;',
-        'color: #8ddced;'
-    );
-    console.log('%c🖱️  Profile image tilts towards mouse cursor (hover over profile picture)',
-        'color: #79d8ed;',
-        'color: #aeb8c6;'
+    console.log('%c🖱️  Hover over profile image for 3D effect',
+        'color: #79d8ed;'
     );
 });
 
-// Add CSS for dynamic elements
+// Add dynamic CSS animations
 const dynamicStyles = document.createElement('style');
 dynamicStyles.textContent = `
     @keyframes contactRipple {
-        from {
-            transform: scale(0);
-            opacity: 1;
-        }
-        to {
-            transform: scale(2.5);
-            opacity: 0;
-        }
+        from { transform: scale(0); opacity: 1; }
+        to { transform: scale(2.5); opacity: 0; }
     }
     
     @keyframes fadeInTooltip {
-        from {
-            opacity: 0;
-            transform: translateX(-50%) translateY(5px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
     
     @keyframes slideUpFadeIn {
-        from {
-            opacity: 0;
-            transform: translateX(-50%) translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
     
     @keyframes slideUpFadeOut {
-        from {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        to {
-            opacity: 0;
-            transform: translateX(-50%) translateY(-10px);
-        }
+        from { opacity: 1; transform: translateX(-50%) translateY(0); }
+        to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
     }
 `;
 document.head.appendChild(dynamicStyles);

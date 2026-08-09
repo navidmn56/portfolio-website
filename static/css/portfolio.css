@@ -130,16 +130,19 @@ body::after {
 /* ============================================================
    PROFILE IMAGE - LEFT SIDE (WITH 3D TILT SUPPORT)
    ============================================================ */
+/* ============================================================
+   PROFILE IMAGE - LEFT SIDE (3D TILT READY)
+   ============================================================ */
 .profile-image-wrapper {
     position: relative;
     width: 60px;
     height: 60px;
     flex-shrink: 0;
     order: 0;
-    perspective: 200px;
+    perspective: 400px;
     transform-style: preserve-3d;
-    /* Remove any overflow hidden to show full shadow */
-    overflow: visible;
+    overflow: visible !important;
+    z-index: 10;
 }
 
 .profile-image {
@@ -148,21 +151,29 @@ body::after {
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid rgba(125, 211, 232, 0.4);
-    box-shadow: 
-        0 0 0 8px rgba(0, 180, 216, 0.05),
-        0 8px 25px rgba(0, 0, 0, 0.35), 
-        0 0 0 5px rgba(255, 255, 255, 0.02);
-    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), 
-                box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1),
-                border-color 0.3s ease !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(255, 255, 255, 0.02);
+    transition: transform 0.1s linear, box-shadow 0.1s linear !important;
     transform-style: preserve-3d;
     will-change: transform;
-    backface-visibility: hidden;
     display: block;
 }
 
 .profile-image-wrapper:hover .profile-image {
-    border-color: rgba(125, 211, 232, 0.6);
+    border-color: rgba(125, 211, 232, 0.7);
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 13px;
+    flex: 1;
+    min-width: 0;
+    overflow: visible !important;
+}
+
+.view {
+    overflow: visible !important;
 }
 
 /* ============================================================
@@ -1270,10 +1281,9 @@ body::after {
     *,
     *::before,
     *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
     body::before,
