@@ -176,6 +176,8 @@ class LanguageAdmin(admin.ModelAdmin):
 
 # resume_app/admin.py
 
+# resume_app/admin.py
+
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import path
@@ -184,11 +186,212 @@ from django.contrib import messages
 from django.http import FileResponse, Http404
 from django import forms
 
-from .models import Backup
+from .models import (
+    Profile, SocialMedia, Skill, Education, CareerGoal,
+    Experience, ExperienceBullet, Project, ProjectTag, Language, Backup
+)
 
+
+# ============================================================
+# SOCIAL MEDIA INLINE
+# ============================================================
+
+class SocialMediaInline(admin.TabularInline):
+    model = SocialMedia
+    extra = 1
+    fields = ['name', 'url', 'icon_class', 'show_tooltip', 'tooltip_text', 'order', 'is_active']
+    ordering = ['order']
+
+
+class ExperienceBulletInline(admin.TabularInline):
+    model = ExperienceBullet
+    extra = 1
+    fields = ['text', 'order']
+
+
+class ProjectTagInline(admin.TabularInline):
+    model = ProjectTag
+    extra = 1
+    fields = ['name']
+
+
+# ============================================================
+# PROFILE ADMIN
+# ============================================================
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('full_name', 'title', 'profile_image', 'summary', 'is_available')
+        }),
+        ('Contact Info', {
+            'fields': ('email', 'phone', 'location', 'location_url')
+        }),
+        ('Footer', {
+            'fields': ('collaboration_text',)
+        }),
+    )
+    
+    inlines = [SocialMediaInline]
+    
+    def image_preview(self, obj):
+        if obj and obj.profile_image:
+            return format_html(
+                '<img src="{}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />',
+                obj.profile_image.url
+            )
+        return "No Image"
+    image_preview.short_description = 'Image'
+    
+    list_display = ['full_name', 'image_preview', 'email', 'title']
+    
+    def has_add_permission(self, request):
+        return not Profile.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+# ============================================================
+# SOCIAL MEDIA ADMIN
+# ============================================================
+
+@admin.register(SocialMedia)
+class SocialMediaAdmin(admin.ModelAdmin):
+    list_display = ['name', 'icon_preview', 'url', 'order', 'is_active']
+    list_editable = ['order', 'is_active']
+    list_filter = ['is_active']
+    search_fields = ['name', 'url']
+    
+    def icon_preview(self, obj):
+        if obj and obj.icon_class:
+            return format_html(
+                '<i class="{}" style="font-size: 1.5rem; color: #66d9ff;"></i>',
+                obj.icon_class
+            )
+        return "-"
+    icon_preview.short_description = 'Icon'
+
+
+# ============================================================
+# SKILLS ADMIN
+# ============================================================
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    list_display = ['name', 'level_colored', 'order']
+    list_editable = ['order']
+    list_filter = ['level']
+    search_fields = ['name']
+    
+    def level_colored(self, obj):
+        if not obj:
+            return "-"
+        colors = {
+            'advanced': '#4ade80',
+            'intermediate': '#60a5fa',
+            'beginner': '#fbbf24'
+        }
+        color = colors.get(obj.level, '#fff')
+        level_display = obj.get_level_display()
+        return format_html(
+            '<span style="background:{}20; color:{}; padding:4px 12px; border-radius:12px; border:1px solid {}; font-weight:600;">{}</span>',
+            color, color, color, level_display
+        )
+    level_colored.short_description = 'Level'
+
+
+# ============================================================
+# EDUCATION ADMIN
+# ============================================================
+
+@admin.register(Education)
+class EducationAdmin(admin.ModelAdmin):
+    list_display = ['degree', 'university', 'start_date', 'end_date', 'is_active', 'order']
+    list_editable = ['order', 'is_active']
+
+
+# ============================================================
+# CAREER GOAL ADMIN
+# ============================================================
+
+@admin.register(CareerGoal)
+class CareerGoalAdmin(admin.ModelAdmin):
+    list_display = ['title', 'icon_preview']
+    
+    def icon_preview(self, obj):
+        if obj and obj.icon:
+            return format_html(
+                '<i class="fas {}" style="font-size: 1.5rem; color: #66d9ff;"></i>',
+                obj.icon
+            )
+        return "-"
+    icon_preview.short_description = 'Icon'
+    
+    def has_add_permission(self, request):
+        return not CareerGoal.objects.exists()
+
+
+# ============================================================
+# EXPERIENCE ADMIN
+# ============================================================
+
+@admin.register(Experience)
+class ExperienceAdmin(admin.ModelAdmin):
+    list_display = ['job_title', 'company', 'start_date', 'end_date', 'is_active', 'order']
+    list_editable = ['order', 'is_active']
+    inlines = [ExperienceBulletInline]
+
+
+# ============================================================
+# PROJECT ADMIN
+# ============================================================
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ['title', 'icon_preview', 'is_active', 'order', 'tag_count']
+    list_editable = ['order', 'is_active']
+    inlines = [ProjectTagInline]
+    search_fields = ['title', 'description']
+    list_filter = ['is_active']
+    
+    def icon_preview(self, obj):
+        if obj and obj.icon_class:
+            return format_html(
+                '<i class="fas {}" style="font-size: 1.5rem; color: #66d9ff;"></i>',
+                obj.icon_class
+            )
+        return "-"
+    icon_preview.short_description = 'Icon'
+    
+    def tag_count(self, obj):
+        if not obj:
+            return "0 tags"
+        count = obj.tags.count()
+        return format_html(
+            '<span style="background:rgba(102,217,255,0.1); color:#66d9ff; padding:2px 10px; border-radius:10px;">{} tag{}</span>',
+            count,
+            's' if count != 1 else ''
+        )
+    tag_count.short_description = 'Tags'
+
+
+# ============================================================
+# LANGUAGE ADMIN
+# ============================================================
+
+@admin.register(Language)
+class LanguageAdmin(admin.ModelAdmin):
+    list_display = ['name', 'order']
+    list_editable = ['order']
+
+
+# ============================================================
+# BACKUP ADMIN
+# ============================================================
 
 class BackupForm(forms.Form):
-
     description = forms.CharField(
         required=False,
         label="Description",
@@ -289,73 +492,52 @@ class BackupAdmin(admin.ModelAdmin):
         ),
     )
 
-    # ---------------------------------------------------------
-    # IMPORTANT
-    # Disable Django's normal "Add Backup" page.
-    # ---------------------------------------------------------
-
     def has_add_permission(self, request):
         return False
 
-    # Backup deletion from normal admin is disabled.
     def has_delete_permission(self, request, obj=None):
         return False
 
-    # ---------------------------------------------------------
-    # Custom URLs
-    # ---------------------------------------------------------
+    # ============================================================
+    # CUSTOM URLS
+    # ============================================================
 
     def get_urls(self):
-
         urls = super().get_urls()
 
         custom_urls = [
             path(
                 "create-backup/",
-                self.admin_site.admin_view(
-                    self.create_backup_view
-                ),
+                self.admin_site.admin_view(self.create_backup_view),
                 name="backup-create",
             ),
-
             path(
                 "<int:backup_id>/restore/",
-                self.admin_site.admin_view(
-                    self.restore_backup_view
-                ),
+                self.admin_site.admin_view(self.restore_backup_view),
                 name="backup-restore",
             ),
-
             path(
                 "<int:backup_id>/download/",
-                self.admin_site.admin_view(
-                    self.download_backup_view
-                ),
+                self.admin_site.admin_view(self.download_backup_view),
                 name="backup-download",
             ),
         ]
 
         return custom_urls + urls
 
-    # ---------------------------------------------------------
-    # Status
-    # ---------------------------------------------------------
+    # ============================================================
+    # STATUS BADGE
+    # ============================================================
 
-    @admin.display(
-        description="Status"
-    )
+    @admin.display(description="Status")
     def status_badge(self, obj):
-
         colors = {
             Backup.BackupStatus.SUCCESS: "#22c55e",
             Backup.BackupStatus.FAILED: "#ef4444",
             Backup.BackupStatus.PROCESSING: "#f59e0b",
         }
 
-        color = colors.get(
-            obj.status,
-            "#6b7280"
-        )
+        color = colors.get(obj.status, "#6b7280")
 
         return format_html(
             '<span style="'
@@ -372,103 +554,70 @@ class BackupAdmin(admin.ModelAdmin):
             obj.get_status_display(),
         )
 
-    # ---------------------------------------------------------
-    # Size
-    # ---------------------------------------------------------
+    # ============================================================
+    # SIZE
+    # ============================================================
 
-    @admin.display(
-        description="Size"
-    )
+    @admin.display(description="Size")
     def get_human_size_display(self, obj):
         return obj.get_human_size()
 
-    # ---------------------------------------------------------
-    # Actions
-    # ---------------------------------------------------------
+    # ============================================================
+    # ACTIONS BUTTONS - اصلاح شده ✅
+    # ============================================================
 
-    @admin.display(
-        description="Actions"
-    )
+    @admin.display(description="Actions")
     def actions_buttons(self, obj):
-
         buttons = []
 
-        if (
-            obj.status
-            == Backup.BackupStatus.SUCCESS
-            and obj.backup_file
-        ):
-
+        if obj.status == Backup.BackupStatus.SUCCESS and obj.backup_file:
+            # دکمه Download
             buttons.append(
                 format_html(
-                    '<a href="../{}/download/" '
-                    'class="button">'
-                    'Download'
-                    '</a>',
+                    '<a href="../{}/download/" class="button" style="background:#417690; color:#fff; padding:4px 12px; border-radius:4px; text-decoration:none; margin-right:4px;">📥 Download</a>',
                     obj.id,
                 )
             )
 
+            # دکمه Restore
             buttons.append(
                 format_html(
-                    '<a href="../{}/restore/" '
-                    'class="button" '
-                    'style="margin-left:5px;">'
-                    'Restore'
-                    '</a>',
+                    '<a href="../{}/restore/" class="button" style="background:#ba2121; color:#fff; padding:4px 12px; border-radius:4px; text-decoration:none;">🔄 Restore</a>',
                     obj.id,
                 )
             )
 
-        return format_html(
-            "{}",
-            " ".join(buttons)
-        )
+        return format_html('{}', ' '.join(buttons))
 
-    # ---------------------------------------------------------
-    # Create Backup
-    # ---------------------------------------------------------
+    # ============================================================
+    # CREATE BACKUP VIEW
+    # ============================================================
 
     def create_backup_view(self, request):
-
         if request.method == "POST":
-
-            form = BackupForm(
-                request.POST
-            )
+            form = BackupForm(request.POST)
 
             if form.is_valid():
-
                 try:
-
                     backup = Backup.create_backup(
-                        description=form.cleaned_data[
-                            "description"
-                        ],
+                        description=form.cleaned_data["description"],
                         is_automatic=False,
                     )
 
                     self.message_user(
                         request,
-                        (
-                            f'Backup "{backup.name}" '
-                            f'created successfully. '
-                            f'({backup.get_human_size()})'
-                        ),
+                        f'✅ Backup "{backup.name}" created successfully. ({backup.get_human_size()})',
                         messages.SUCCESS,
                     )
 
                 except Exception as exc:
-
                     self.message_user(
                         request,
-                        f"Backup failed: {exc}",
+                        f'❌ Backup failed: {exc}',
                         messages.ERROR,
                     )
 
-                return redirect(
-                    "admin:resume_app_backup_changelist"
-                )
+                return redirect("admin:resume_app_backup_changelist")
 
         else:
             form = BackupForm()
@@ -486,66 +635,42 @@ class BackupAdmin(admin.ModelAdmin):
             context,
         )
 
-    # ---------------------------------------------------------
-    # Restore
-    # ---------------------------------------------------------
+    # ============================================================
+    # RESTORE BACKUP VIEW
+    # ============================================================
 
-    def restore_backup_view(
-        self,
-        request,
-        backup_id,
-    ):
-
-        backup = self.get_object(
-            request,
-            backup_id,
-        )
+    def restore_backup_view(self, request, backup_id):
+        backup = self.get_object(request, backup_id)
 
         if not backup:
-            raise Http404(
-                "Backup not found."
-            )
+            raise Http404("Backup not found.")
 
-        if (
-            backup.status
-            != Backup.BackupStatus.SUCCESS
-        ):
+        if backup.status != Backup.BackupStatus.SUCCESS:
             self.message_user(
                 request,
                 "This backup cannot be restored.",
                 messages.ERROR,
             )
-
-            return redirect(
-                "admin:resume_app_backup_changelist"
-            )
+            return redirect("admin:resume_app_backup_changelist")
 
         if request.method == "POST":
-
             try:
-
                 backup.restore_backup()
 
                 self.message_user(
                     request,
-                    (
-                        f'Database successfully restored '
-                        f'from "{backup.name}".'
-                    ),
+                    f'✅ Database successfully restored from "{backup.name}".',
                     messages.SUCCESS,
                 )
 
             except Exception as exc:
-
                 self.message_user(
                     request,
-                    f"Restore failed: {exc}",
+                    f'❌ Restore failed: {exc}',
                     messages.ERROR,
                 )
 
-            return redirect(
-                "admin:resume_app_backup_changelist"
-            )
+            return redirect("admin:resume_app_backup_changelist")
 
         context = {
             **self.admin_site.each_context(request),
@@ -560,60 +685,30 @@ class BackupAdmin(admin.ModelAdmin):
             context,
         )
 
-    # ---------------------------------------------------------
-    # Download
-    # ---------------------------------------------------------
+    # ============================================================
+    # DOWNLOAD BACKUP VIEW
+    # ============================================================
 
-    def download_backup_view(
-        self,
-        request,
-        backup_id,
-    ):
+    def download_backup_view(self, request, backup_id):
+        backup = self.get_object(request, backup_id)
 
-        backup = self.get_object(
-            request,
-            backup_id,
-        )
-
-        if (
-            not backup
-            or not backup.backup_file
-        ):
-            raise Http404(
-                "Backup file not found."
-            )
+        if not backup or not backup.backup_file:
+            raise Http404("Backup file not found.")
 
         response = FileResponse(
             backup.backup_file.open("rb"),
             content_type="application/x-sqlite3",
         )
 
-        response[
-            "Content-Disposition"
-        ] = (
-            f'attachment; '
-            f'filename="{backup.backup_file.name}"'
-        )
+        response["Content-Disposition"] = f'attachment; filename="{backup.backup_file.name}"'
 
         return response
 
-    # ---------------------------------------------------------
-    # Add Create Backup button to changelist
-    # ---------------------------------------------------------
+    # ============================================================
+    # CHANGELIST VIEW - اضافه کردن دکمه Create Backup
+    # ============================================================
 
-    def changelist_view(
-        self,
-        request,
-        extra_context=None,
-    ):
-
+    def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
-
-        extra_context[
-            "create_backup_url"
-        ] = "create-backup/"
-
-        return super().changelist_view(
-            request,
-            extra_context=extra_context,
-        )
+        extra_context["create_backup_url"] = "create-backup/"
+        return super().changelist_view(request, extra_context=extra_context)
