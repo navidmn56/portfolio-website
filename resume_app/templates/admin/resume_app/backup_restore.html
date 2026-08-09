@@ -1,0 +1,156 @@
+
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block content %}
+
+<div id="content-main">
+
+    <div class="module aligned">
+
+        <h2>
+            Restore Database
+        </h2>
+
+        <div style="
+            margin: 20px 0;
+            padding: 18px;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            background: rgba(245, 158, 11, 0.08);
+        ">
+
+            <h3 style="
+                margin-top: 0;
+                color: #f59e0b;
+            ">
+                Warning
+            </h3>
+
+            <p>
+                Restoring this backup will replace the
+                current SQLite database.
+            </p>
+
+            <p>
+                Make sure you selected the correct backup
+                before continuing.
+            </p>
+
+        </div>
+
+
+        <div style="
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(128,128,128,0.08);
+            border-radius: 8px;
+        ">
+
+            <table style="
+                width: 100%;
+                max-width: 700px;
+                border-collapse: collapse;
+            ">
+
+                <tr>
+                    <th style="
+                        text-align: left;
+                        padding: 10px;
+                        width: 160px;
+                    ">
+                        Backup
+                    </th>
+
+                    <td style="padding: 10px;">
+                        {{ backup.name }}
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <th style="
+                        text-align: left;
+                        padding: 10px;
+                    ">
+                        Created
+                    </th>
+
+                    <td style="padding: 10px;">
+                        {{ backup.created_at|date:"Y-m-d H:i:s" }}
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <th style="
+                        text-align: left;
+                        padding: 10px;
+                    ">
+                        Size
+                    </th>
+
+                    <td style="padding: 10px;">
+                        {{ backup.get_human_size }}
+                    </td>
+                </tr>
+
+
+                {% if backup.description %}
+
+                <tr>
+                    <th style="
+                        text-align: left;
+                        padding: 10px;
+                    ">
+                        Description
+                    </th>
+
+                    <td style="padding: 10px;">
+                        {{ backup.description }}
+                    </td>
+                </tr>
+
+                {% endif %}
+
+
+            </table>
+
+        </div>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="submit-row">
+
+                <input
+                    type="submit"
+                    value="Restore Database"
+                    class="default"
+                    style="
+                        background: #f59e0b;
+                        border-color: #f59e0b;
+                        color: #fff;
+                    "
+                >
+
+                <a
+                    href="{% url 'admin:resume_app_backup_changelist' %}"
+                    class="button"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

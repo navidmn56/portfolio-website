@@ -170,249 +170,415 @@ class LanguageAdmin(admin.ModelAdmin):
     
 # resume_app/admin.py - بخش Backup (کامل)
 
-from django.contrib import admin
+
+
+
+
+# resume_app/admin.py
+
+from django.contrib import admin, messages
 from django.utils.html import format_html
 from django.urls import path
-from django.shortcuts import redirect, render
-from django.contrib import messages
+from django.shortcuts import redirect
 from django.http import FileResponse, Http404
-from django import forms
-from .models import Backup
+from django.template.response import TemplateResponse
 
+from .models import (
+    Profile,
+    SocialMedia,
+    Skill,
+    Education,
+    CareerGoal,
+    Experience,
+    ExperienceBullet,
+    Project,
+    ProjectTag,
+    Language,
+    Backup,
+)
 
-class BackupForm(forms.Form):
-    description = forms.CharField(
-        required=False,
-        widget=forms.Textarea(attrs={
-            'rows': 3,
-            'style': 'width:100%; padding:10px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#fff;'
-        }),
-        label='📝 توضیحات',
-        help_text='توضیحات دلخواه برای این بکاپ'
-    )
 
 
 @admin.register(Backup)
 class BackupAdmin(admin.ModelAdmin):
-    change_list_template = "admin/resume_app/backup_changelist.html"
-    
+
     list_display = [
-        'name',
-        'status_badge',
-        'get_human_size_display',
-        'created_at',
-        'restored_at',
-        'actions_buttons'
+        "name",
+        "status_badge",
+        "backup_size_display",
+        "created_at",
+        "restored_at",
+        "actions_buttons",
     ]
-    
-    list_filter = ['status', 'is_automatic']
-    search_fields = ['name', 'description']
-    
+
+    list_filter = [
+        "status",
+        "is_automatic",
+    ]
+
+    search_fields = [
+        "name",
+        "description",
+    ]
+
     readonly_fields = [
-        'backup_file',
-        'backup_size',
-        'status',
-        'error_message',
-        'created_at',
-        'restored_at'
+        "backup_file",
+        "backup_size",
+        "status",
+        "error_message",
+        "created_at",
+        "restored_at",
     ]
-    
+
     fieldsets = (
-        ('📦 Backup Information', {
-            'fields': ('name', 'description')
-        }),
-        ('📊 Statistics', {
-            'fields': ('backup_size', 'get_human_size')
-        }),
-        ('📁 File', {
-            'fields': ('backup_file',)
-        }),
-        ('🔄 Status', {
-            'fields': ('status', 'error_message')
-        }),
-        ('⏰ Timeline', {
-            'fields': ('created_at', 'restored_at')
-        }),
-        ('🤖 Automation', {
-            'fields': ('is_automatic',)
-        })
+        (
+            "Backup Information",
+            {
+                "fields": (
+                    "name",
+                    "description",
+                    "is_automatic",
+                )
+            },
+        ),
+        (
+            "Backup File",
+            {
+                "fields": (
+                    "backup_file",
+                    "backup_size",
+                )
+            },
+        ),
+        (
+            "Status",
+            {
+                "fields": (
+                    "status",
+                    "error_message",
+                )
+            },
+        ),
+        (
+            "Timeline",
+            {
+                "fields": (
+                    "created_at",
+                    "restored_at",
+                )
+            },
+        ),
     )
-    
+
+    # ---------------------------------------------------------
+    # Custom Admin URLs
+    # ---------------------------------------------------------
+
     def get_urls(self):
         urls = super().get_urls()
+
         custom_urls = [
             path(
-                'create-backup/',
-                self.admin_site.admin_view(self.create_backup_view),
-                name='backup-create-backup'
+                "create-backup/",
+                self.admin_site.admin_view(
+                    self.create_backup_view
+                ),
+                name="backup-create-backup",
             ),
+
             path(
-                '<int:backup_id>/restore/',
-                self.admin_site.admin_view(self.restore_backup_view),
-                name='backup-restore-backup'
+                "<int:backup_id>/restore/",
+                self.admin_site.admin_view(
+                    self.restore_backup_view
+                ),
+                name="backup-restore-backup",
             ),
+
             path(
-                '<int:backup_id>/download/',
-                self.admin_site.admin_view(self.download_backup_view),
-                name='backup-download-backup'
-            ),
-            path(
-                '<int:backup_id>/delete/',
-                self.admin_site.admin_view(self.delete_backup_view),
-                name='backup-delete-backup'
+                "<int:backup_id>/download/",
+                self.admin_site.admin_view(
+                    self.download_backup_view
+                ),
+                name="backup-download-backup",
             ),
         ]
+
         return custom_urls + urls
-    
+
+    # ---------------------------------------------------------
+    # Status
+    # ---------------------------------------------------------
+
+    @admin.display(description="Status")
     def status_badge(self, obj):
+
         colors = {
-            'success': '#4ade80',
-            'failed': '#f87171',
-            'processing': '#fbbf24'
+            Backup.BackupStatus.SUCCESS: "#4ade80",
+            Backup.BackupStatus.FAILED: "#f87171",
+            Backup.BackupStatus.PROCESSING: "#fbbf24",
         }
-        color = colors.get(obj.status, '#6b7280')
+
+        color = colors.get(
+            obj.status,
+            "#6b7280"
+        )
+
         return format_html(
-            '<span style="background:{}20; color:{}; padding:4px 12px; border-radius:12px; font-weight:600; font-size:0.75rem;">{}</span>',
-            color, color, obj.get_status_display()
+            '<span style="'
+            'background:{}20;'
+            'color:{};'
+            'padding:4px 10px;'
+            'border-radius:12px;'
+            'font-weight:600;'
+            'font-size:12px;'
+            '">'
+            '{}</span>',
+            color,
+            color,
+            obj.get_status_display(),
         )
-    status_badge.short_description = 'Status'
-    
-    def get_human_size_display(self, obj):
+
+    # ---------------------------------------------------------
+    # Size
+    # ---------------------------------------------------------
+
+    @admin.display(description="Size")
+    def backup_size_display(self, obj):
         return obj.get_human_size()
-    get_human_size_display.short_description = 'Size'
-    
+
+    # ---------------------------------------------------------
+    # Action buttons
+    # ---------------------------------------------------------
+
+    @admin.display(description="Actions")
     def actions_buttons(self, obj):
-        buttons = []
-        
-        if obj.status == Backup.BackupStatus.SUCCESS and obj.backup_file:
-            # دکمه دانلود
-            buttons.append(
-                format_html(
-                    '<a href="{}" class="button" style="background:#3b82f6; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; margin-right:4px; font-size:0.7rem; display:inline-block;">📥 Download</a>',
-                    f'../{obj.id}/download/'
-                )
-            )
-            
-            # دکمه ریستور
-            buttons.append(
-                format_html(
-                    '<a href="{}" class="button" style="background:#f59e0b; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; margin-right:4px; font-size:0.7rem; display:inline-block;">🔄 Restore</a>',
-                    f'../{obj.id}/restore/'
-                )
-            )
-            
-            # دکمه حذف
-            buttons.append(
-                format_html(
-                    '<a href="{}" class="button" style="background:#ef4444; color:#fff; padding:4px 10px; border-radius:6px; text-decoration:none; margin-right:4px; font-size:0.7rem; display:inline-block;">🗑️ Delete</a>',
-                    f'../{obj.id}/delete/'
-                )
-            )
-        
-        return format_html('{}', ' '.join(buttons))
-    actions_buttons.short_description = 'Actions'
-    actions_buttons.allow_tags = True
-    
-    def create_backup_view(self, request):
-        """ایجاد بکاپ جدید - بدون دستور"""
-        if request.method == 'POST':
-            form = BackupForm(request.POST)
-            if form.is_valid():
-                description = form.cleaned_data['description']
-                
-                try:
-                    backup = Backup.create_backup(description=description)
-                    messages.success(
-                        request,
-                        f'✅ Backup "{backup.name}" created successfully! ({backup.get_human_size()})'
-                    )
-                except Exception as e:
-                    messages.error(request, f'❌ Error creating backup: {str(e)}')
-                
-                return redirect('admin:resume_app_backup_changelist')
-        else:
-            form = BackupForm()
-        
-        context = {
-            'form': form,
-            'title': '📦 Create New SQLite Backup',
-            'opts': self.model._meta,
-            'app_label': self.model._meta.app_label,
-            'media': self.media,
-        }
-        return render(request, 'admin/resume_app/backup_create.html', context)
-    
-    def restore_backup_view(self, request, backup_id):
-        """ریستور کردن بکاپ - بدون دستور"""
-        backup = self.get_object(request, backup_id)
-        
-        if not backup:
-            messages.error(request, 'Backup not found!')
-            return redirect('admin:resume_app_backup_changelist')
-        
-        if request.method == 'POST':
-            try:
-                backup.restore_backup()
-                messages.success(
-                    request,
-                    f'✅ Database restored successfully from "{backup.name}"!'
-                )
-            except Exception as e:
-                messages.error(request, f'❌ Error restoring backup: {str(e)}')
-            
-            return redirect('admin:resume_app_backup_changelist')
-        
-        context = {
-            'backup': backup,
-            'title': f'🔄 Restore Database from: {backup.name}',
-            'opts': self.model._meta,
-            'app_label': self.model._meta.app_label,
-            'media': self.media,
-        }
-        return render(request, 'admin/resume_app/backup_restore.html', context)
-    
-    def download_backup_view(self, request, backup_id):
-        """دانلود فایل بکاپ - بدون دستور"""
-        backup = self.get_object(request, backup_id)
-        
-        if not backup or not backup.backup_file:
-            raise Http404("Backup or file not found")
-        
-        response = FileResponse(
-            backup.backup_file.open('rb'),
-            content_type='application/x-sqlite3'
+
+        if (
+            obj.status != Backup.BackupStatus.SUCCESS
+            or not obj.backup_file
+        ):
+            return "-"
+
+        download_url = (
+            f"../{obj.pk}/download/"
         )
-        response['Content-Disposition'] = f'attachment; filename="{backup.backup_file.name}"'
-        return response
-    
-    def delete_backup_view(self, request, backup_id):
-        """حذف بکاپ - بدون دستور"""
-        backup = self.get_object(request, backup_id)
-        
+
+        restore_url = (
+            f"../{obj.pk}/restore/"
+        )
+
+        return format_html(
+            '<a href="{}" class="button" '
+            'style="margin-right:5px;">'
+            'Download'
+            '</a>'
+
+            '<a href="{}" class="button" '
+            'style="background:#f59e0b;'
+            'color:white;">'
+            'Restore'
+            '</a>',
+            download_url,
+            restore_url,
+        )
+
+    # ---------------------------------------------------------
+    # Create backup
+    # ---------------------------------------------------------
+
+    def create_backup_view(self, request):
+
+        if request.method == "POST":
+
+            try:
+                backup = Backup.create_backup()
+
+                self.message_user(
+                    request,
+                    (
+                        f'Backup "{backup.name}" '
+                        f'created successfully '
+                        f'({backup.get_human_size()}).'
+                    ),
+                    messages.SUCCESS,
+                )
+
+            except Exception as exc:
+
+                self.message_user(
+                    request,
+                    f"Error creating backup: {exc}",
+                    messages.ERROR,
+                )
+
+            return redirect(
+                "admin:resume_app_backup_changelist"
+            )
+
+        return TemplateResponse(
+            request,
+            "admin/resume_app/backup_create.html",
+            {
+                **self.admin_site.each_context(request),
+                "title": "Create Backup",
+                "opts": self.model._meta,
+            },
+        )
+
+    # ---------------------------------------------------------
+    # Restore backup
+    # ---------------------------------------------------------
+
+    def restore_backup_view(
+        self,
+        request,
+        backup_id,
+    ):
+
+        backup = self.get_object(
+            request,
+            backup_id
+        )
+
         if not backup:
-            messages.error(request, 'Backup not found!')
-            return redirect('admin:resume_app_backup_changelist')
-        
-        if request.method == 'POST':
-            backup_name = backup.name
-            if backup.backup_file:
-                backup.backup_file.delete()
-            backup.delete()
-            messages.success(request, f'✅ Backup "{backup_name}" deleted successfully!')
-            return redirect('admin:resume_app_backup_changelist')
-        
-        context = {
-            'backup': backup,
-            'title': f'🗑️ Delete Backup: {backup.name}',
-            'opts': self.model._meta,
-            'app_label': self.model._meta.app_label,
-            'media': self.media,
-        }
-        return render(request, 'admin/resume_app/backup_delete.html', context)
-    
+
+            self.message_user(
+                request,
+                "Backup not found.",
+                messages.ERROR,
+            )
+
+            return redirect(
+                "admin:resume_app_backup_changelist"
+            )
+
+        if (
+            backup.status
+            != Backup.BackupStatus.SUCCESS
+        ):
+
+            self.message_user(
+                request,
+                "This backup is not valid for restore.",
+                messages.ERROR,
+            )
+
+            return redirect(
+                "admin:resume_app_backup_changelist"
+            )
+
+        if not backup.backup_file:
+
+            self.message_user(
+                request,
+                "Backup file not found.",
+                messages.ERROR,
+            )
+
+            return redirect(
+                "admin:resume_app_backup_changelist"
+            )
+
+        # GET = show confirmation page
+        if request.method == "GET":
+
+            return TemplateResponse(
+                request,
+                "admin/resume_app/backup_restore.html",
+                {
+                    **self.admin_site.each_context(request),
+                    "title": "Restore Backup",
+                    "backup": backup,
+                    "opts": self.model._meta,
+                },
+            )
+
+        # POST = actually restore
+        if request.method == "POST":
+
+            try:
+
+                backup.restore_backup()
+
+                self.message_user(
+                    request,
+                    (
+                        f'Database successfully restored '
+                        f'from "{backup.name}".'
+                    ),
+                    messages.SUCCESS,
+                )
+
+            except Exception as exc:
+
+                self.message_user(
+                    request,
+                    f"Error restoring database: {exc}",
+                    messages.ERROR,
+                )
+
+            return redirect(
+                "admin:resume_app_backup_changelist"
+            )
+
+    # ---------------------------------------------------------
+    # Download backup
+    # ---------------------------------------------------------
+
+    def download_backup_view(
+        self,
+        request,
+        backup_id,
+    ):
+
+        backup = self.get_object(
+            request,
+            backup_id
+        )
+
+        if (
+            not backup
+            or not backup.backup_file
+        ):
+            raise Http404(
+                "Backup file not found."
+            )
+
+        response = FileResponse(
+            backup.backup_file.open("rb"),
+            content_type="application/x-sqlite3",
+        )
+
+        response["Content-Disposition"] = (
+            f'attachment; '
+            f'filename="{backup.backup_file.name}"'
+        )
+
+        return response
+
+    # ---------------------------------------------------------
+    # Permissions
+    # ---------------------------------------------------------
+
+    def has_delete_permission(
+        self,
+        request,
+        obj=None,
+    ):
+        return False
+
+    # ---------------------------------------------------------
+    # Disable bulk delete
+    # ---------------------------------------------------------
+
     def get_actions(self, request):
-        """حذف اکشن‌های پیش‌فرض"""
+
         actions = super().get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
+
+        actions.pop(
+            "delete_selected",
+            None
+        )
+
         return actions
+
