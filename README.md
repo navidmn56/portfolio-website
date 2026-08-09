@@ -194,6 +194,13 @@ Apply new migrations if required:
 docker compose \
   -f docker-compose.yml \
   -f deploy/docker-compose.prod.yml \
+  exec web python manage.py makemigrations
+```
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f deploy/docker-compose.prod.yml \
   exec web python manage.py migrate
 ```
 
