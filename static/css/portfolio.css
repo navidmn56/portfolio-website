@@ -104,7 +104,7 @@ body::after {
     border-radius: 20px;
     padding: 16px;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to visible for 3D tilt */
 }
 
 /* ============================================================
@@ -124,7 +124,7 @@ body::after {
     gap: 13px;
     flex: 1;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to allow shadow & tilt */
 }
 
 /* ============================================================
@@ -138,6 +138,8 @@ body::after {
     order: 0;
     perspective: 200px;
     transform-style: preserve-3d;
+    /* Remove any overflow hidden to show full shadow */
+    overflow: visible;
 }
 
 .profile-image {
@@ -146,13 +148,17 @@ body::after {
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid rgba(125, 211, 232, 0.4);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(255, 255, 255, 0.02);
+    box-shadow: 
+        0 0 0 8px rgba(0, 180, 216, 0.05),
+        0 8px 25px rgba(0, 0, 0, 0.35), 
+        0 0 0 5px rgba(255, 255, 255, 0.02);
     transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), 
                 box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1),
-                border-color 0.3s ease;
+                border-color 0.3s ease !important;
     transform-style: preserve-3d;
     will-change: transform;
     backface-visibility: hidden;
+    display: block;
 }
 
 .profile-image-wrapper:hover .profile-image {
@@ -174,6 +180,8 @@ body::after {
     box-shadow: 0 0 0 3px rgba(88, 214, 141, 0.08);
     animation: statusPulse 3s ease-in-out infinite;
     z-index: 1;
+    /* Fix for 3D - keep dot visible */
+    transform: translateZ(10px);
 }
 
 @keyframes statusPulse {
@@ -261,6 +269,8 @@ body::after {
     background: rgba(110, 211, 235, 0.05);
     border-color: rgba(110, 211, 235, 0.12);
     color: #79d8ed;
+    position: relative;
+    overflow: visible;
 }
 
 .contact-inline-icon:hover {
@@ -819,6 +829,7 @@ body::after {
     .profile-image {
         transform: none !important;
         will-change: auto;
+        transition: none !important;
     }
 }
 
