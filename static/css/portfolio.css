@@ -693,148 +693,164 @@ body::after {
     .social-icon-circle { width: 36px; height: 36px; min-width: 36px; max-width: 36px; flex: 0 0 36px; font-size: 0.78rem; }
 }
 
-
 /* ============================================================
-   فقط بخش موبایل - با استفاده از TABLE LAYOUT
+   موبایل - کاملاً بازطراحی شده
    ============================================================ */
-
 @media (max-width: 599px) {
     body { 
         padding: 8px; 
+        align-items: flex-start;
     }
     
     .view { 
         padding: 12px; 
         border-radius: 18px;
+        overflow: visible;
     }
 
-    /* ==========================================================
-       استفاده از TABLE برای پروفایل هدر - ۱۰۰٪ پایدار
-       ========================================================== */
+    /* ===== پروفایل هدر - با استفاده از table-cell برای پایداری ===== */
     .profile-header {
         margin-bottom: 14px;
-        display: block;
-        width: 100%;
+        overflow: visible;
     }
 
     .profile-info {
-        display: table !important;
-        width: 100% !important;
-        table-layout: fixed !important;
-        border-collapse: collapse !important;
-        padding: 8px 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 4px;
+        overflow: visible;
+        /* جلوگیری از مشکلات flex در مرورگر سامسونگ */
+        flex-wrap: nowrap;
     }
 
-    /* ستون عکس */
+    /* ===== عکس پروفایل با اندازه ثابت و بوردر ===== */
     .profile-image-wrapper {
-        display: table-cell !important;
-        vertical-align: middle !important;
+        display: block;
         width: 56px !important;
         height: 56px !important;
         min-width: 56px !important;
         max-width: 56px !important;
-        padding-right: 12px !important;
-        position: relative !important;
-        /* غیرفعال کردن 3D */
+        flex: 0 0 56px !important;
+        border-radius: 50%;
+        overflow: visible;
         perspective: none !important;
-        transform: none !important;
+        transform-style: flat !important;
         -webkit-transform: none !important;
-    }
-
-    .profile-image-wrapper::before,
-    .profile-image-wrapper::after {
-        display: none !important;
+        transform: none !important;
+        /* مهم: جلوگیری از overflow */
+        position: relative;
+        z-index: 2;
+        /* اطمینان از اینکه عکس دقیقاً در جای خود است */
+        margin: 0;
+        padding: 0;
     }
 
     .profile-image {
-        display: block !important;
+        display: block;
         width: 56px !important;
         height: 56px !important;
         border-radius: 50% !important;
         border: 2.5px solid rgba(125, 211, 232, 0.4) !important;
-        box-shadow: 0 0 0 1px rgba(125, 211, 232, 0.2), 0 0 30px rgba(0, 180, 216, 0.12), 0 10px 30px rgba(0, 0, 0, 0.40) !important;
         transform: none !important;
         -webkit-transform: none !important;
-        object-fit: cover !important;
-        background: #11151b !important;
-        position: relative !important;
-        z-index: 2 !important;
+        box-shadow: 
+            0 0 0 1px rgba(125, 211, 232, 0.2),
+            0 0 30px rgba(0, 180, 216, 0.12),
+            0 10px 30px rgba(0, 0, 0, 0.40) !important;
+        position: relative;
+        z-index: 2;
+        object-fit: cover;
+        background: #11151b;
+        /* جلوگیری از هرگونه تغییر اندازه */
+        flex-shrink: 0;
+        flex-grow: 0;
     }
 
-    /* نقطه سبز - با موقعیت مطلق روی عکس */
+    /* حلقه تزئینی - با اندازه دقیق */
+    .profile-image-wrapper::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        border-radius: 50%;
+        border: 2px solid rgba(125, 211, 232, 0.2);
+        pointer-events: none;
+        z-index: 1;
+        box-shadow: 0 0 20px rgba(80, 200, 225, 0.06);
+    }
+
+    .profile-image-wrapper::after {
+        display: none !important;
+    }
+
+    /* ===== نقطه وضعیت - موقعیت دقیق ===== */
     .status-dot {
-        position: absolute !important;
-        right: 2px !important;
-        bottom: 2px !important;
         width: 11px !important;
         height: 11px !important;
-        border-radius: 50% !important;
-        background: #58d68d !important;
+        right: -1px !important;
+        bottom: -1px !important;
         border: 2px solid #0b0d11 !important;
-        box-shadow: 0 0 0 2px rgba(88, 214, 141, 0.2) !important;
         z-index: 10 !important;
+        position: absolute !important;
         display: block !important;
+        background: #58d68d !important;
+        box-shadow: 0 0 0 2px rgba(88, 214, 141, 0.15) !important;
     }
 
-    /* ستون نام و اطلاعات */
+    /* ===== نام و تایتل ===== */
     .name-section {
-        display: table-cell !important;
-        vertical-align: middle !important;
-        width: auto !important;
-        padding: 0 !important;
-        min-width: 0 !important;
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
     }
 
     .name-section h1 {
         font-size: 0.95rem !important;
-        margin: 0 0 2px 0 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .title-badge {
-        font-size: 0.5rem !important;
-        padding: 2px 8px !important;
-        display: inline-block !important;
-        margin-bottom: 4px !important;
-        white-space: nowrap !important;
+        font-size: 0.52rem !important;
+        padding: 2px 6px !important;
     }
 
-    /* ==========================================================
-       سوشال لینک‌ها - با FLEX درون TABLE-CELL
-       ========================================================== */
+    /* ===== دایره‌های سوشال - کاملاً گرد ===== */
     .social-links-row {
-        display: flex !important;
-        align-items: center !important;
-        flex-wrap: wrap !important;
-        gap: 5px !important;
-        margin-top: 2px !important;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 3px;
     }
 
     .social-icon-circle {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        width: 30px !important;
-        height: 30px !important;
-        min-width: 30px !important;
-        max-width: 30px !important;
-        flex: 0 0 30px !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        flex: 0 0 32px !important;
+        padding: 0 !important;
+        margin: 0 !important;
         border-radius: 50% !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         background: rgba(255, 255, 255, 0.04) !important;
-        font-size: 0.65rem !important;
-        padding: 0 !important;
-        margin: 0 !important;
+        font-size: 0.7rem !important;
+        line-height: 1 !important;
         text-decoration: none !important;
-        color: #aeb8c6 !important;
-        /* مهم: جلوگیری از هرگونه تغییر شکل */
         box-sizing: border-box !important;
-        aspect-ratio: 1 / 1 !important;
-        overflow: hidden !important;
-        flex-shrink: 0 !important;
-        flex-grow: 0 !important;
+        /* جلوگیری از تغییر شکل */
+        aspect-ratio: 1/1 !important;
+        overflow: visible !important;
     }
 
     .social-icon-circle i {
@@ -850,88 +866,55 @@ body::after {
     .contact-inline-icon {
         background: rgba(110, 211, 235, 0.08) !important;
         border-color: rgba(110, 211, 235, 0.18) !important;
-        color: #79d8ed !important;
     }
 
-    /* ==========================================================
-       بقیه المان‌ها
-       ========================================================== */
+    /* ===== بقیه المان‌ها ===== */
     .grid-2col { 
-        grid-template-columns: 1fr !important; 
-        gap: 10px !important; 
+        grid-template-columns: 1fr; 
+        gap: 10px; 
     }
     
     .project-grid { 
-        grid-template-columns: 1fr !important; 
-        gap: 8px !important; 
+        grid-template-columns: 1fr; 
+        gap: 8px; 
     }
     
     .project-card { 
-        min-height: 140px !important; 
-        padding: 12px !important; 
+        min-height: 140px; 
+        padding: 12px; 
     }
     
     .tab-btn { 
-        min-height: 44px !important; 
-        font-size: 0.65rem !important;
-        padding: 6px !important;
-    }
-
-    .summary {
-        font-size: 0.75rem !important;
-        padding: 12px 14px !important;
-    }
-
-    .card-style {
-        padding: 14px !important;
-        margin-bottom: 10px !important;
-    }
-
-    .card-style h2 {
-        font-size: 0.85rem !important;
-    }
-
-    .skill-tag {
-        font-size: 0.65rem !important;
-        padding: 4px 8px !important;
+        min-height: 44px; 
+        font-size: 0.65rem;
     }
 }
 
-/* ============================================================
-   موبایل خیلی کوچک
-   ============================================================ */
+/* ===== موبایل خیلی کوچک ===== */
 @media (max-width: 360px) {
+    body { padding: 6px; }
+    .view { padding: 10px; }
+    
     .profile-image-wrapper,
     .profile-image {
         width: 46px !important;
         height: 46px !important;
         min-width: 46px !important;
         max-width: 46px !important;
+        flex: 0 0 46px !important;
     }
     
-    .profile-image-wrapper {
-        padding-right: 10px !important;
-    }
-
     .social-icon-circle {
-        width: 26px !important;
-        height: 26px !important;
-        min-width: 26px !important;
-        max-width: 26px !important;
-        flex: 0 0 26px !important;
-        font-size: 0.55rem !important;
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        flex: 0 0 28px !important;
+        font-size: 0.6rem !important;
     }
     
-    .name-section h1 { 
-        font-size: 0.85rem !important; 
-    }
-    
-    .status-dot {
-        width: 9px !important;
-        height: 9px !important;
-        right: 1px !important;
-        bottom: 1px !important;
-    }
+    .name-section h1 { font-size: 0.85rem !important; }
+    .profile-info { gap: 8px; padding: 6px 2px; }
 }
 
 /* ============================================================
