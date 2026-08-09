@@ -95,7 +95,7 @@ body::after {
 }
 
 /* ============================================================
-   MAIN CARD
+   MAIN CARD - overflow visible for 3D
    ============================================================ */
 .view {
     width: 100%;
@@ -104,11 +104,11 @@ body::after {
     border-radius: 20px;
     padding: 16px;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    overflow: visible; /* Changed from hidden to visible for 3D tilt */
+    overflow: visible;
 }
 
 /* ============================================================
-   PROFILE HEADER - IMAGE LEFT, NAME CENTER
+   PROFILE HEADER
    ============================================================ */
 .profile-header {
     display: flex;
@@ -124,14 +124,11 @@ body::after {
     gap: 13px;
     flex: 1;
     min-width: 0;
-    overflow: visible; /* Changed from hidden to allow shadow & tilt */
+    overflow: visible;
 }
 
 /* ============================================================
-   PROFILE IMAGE - LEFT SIDE (WITH 3D TILT SUPPORT)
-   ============================================================ */
-/* ============================================================
-   PROFILE IMAGE - LEFT SIDE (3D TILT READY)
+   PROFILE IMAGE - 3D TILT
    ============================================================ */
 .profile-image-wrapper {
     position: relative;
@@ -141,7 +138,7 @@ body::after {
     order: 0;
     perspective: 400px;
     transform-style: preserve-3d;
-    overflow: visible !important;
+    overflow: visible;
     z-index: 10;
 }
 
@@ -151,29 +148,19 @@ body::after {
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid rgba(125, 211, 232, 0.4);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(255, 255, 255, 0.02);
-    transition: transform 0.1s linear, box-shadow 0.1s linear !important;
+    box-shadow: 
+        0 0 0 8px rgba(0, 180, 216, 0.05),
+        0 8px 25px rgba(0, 0, 0, 0.35), 
+        0 0 0 5px rgba(255, 255, 255, 0.02);
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out, border-color 0.2s ease;
     transform-style: preserve-3d;
     will-change: transform;
+    backface-visibility: hidden;
     display: block;
 }
 
 .profile-image-wrapper:hover .profile-image {
-    border-color: rgba(125, 211, 232, 0.7);
-}
-
-.profile-info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 13px;
-    flex: 1;
-    min-width: 0;
-    overflow: visible !important;
-}
-
-.view {
-    overflow: visible !important;
+    border-color: rgba(125, 211, 232, 0.6);
 }
 
 /* ============================================================
@@ -190,9 +177,8 @@ body::after {
     border-radius: 50%;
     box-shadow: 0 0 0 3px rgba(88, 214, 141, 0.08);
     animation: statusPulse 3s ease-in-out infinite;
-    z-index: 1;
-    /* Fix for 3D - keep dot visible */
-    transform: translateZ(10px);
+    z-index: 20;
+    pointer-events: none;
 }
 
 @keyframes statusPulse {
@@ -247,7 +233,7 @@ body::after {
 }
 
 /* ============================================================
-   SOCIAL LINKS - INCLUDES CONTACT ICONS INLINE
+   SOCIAL LINKS
    ============================================================ */
 .social-links-row {
     display: flex;
@@ -275,7 +261,6 @@ body::after {
     flex-shrink: 0;
 }
 
-/* Contact inline icons - same style, different hover color */
 .contact-inline-icon {
     background: rgba(110, 211, 235, 0.05);
     border-color: rgba(110, 211, 235, 0.12);
@@ -291,12 +276,10 @@ body::after {
     transform: translateY(-2px);
 }
 
-/* Hide old contact container */
 .contact-links {
     display: none;
 }
 
-/* Hide tooltip completely */
 .tooltip {
     display: none !important;
 }
@@ -507,18 +490,12 @@ body::after {
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(3px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================================
-   EDUCATION & EXPERIENCE - ICON LEFT, TEXT LEFT
+   EDUCATION & EXPERIENCE
    ============================================================ */
 .education-item,
 .experience-item {
@@ -787,25 +764,11 @@ body::after {
 /* ============================================================
    UTILITY CLASSES
    ============================================================ */
-.text-accent {
-    color: #76d5e8;
-}
-
-.text-muted {
-    color: #8b95a4;
-}
-
-.mt-1-5 {
-    margin-top: 8px;
-}
-
-.mt-2 {
-    margin-top: 10px;
-}
-
-.min-w-0 {
-    min-width: 0;
-}
+.text-accent { color: #76d5e8; }
+.text-muted { color: #8b95a4; }
+.mt-1-5 { margin-top: 8px; }
+.mt-2 { margin-top: 10px; }
+.min-w-0 { min-width: 0; }
 
 /* ============================================================
    EMPTY STATE
@@ -830,13 +793,12 @@ body::after {
 }
 
 /* ============================================================
-   3D PROFILE IMAGE - DISABLE ON TOUCH & REDUCED MOTION
+   DISABLE 3D ON TOUCH & REDUCED MOTION
    ============================================================ */
 @media (hover: none) and (pointer: coarse) {
     .profile-image-wrapper {
         perspective: none;
     }
-    
     .profile-image {
         transform: none !important;
         will-change: auto;
@@ -845,10 +807,21 @@ body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    body::before,
+    body::after {
+        animation: none;
+    }
     .profile-image-wrapper {
         perspective: none;
     }
-    
     .profile-image {
         transition: none !important;
         transform: none !important;
@@ -860,435 +833,136 @@ body::after {
    MOBILE OPTIMIZATION (max-width: 599px)
    ============================================================ */
 @media (max-width: 599px) {
-    body {
-        padding: 8px;
-    }
-
-    .view {
-        padding: 12px;
-        border-radius: 18px;
-    }
-
-    .profile-info {
-        gap: 10px;
-    }
-
-    .profile-image-wrapper {
-        width: 52px;
-        height: 52px;
-    }
-
-    .name-section h1 {
-        font-size: clamp(0.95rem, 3.8vw, 1.15rem);
-    }
-
-    .title-badge {
-        font-size: clamp(0.5rem, 1.4vw, 0.58rem);
-        padding: 3px 7px;
-    }
-
-    .social-links-row {
-        gap: 3px;
-    }
-
-    .social-icon-circle {
-        width: 28px;
-        height: 28px;
-        font-size: 0.62rem;
-    }
-
-    .summary {
-        padding: 12px;
-        font-size: 0.76rem;
-    }
-
-    .grid-2col {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .card-style {
-        padding: 12px;
-        margin-bottom: 10px;
-    }
-
-    .card-style h2 {
-        font-size: 0.85rem;
-    }
-
-    .skill-tag {
-        font-size: 0.66rem;
-        padding: 5px 8px;
-    }
-
-    .project-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .project-card {
-        min-height: 140px;
-        padding: 12px;
-    }
-
-    .project-card h4 {
-        font-size: 0.8rem;
-    }
-
-    .project-card p {
-        font-size: 0.68rem;
-    }
-
-    .projects-hint {
-        font-size: 0.58rem;
-        margin-top: 5px;
-        opacity: 0.5;
-    }
+    body { padding: 8px; }
+    .view { padding: 12px; border-radius: 18px; }
+    .profile-info { gap: 10px; }
+    .profile-image-wrapper { width: 52px; height: 52px; }
+    .name-section h1 { font-size: clamp(0.95rem, 3.8vw, 1.15rem); }
+    .title-badge { font-size: clamp(0.5rem, 1.4vw, 0.58rem); padding: 3px 7px; }
+    .social-links-row { gap: 3px; }
+    .social-icon-circle { width: 28px; height: 28px; font-size: 0.62rem; }
+    .summary { padding: 12px; font-size: 0.76rem; }
+    .grid-2col { grid-template-columns: 1fr; gap: 10px; }
+    .card-style { padding: 12px; margin-bottom: 10px; }
+    .card-style h2 { font-size: 0.85rem; }
+    .skill-tag { font-size: 0.66rem; padding: 5px 8px; }
+    .project-grid { grid-template-columns: 1fr; gap: 8px; }
+    .project-card { min-height: 140px; padding: 12px; }
+    .project-card h4 { font-size: 0.8rem; }
+    .project-card p { font-size: 0.68rem; }
+    .projects-hint { font-size: 0.58rem; margin-top: 5px; opacity: 0.5; }
 }
 
 /* ============================================================
    VERY SMALL PHONES (360px-)
    ============================================================ */
 @media (max-width: 360px) {
-    body {
-        padding: 6px;
-    }
-
-    .view {
-        padding: 10px;
-        border-radius: 16px;
-    }
-
-    .profile-info {
-        gap: 8px;
-    }
-
-    .profile-image-wrapper {
-        width: 46px;
-        height: 46px;
-    }
-
-    .name-section h1 {
-        font-size: clamp(0.85rem, 3.5vw, 1rem);
-    }
-
-    .title-badge {
-        font-size: clamp(0.45rem, 1.3vw, 0.52rem);
-        padding: 2px 6px;
-    }
-
-    .social-links-row {
-        gap: 2px;
-    }
-
-    .social-icon-circle {
-        width: 26px;
-        height: 26px;
-        font-size: 0.58rem;
-    }
-
-    .summary {
-        padding: 10px;
-        font-size: 0.7rem;
-    }
-
-    .card-style {
-        padding: 10px;
-    }
-
-    .skill-tag {
-        font-size: 0.6rem;
-        padding: 4px 6px;
-    }
-
-    .project-grid {
-        gap: 6px;
-    }
-
-    .project-card {
-        min-height: 120px;
-        padding: 10px;
-    }
-
-    .project-card h4 {
-        font-size: 0.74rem;
-    }
-
-    .project-card p {
-        font-size: 0.62rem;
-    }
-
-    .projects-hint {
-        font-size: 0.54rem;
-        margin-top: 4px;
-        opacity: 0.45;
-    }
+    body { padding: 6px; }
+    .view { padding: 10px; border-radius: 16px; }
+    .profile-info { gap: 8px; }
+    .profile-image-wrapper { width: 46px; height: 46px; }
+    .name-section h1 { font-size: clamp(0.85rem, 3.5vw, 1rem); }
+    .title-badge { font-size: clamp(0.45rem, 1.3vw, 0.52rem); padding: 2px 6px; }
+    .social-links-row { gap: 2px; }
+    .social-icon-circle { width: 26px; height: 26px; font-size: 0.58rem; }
+    .summary { padding: 10px; font-size: 0.7rem; }
+    .card-style { padding: 10px; }
+    .skill-tag { font-size: 0.6rem; padding: 4px 6px; }
+    .project-grid { gap: 6px; }
+    .project-card { min-height: 120px; padding: 10px; }
+    .project-card h4 { font-size: 0.74rem; }
+    .project-card p { font-size: 0.62rem; }
+    .projects-hint { font-size: 0.54rem; margin-top: 4px; opacity: 0.45; }
 }
 
 /* ============================================================
    TABLET OPTIMIZATION (600px - 899px)
    ============================================================ */
 @media (min-width: 600px) and (max-width: 899px) {
-    body {
-        padding: 20px;
-    }
-
-    .view {
-        padding: 22px;
-        border-radius: 24px;
-    }
-
-    .profile-image-wrapper {
-        width: 70px;
-        height: 70px;
-    }
-
-    .name-section h1 {
-        font-size: clamp(1.1rem, 3vw, 1.5rem);
-    }
-
-    .title-badge {
-        font-size: 0.66rem;
-        padding: 4px 9px;
-    }
-
-    .social-links-row {
-        gap: 4px;
-    }
-
-    .social-icon-circle {
-        width: 32px;
-        height: 32px;
-        font-size: 0.72rem;
-    }
-
-    .summary {
-        font-size: 0.85rem;
-        padding: 16px 18px;
-    }
-
-    .grid-2col {
-        gap: 12px;
-    }
-
-    .card-style {
-        padding: 18px;
-    }
-
-    .card-style h2 {
-        font-size: 1rem;
-    }
-
-    .skill-tag {
-        font-size: 0.74rem;
-        padding: 7px 11px;
-    }
-
-    .project-grid {
-        gap: 12px;
-    }
-
-    .project-card {
-        min-height: 165px;
-        padding: 16px;
-    }
-
-    .project-card h4 {
-        font-size: 0.88rem;
-    }
-
-    .project-card p {
-        font-size: 0.72rem;
-    }
-
-    .projects-hint {
-        font-size: 0.65rem;
-        margin-top: 8px;
-        opacity: 0.55;
-    }
+    body { padding: 20px; }
+    .view { padding: 22px; border-radius: 24px; }
+    .profile-image-wrapper { width: 70px; height: 70px; }
+    .name-section h1 { font-size: clamp(1.1rem, 3vw, 1.5rem); }
+    .title-badge { font-size: 0.66rem; padding: 4px 9px; }
+    .social-links-row { gap: 4px; }
+    .social-icon-circle { width: 32px; height: 32px; font-size: 0.72rem; }
+    .summary { font-size: 0.85rem; padding: 16px 18px; }
+    .grid-2col { gap: 12px; }
+    .card-style { padding: 18px; }
+    .card-style h2 { font-size: 1rem; }
+    .skill-tag { font-size: 0.74rem; padding: 7px 11px; }
+    .project-grid { gap: 12px; }
+    .project-card { min-height: 165px; padding: 16px; }
+    .project-card h4 { font-size: 0.88rem; }
+    .project-card p { font-size: 0.72rem; }
+    .projects-hint { font-size: 0.65rem; margin-top: 8px; opacity: 0.55; }
 }
 
 /* ============================================================
    DESKTOP OPTIMIZATION (900px+)
    ============================================================ */
 @media (min-width: 900px) {
-    body {
-        align-items: center;
-        padding: 30px;
-    }
-
-    .view {
-        padding: 30px;
-        border-radius: 28px;
-    }
-
-    .profile-info {
-        gap: 15px;
-    }
-
-    .profile-image-wrapper {
-        width: 85px;
-        height: 85px;
-    }
-
-    .name-section h1 {
-        font-size: clamp(1.5rem, 3vw, 1.8rem);
-        white-space: nowrap;
-    }
-
-    .title-badge {
-        font-size: 0.7rem;
-        padding: 5px 11px;
-    }
-
-    .social-links-row {
-        gap: 5px;
-    }
-
-    .social-icon-circle {
-        width: 36px;
-        height: 36px;
-        font-size: 0.82rem;
-    }
-
+    body { align-items: center; padding: 30px; }
+    .view { padding: 30px; border-radius: 28px; }
+    .profile-info { gap: 15px; }
+    .profile-image-wrapper { width: 85px; height: 85px; }
+    .name-section h1 { font-size: clamp(1.5rem, 3vw, 1.8rem); white-space: nowrap; }
+    .title-badge { font-size: 0.7rem; padding: 5px 11px; }
+    .social-links-row { gap: 5px; }
+    .social-icon-circle { width: 36px; height: 36px; font-size: 0.82rem; }
     .social-icon-circle:hover {
         background: rgba(110, 211, 235, 0.09);
         border-color: rgba(110, 211, 235, 0.3);
         color: #8de2f5;
         transform: translateY(-2px);
     }
-
     .contact-inline-icon:hover {
         background: rgba(110, 211, 235, 0.15);
         border-color: rgba(110, 211, 235, 0.4);
         color: #a0e8f5;
     }
-
-    .summary {
-        font-size: 0.9rem;
-        line-height: 1.8;
-    }
-
-    .grid-2col {
-        grid-template-columns: 0.85fr 1.15fr;
-        gap: 18px;
-    }
-
-    .card-style {
-        padding: 20px;
-        border-radius: 16px;
-    }
-
-    .card-style h2 {
-        font-size: 1.05rem;
-    }
-
-    .skill-tag {
-        font-size: 0.76rem;
-    }
-
-    .project-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-    }
-
-    .project-card {
-        min-height: 180px;
-        padding: 18px;
-    }
-
+    .summary { font-size: 0.9rem; line-height: 1.8; }
+    .grid-2col { grid-template-columns: 0.85fr 1.15fr; gap: 18px; }
+    .card-style { padding: 20px; border-radius: 16px; }
+    .card-style h2 { font-size: 1.05rem; }
+    .skill-tag { font-size: 0.76rem; }
+    .project-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .project-card { min-height: 180px; padding: 18px; }
     .project-card:hover {
         transform: translateY(-4px);
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
         border-color: rgba(108, 211, 234, 0.25);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
     }
-
-    .project-card h4 {
-        font-size: 0.92rem;
-    }
-
-    .project-card p {
-        font-size: 0.74rem;
-    }
-
-    .projects-hint {
-        font-size: 0.68rem;
-        margin-top: 10px;
-        opacity: 0.5;
-    }
+    .project-card h4 { font-size: 0.92rem; }
+    .project-card p { font-size: 0.74rem; }
+    .projects-hint { font-size: 0.68rem; margin-top: 10px; opacity: 0.5; }
 }
 
 /* ============================================================
    LARGE DESKTOP (1200px+)
    ============================================================ */
 @media (min-width: 1200px) {
-    .view {
-        padding: 36px;
-    }
-
-    .name-section h1 {
-        font-size: 2rem;
-    }
-
-    .title-badge {
-        font-size: 0.72rem;
-        padding: 6px 12px;
-    }
-
-    .grid-2col {
-        grid-template-columns: 0.8fr 1.2fr;
-    }
-
-    .project-grid {
-        gap: 16px;
-    }
-
-    .project-card {
-        min-height: 190px;
-    }
-
-    .projects-hint {
-        font-size: 0.7rem;
-    }
+    .view { padding: 36px; }
+    .name-section h1 { font-size: 2rem; }
+    .title-badge { font-size: 0.72rem; padding: 6px 12px; }
+    .grid-2col { grid-template-columns: 0.8fr 1.2fr; }
+    .project-grid { gap: 16px; }
+    .project-card { min-height: 190px; }
+    .projects-hint { font-size: 0.7rem; }
 }
 
 /* ============================================================
    TOUCH DEVICE OPTIMIZATION
    ============================================================ */
 @media (hover: none) and (pointer: coarse) {
-    .tab-btn {
-        min-height: 44px;
-    }
-
-    .social-icon-circle {
-        width: 36px;
-        height: 36px;
-    }
-
+    .tab-btn { min-height: 44px; }
+    .social-icon-circle { width: 36px; height: 36px; }
     .project-card:hover {
         transform: none;
         background: linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
         border-color: rgba(255, 255, 255, 0.06);
         box-shadow: none;
-    }
-}
-
-/* ============================================================
-   REDUCED MOTION
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body::before,
-    body::after {
-        animation: none;
     }
 }
 
@@ -1301,7 +975,6 @@ body::after {
     .project-card {
         border-color: rgba(255, 255, 255, 0.25);
     }
-
     .skill-tag {
         border-color: rgba(255, 255, 255, 0.3);
     }
@@ -1317,23 +990,19 @@ body::after {
         background: #fff;
         color: #111;
     }
-
     body::before,
     body::after {
         display: none;
     }
-
     .app-container {
         max-width: none;
     }
-
     .view {
         background: #fff;
         color: #111;
         border: 1px solid #ddd;
         box-shadow: none;
     }
-
     .card-style,
     .project-card {
         background: #fff;
