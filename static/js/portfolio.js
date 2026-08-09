@@ -406,74 +406,58 @@ function initProfileTilt() {
     const supportsHover =
         window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    if (!supportsHover) {
-        return;
-    }
+    if (!supportsHover) return;
 
     const wrapper = document.querySelector('.profile-image-wrapper');
     const image = document.querySelector('.profile-image');
 
-    if (!wrapper || !image) {
-        return;
-    }
+    if (!wrapper || !image) return;
+
+    const MAX_TILT = 10;
 
     /* ========================================================
-       CONFIGURATION
-       ======================================================== */
-
-    const MAX_TILT = 8;           // Degrees
-    const SHADOW_STRENGTH = 12;   // Shadow movement
-
-
-    /* ========================================================
-       MOUSE MOVE
+       MOUSE MOVE - فقط rotate، بدون translateZ
        ======================================================== */
 
     wrapper.addEventListener('mousemove', function (e) {
 
         const rect = wrapper.getBoundingClientRect();
 
-        // Mouse position: -0.5 to +0.5
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-        // Rotate image (not the wrapper)
         const rotateY = x * (MAX_TILT * 2);
         const rotateX = -y * (MAX_TILT * 2);
 
+        // فقط rotate، بدون translateZ
         image.style.transform = `
-            translateZ(16px)
             rotateX(${rotateX}deg)
             rotateY(${rotateY}deg)
-            scale(1.02)
         `;
 
-        // Move shadow with mouse
-        const shadowX = -x * SHADOW_STRENGTH;
-        const shadowY = y * SHADOW_STRENGTH;
-
+        // سایه پویا
+        const shadowX = -x * 10;
+        const shadowY = y * 10;
         image.style.boxShadow = `
             ${shadowX}px ${shadowY}px 30px rgba(0, 0, 0, 0.45),
             0 0 0 1px rgba(125, 211, 232, 0.22),
             0 0 35px rgba(0, 180, 216, 0.12)
         `;
 
-        // Move light reflection
-        const mouseXPercent = ((e.clientX - rect.left) / rect.width) * 100;
-        const mouseYPercent = ((e.clientY - rect.top) / rect.height) * 100;
-
-        wrapper.style.setProperty('--mouse-x', mouseXPercent + '%');
-        wrapper.style.setProperty('--mouse-y', mouseYPercent + '%');
+        // نور reflection
+        const mx = ((e.clientX - rect.left) / rect.width) * 100;
+        const my = ((e.clientY - rect.top) / rect.height) * 100;
+        wrapper.style.setProperty('--mouse-x', mx + '%');
+        wrapper.style.setProperty('--mouse-y', my + '%');
     });
 
-
     /* ========================================================
-       MOUSE LEAVE
+       MOUSE LEAVE - برگشت به حالت عادی
        ======================================================== */
 
     wrapper.addEventListener('mouseleave', function () {
 
-        image.style.transform = 'translateZ(16px) rotateX(0deg) rotateY(0deg) scale(1)';
+        image.style.transform = 'rotateX(0deg) rotateY(0deg)';
 
         image.style.boxShadow = `
             0 10px 30px rgba(0, 0, 0, 0.40),
@@ -481,25 +465,8 @@ function initProfileTilt() {
             0 0 30px rgba(0, 180, 216, 0.10)
         `;
 
-        // Reset light
         wrapper.style.setProperty('--mouse-x', '50%');
         wrapper.style.setProperty('--mouse-y', '50%');
-    });
-
-
-    /* ========================================================
-       CLEANUP ON BLUR
-       ======================================================== */
-
-    window.addEventListener('blur', function () {
-
-        image.style.transform = 'translateZ(16px) rotateX(0deg) rotateY(0deg) scale(1)';
-
-        image.style.boxShadow = `
-            0 10px 30px rgba(0, 0, 0, 0.40),
-            0 0 0 1px rgba(125, 211, 232, 0.18),
-            0 0 30px rgba(0, 180, 216, 0.10)
-        `;
     });
 }
 
