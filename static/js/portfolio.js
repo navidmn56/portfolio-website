@@ -104,6 +104,68 @@ function animateProjectCounter() {
 }
 
 /**
+ * 3D Profile Image Tilt Effect
+ * Creates subtle rotation towards mouse position
+ */
+function initProfileTilt() {
+    const profileWrapper = document.querySelector('.profile-image-wrapper');
+    const profileImage = document.querySelector('.profile-image');
+    
+    if (!profileWrapper || !profileImage) return;
+    
+    // Don't apply on touch devices
+    if ('ontouchstart' in window) return;
+    
+    // Maximum rotation in degrees (subtle effect)
+    const maxTilt = 8;
+    
+    profileWrapper.addEventListener('mousemove', function(e) {
+        const rect = profileWrapper.getBoundingClientRect();
+        
+        // Calculate mouse position relative to center (in percentage)
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // Calculate offset from center (-1 to 1)
+        const offsetX = (e.clientX - centerX) / (rect.width / 2);
+        const offsetY = (e.clientY - centerY) / (rect.height / 2);
+        
+        // Calculate rotation (clamped between -maxTilt and maxTilt)
+        const rotateY = offsetX * maxTilt;
+        const rotateX = -offsetY * maxTilt;
+        
+        // Apply transform
+        profileImage.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+        
+        // Add subtle shadow shift
+        const shadowX = -offsetX * 5;
+        const shadowY = offsetY * 5;
+        profileImage.style.boxShadow = `
+            ${shadowX}px ${shadowY}px 20px rgba(0, 0, 0, 0.4),
+            0 0 0 5px rgba(255, 255, 255, 0.02)
+        `;
+    });
+    
+    profileWrapper.addEventListener('mouseleave', function() {
+        // Smooth reset to original position
+        profileImage.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        profileImage.style.boxShadow = `
+            0 8px 25px rgba(0, 0, 0, 0.35),
+            0 0 0 5px rgba(255, 255, 255, 0.02)
+        `;
+    });
+    
+    // Reset on window blur (when user switches tabs)
+    window.addEventListener('blur', function() {
+        profileImage.style.transform = 'rotateY(0deg) rotateX(0deg)';
+        profileImage.style.boxShadow = `
+            0 8px 25px rgba(0, 0, 0, 0.35),
+            0 0 0 5px rgba(255, 255, 255, 0.02)
+        `;
+    });
+}
+
+/**
  * Add ripple effect to icon-only contact buttons
  */
 function initContactRipple() {
@@ -274,6 +336,9 @@ document.addEventListener('DOMContentLoaded', function() {
         el.remove();
     });
 
+    // Initialize 3D tilt effect on profile image
+    initProfileTilt();
+
     // Start counter animation after a short delay
     setTimeout(animateProjectCounter, 300);
 
@@ -347,6 +412,10 @@ document.addEventListener('DOMContentLoaded', function() {
         'color: #79d8ed;',
         'color: #6b7280;',
         'color: #8ddced;'
+    );
+    console.log('%c🖱️  Profile image tilts towards mouse cursor',
+        'color: #79d8ed;',
+        'color: #aeb8c6;'
     );
 });
 

@@ -128,6 +128,7 @@ body::after {
     overflow: hidden;
 }
 
+
 /* ============================================================
    PROFILE IMAGE - LEFT SIDE
    ============================================================ */
@@ -137,6 +138,8 @@ body::after {
     height: 60px;
     flex-shrink: 0;
     order: 0;
+    perspective: 200px;
+    transform-style: preserve-3d;
 }
 
 .profile-image {
@@ -146,6 +149,9 @@ body::after {
     border-radius: 50%;
     border: 2px solid rgba(125, 211, 232, 0.4);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(255, 255, 255, 0.02);
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 
 /* ============================================================
