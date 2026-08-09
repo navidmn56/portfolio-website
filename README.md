@@ -1,70 +1,25 @@
 # Developer Resume & Portfolio Website
 
-<p align="center">
-  A modern, responsive personal resume and portfolio website built with <strong>Django</strong>, designed for developers and programmers.
-</p>
+A modern, responsive personal resume and portfolio website built with **Django**, designed for developers and programmers.
 
-<p align="center">
-  A clean and professional platform for showcasing personal information, technical skills, projects, career experience, education, social links, and contact information.
-</p>
+The website provides a clean and professional way to showcase personal information, technical skills, projects, career experience, education, social links, and contact information.
 
-<br>
+All portfolio content can be managed through the **Django Admin Panel**, allowing the website to be updated without directly editing the HTML templates.
+
+> Current version: English
+> Project status: Under Development
+
+---
+
+## Repository
 
 <div align="center">
 
-<table>
-<tr>
-<td align="center" width="50%">
-
-<strong>Project Repository</strong>
-
-<br><br>
-
 <a href="https://github.com/navidmn56/portfolio-website">
-  <img src="https://img.shields.io/badge/GitHub-Portfolio%20Website-181717?style=for-the-badge&logo=github" alt="Portfolio Repository">
+  <img src="https://img.shields.io/badge/GitHub-Portfolio%20Website-181717?style=for-the-badge&logo=github" alt="GitHub Repository">
 </a>
-
-<br><br>
-
-</td>
-
-<td align="center" width="50%">
-
-<strong>Developer</strong>
-
-<br><br>
-
-<a href="https://github.com/navidmn56">
-  <img src="https://img.shields.io/badge/GitHub-Navid%20Moradi-181717?style=for-the-badge&logo=github" alt="Developer GitHub">
-</a>
-
-<br><br>
-
-<a href="https://github.com/navidmn56">
-  github.com/navidmn56
-</a>
-
-</td>
-</tr>
-
-<tr>
-<td colspan="2" align="center">
-
-<br>
 
 <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12">
-
-<img src="https://img.shields.io/badge/Django-Framework-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django">
-
-<img src="https://img.shields.io/badge/Docker-Production-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-
-<img src="https://img.shields.io/badge/Caddy-HTTPS-1F88C0?style=for-the-badge&logo=caddy&logoColor=white" alt="Caddy">
-
-<br><br>
-
-</td>
-</tr>
-</table>
 
 </div>
 
@@ -73,7 +28,7 @@
 ## Screenshot
 
 <p align="center">
-  <img src="screenshots/home.png" alt="Developer Resume & Portfolio Website" width="900">
+  <img src="screenshots/home.png" alt="Developer Portfolio Website" width="360">
 </p>
 
 ---
@@ -98,6 +53,9 @@
 * Production deployment with Gunicorn and Caddy
 * Automatic HTTPS with Caddy
 * Automated Linux server installation
+* Static file management
+* Database migrations
+* Production Docker Compose configuration
 
 ---
 
@@ -121,6 +79,7 @@
 * Docker Compose
 * Caddy
 * Linux
+
 ---
 
 ## Project Structure
