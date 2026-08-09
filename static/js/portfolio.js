@@ -5,7 +5,6 @@
 
 /**
  * Tab Switching System
- * Switches between Education and Experience tabs with instant response
  */
 function switchTab(tab) {
     const eduContent = document.getElementById('education-content');
@@ -22,8 +21,6 @@ function switchTab(tab) {
         expContent.classList.remove('active');
         eduTab.classList.add('active');
         expTab.classList.remove('active');
-        eduTab.setAttribute('aria-pressed', 'true');
-        expTab.setAttribute('aria-pressed', 'false');
         if (tabIcon) tabIcon.className = 'fas fa-graduation-cap';
         if (tabTitle) tabTitle.textContent = 'Education';
     } else {
@@ -31,15 +28,13 @@ function switchTab(tab) {
         eduContent.classList.remove('active');
         expTab.classList.add('active');
         eduTab.classList.remove('active');
-        expTab.setAttribute('aria-pressed', 'true');
-        eduTab.setAttribute('aria-pressed', 'false');
         if (tabIcon) tabIcon.className = 'fas fa-briefcase';
         if (tabTitle) tabTitle.textContent = 'Experience';
     }
 }
 
 /**
- * Counter Animation for Project Count
+ * Counter Animation
  */
 function animateProjectCounter() {
     const counter = document.querySelector('.project-count');
@@ -69,53 +64,39 @@ function animateProjectCounter() {
 
 /**
  * 3D Profile Image Tilt Effect
- * Creates subtle rotation towards mouse position
  */
 function initProfileTilt() {
     const wrapper = document.querySelector('.profile-image-wrapper');
     const image = document.querySelector('.profile-image');
     
     if (!wrapper || !image) {
-        console.warn('⚠️ 3D Tilt: Profile image elements not found');
+        console.warn('3D Tilt: Elements not found');
         return;
     }
     
     // Skip on touch devices
     if ('ontouchstart' in window) {
-        console.log('📱 3D Tilt: Disabled on touch device');
+        console.log('3D Tilt: Disabled on touch device');
         return;
     }
     
-    // Maximum rotation in degrees
     const maxTilt = 8;
-    
-    console.log('✅ 3D Tilt: Initialized successfully');
     
     wrapper.addEventListener('mousemove', function(e) {
         const rect = wrapper.getBoundingClientRect();
-        
-        // Calculate mouse position relative to center (-0.5 to 0.5)
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
         
-        // Apply rotation
-        const rotateY = x * (maxTilt * 2);
-        const rotateX = -y * (maxTilt * 2);
+        image.style.transform = `rotateY(${x * maxTilt * 2}deg) rotateX(${-y * maxTilt * 2}deg)`;
         
-        image.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-        
-        // Dynamic shadow based on mouse position
-        const shadowX = -x * 10;
-        const shadowY = y * 10;
         image.style.boxShadow = `
-            ${shadowX}px ${shadowY}px 25px rgba(0, 0, 0, 0.4),
+            ${-x * 10}px ${y * 10}px 25px rgba(0, 0, 0, 0.4),
             0 0 0 8px rgba(0, 180, 216, 0.05),
             0 0 0 5px rgba(255, 255, 255, 0.02)
         `;
     });
     
     wrapper.addEventListener('mouseleave', function() {
-        // Reset to original position
         image.style.transform = 'rotateY(0deg) rotateX(0deg)';
         image.style.boxShadow = `
             0 8px 25px rgba(0, 0, 0, 0.35),
@@ -123,266 +104,109 @@ function initProfileTilt() {
             0 0 0 5px rgba(255, 255, 255, 0.02)
         `;
     });
-    
-    // Reset on window blur
-    window.addEventListener('blur', function() {
-        if (image) {
-            image.style.transform = 'rotateY(0deg) rotateX(0deg)';
-            image.style.boxShadow = `
-                0 8px 25px rgba(0, 0, 0, 0.35),
-                0 0 0 8px rgba(0, 180, 216, 0.05),
-                0 0 0 5px rgba(255, 255, 255, 0.02)
-            `;
-        }
-    });
 }
 
 /**
- * Add ripple effect to contact buttons
+ * Contact Ripple Effect
  */
 function initContactRipple() {
-    const contactButtons = document.querySelectorAll('.contact-inline-icon');
+    const buttons = document.querySelectorAll('.contact-inline-icon');
+    if (!buttons.length) return;
     
-    if (contactButtons.length === 0) return;
-    
-    contactButtons.forEach(button => {
+    buttons.forEach(button => {
         button.addEventListener('click', function(e) {
             const ripple = document.createElement('span');
             const rect = button.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top - size / 2;
             
             ripple.style.cssText = `
                 position: absolute;
                 width: ${size}px;
                 height: ${size}px;
-                left: ${x}px;
-                top: ${y}px;
+                left: ${e.clientX - rect.left - size / 2}px;
+                top: ${e.clientY - rect.top - size / 2}px;
                 border-radius: 50%;
                 background: rgba(110, 211, 235, 0.2);
                 transform: scale(0);
-                animation: contactRipple 0.6s ease-out;
+                animation: ripple 0.6s ease-out;
                 pointer-events: none;
             `;
             
             button.style.position = 'relative';
             button.style.overflow = 'hidden';
             button.appendChild(ripple);
-            
             setTimeout(() => ripple.remove(), 600);
         });
     });
 }
 
 /**
- * Add hover tooltip to contact buttons (desktop only)
+ * Copy Email on Right Click
  */
-function initContactTooltips() {
-    if ('ontouchstart' in window) return;
+function initEmailCopy() {
+    const emailBtn = document.querySelector('.contact-inline-icon[aria-label="Email"]');
+    if (!emailBtn) return;
     
-    const contactButtons = document.querySelectorAll('.contact-inline-icon');
-    if (contactButtons.length === 0) return;
+    const email = emailBtn.getAttribute('href')?.replace('mailto:', '') || '';
+    if (!email) return;
     
-    contactButtons.forEach(button => {
-        const tooltipText = button.getAttribute('title');
-        if (!tooltipText) return;
-        
-        button.addEventListener('mouseenter', function() {
-            const existingTooltip = document.querySelector('.contact-tooltip-dynamic');
-            if (existingTooltip) existingTooltip.remove();
-            
-            const tooltip = document.createElement('div');
-            tooltip.className = 'contact-tooltip-dynamic';
-            tooltip.textContent = tooltipText;
-            tooltip.style.cssText = `
-                position: absolute;
-                bottom: -30px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(15, 18, 28, 0.95);
-                color: #e8edf3;
-                padding: 4px 10px;
-                border-radius: 6px;
-                font-size: 0.65rem;
-                white-space: nowrap;
-                border: 1px solid rgba(110, 211, 235, 0.2);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                z-index: 999;
-                pointer-events: none;
-                animation: fadeInTooltip 0.2s ease;
-            `;
-            
-            button.style.position = 'relative';
-            button.appendChild(tooltip);
-        });
-        
-        button.addEventListener('mouseleave', function() {
-            const tooltip = button.querySelector('.contact-tooltip-dynamic');
-            if (tooltip) {
-                tooltip.style.opacity = '0';
-                setTimeout(() => tooltip.remove(), 200);
-            }
-        });
-    });
-}
-
-/**
- * Add copy-to-clipboard for email (mobile: long press, desktop: right click)
- */
-function initLongPressCopy() {
-    const emailButton = document.querySelector('.contact-inline-icon[aria-label="Email"]');
-    if (!emailButton) return;
-    
-    let pressTimer;
-    const emailAddress = emailButton.getAttribute('href')?.replace('mailto:', '') || '';
-    if (!emailAddress) return;
-    
-    // Mobile: long press to copy
-    emailButton.addEventListener('touchstart', function(e) {
-        pressTimer = setTimeout(() => {
-            navigator.clipboard.writeText(emailAddress).then(() => {
-                const feedback = document.createElement('div');
-                feedback.textContent = 'Email copied!';
-                feedback.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: rgba(88, 214, 141, 0.95);
-                    color: #111;
-                    padding: 8px 16px;
-                    border-radius: 20px;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    z-index: 9999;
-                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-                    animation: slideUpFadeIn 0.3s ease, slideUpFadeOut 0.3s ease 1.5s forwards;
-                `;
-                document.body.appendChild(feedback);
-                setTimeout(() => feedback.remove(), 2000);
-            }).catch(() => {});
-        }, 800);
-    });
-    
-    emailButton.addEventListener('touchend', () => clearTimeout(pressTimer));
-    emailButton.addEventListener('touchmove', () => clearTimeout(pressTimer));
-    
-    // Desktop: right click to copy
-    emailButton.addEventListener('contextmenu', function(e) {
+    emailBtn.addEventListener('contextmenu', function(e) {
         e.preventDefault();
-        navigator.clipboard.writeText(emailAddress).then(() => {
-            emailButton.style.background = 'rgba(88, 214, 141, 0.15)';
-            emailButton.style.borderColor = 'rgba(88, 214, 141, 0.3)';
+        navigator.clipboard.writeText(email).then(() => {
+            emailBtn.style.background = 'rgba(88, 214, 141, 0.15)';
+            emailBtn.style.borderColor = 'rgba(88, 214, 141, 0.3)';
             setTimeout(() => {
-                emailButton.style.background = '';
-                emailButton.style.borderColor = '';
+                emailBtn.style.background = '';
+                emailBtn.style.borderColor = '';
             }, 800);
-        }).catch(() => {});
+        });
     });
 }
 
 /**
- * Initialize everything when DOM is ready
+ * Initialize Everything
  */
 document.addEventListener('DOMContentLoaded', function() {
     
-    console.log('%c🚀 Portfolio Initializing...', 'color: #79d8ed; font-size: 14px; font-weight: bold;');
-    
-    // Remove old tooltips
-    document.querySelectorAll('.tooltip').forEach(el => el.remove());
-    
-    // Initialize 3D tilt effect
+    // Initialize 3D tilt
     initProfileTilt();
     
-    // Initialize counter animation
+    // Counter animation
     setTimeout(animateProjectCounter, 300);
     
-    // Initialize contact button effects
+    // Contact effects
     initContactRipple();
-    initContactTooltips();
-    initLongPressCopy();
+    initEmailCopy();
     
-    // Keyboard shortcuts for tab switching
+    // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
-            return;
-        }
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
         
-        switch(e.key.toLowerCase()) {
-            case '1':
-            case 'e':
-                e.preventDefault();
-                switchTab('education');
-                break;
-            case '2':
-            case 'x':
-                e.preventDefault();
-                switchTab('experience');
-                break;
+        if (e.key === '1' || e.key.toLowerCase() === 'e') {
+            e.preventDefault();
+            switchTab('education');
+        } else if (e.key === '2' || e.key.toLowerCase() === 'x') {
+            e.preventDefault();
+            switchTab('experience');
         }
     });
     
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest'
-                });
-            }
-        });
-    });
-    
-    // Handle image loading errors
+    // Image error fallback
     window.addEventListener('error', function(e) {
         if (e.target.tagName === 'IMG') {
-            const name = e.target.alt || 'User';
-            e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=00b4d8&color=fff&size=200';
+            e.target.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(e.target.alt || 'User') + '&background=00b4d8&color=fff&size=200';
         }
     }, true);
     
-    // Success messages
-    console.log('%c✨ Portfolio Ready %c| %c3D Tilt Active',
-        'color: #79d8ed; font-size: 14px; font-weight: bold;',
-        'color: #6b7280;',
-        'color: #8ddced; font-weight: 500;'
-    );
-    console.log('%c⌨️  Shortcuts:%c 1/E=Education %c2/X=Experience',
-        'color: #79d8ed;',
-        'color: #aeb8c6;',
-        'color: #aeb8c6;'
-    );
-    console.log('%c🖱️  Hover over profile image for 3D effect',
-        'color: #79d8ed;'
-    );
+    console.log('✅ Portfolio Ready - 3D Tilt Active');
 });
 
-// Add dynamic CSS animations
-const dynamicStyles = document.createElement('style');
-dynamicStyles.textContent = `
-    @keyframes contactRipple {
+// Dynamic styles
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
         from { transform: scale(0); opacity: 1; }
         to { transform: scale(2.5); opacity: 0; }
     }
-    
-    @keyframes fadeInTooltip {
-        from { opacity: 0; transform: translateX(-50%) translateY(5px); }
-        to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-    
-    @keyframes slideUpFadeIn {
-        from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-        to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-    
-    @keyframes slideUpFadeOut {
-        from { opacity: 1; transform: translateX(-50%) translateY(0); }
-        to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-    }
 `;
-document.head.appendChild(dynamicStyles);
+document.head.appendChild(style);
