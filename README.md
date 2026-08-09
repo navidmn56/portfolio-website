@@ -164,7 +164,7 @@ After the installation is complete, create a Django superuser:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   exec web python manage.py createsuperuser
 ```
 
@@ -184,7 +184,7 @@ Rebuild the Docker container:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   up -d --build
 ```
 
@@ -193,7 +193,7 @@ Apply new migrations if required:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   exec web python manage.py migrate
 ```
 
@@ -202,7 +202,7 @@ Collect static files:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   exec web python manage.py collectstatic --noinput
 ```
 
@@ -213,7 +213,7 @@ Check the running containers:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   ps
 ```
 
@@ -222,7 +222,7 @@ View logs:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   logs -f
 ```
 
@@ -231,7 +231,7 @@ Restart the application:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   restart
 ```
 
@@ -240,7 +240,7 @@ Stop the application:
 ```bash
 docker compose \
   -f docker-compose.yml \
-  -f docker-compose.prod.yml \
+  -f deploy/docker-compose.prod.yml \
   down
 ```
 
