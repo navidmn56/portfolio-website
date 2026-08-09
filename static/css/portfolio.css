@@ -125,7 +125,7 @@ body::after {
     gap: 13px;
     flex: 1;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* ============================================================
