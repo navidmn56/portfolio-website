@@ -286,3 +286,181 @@ class Language(models.Model):
     
     def __str__(self):
         return self.name
+    
+    
+    
+# resume_app/models.py - بخش Backup
+
+import os
+import shutil
+import json
+from django.db import models
+from django.utils import timezone
+from django.conf import settings
+from django.core.files.base import ContentFile
+from datetime import datetime
+
+
+class Backup(models.Model):
+    """سیستم بکاپ‌گیری از فایل SQLite"""
+    
+    class BackupStatus(models.TextChoices):
+        SUCCESS = 'success', '✅ Success'
+        FAILED = 'failed', '❌ Failed'
+        PROCESSING = 'processing', '⏳ Processing'
+    
+    name = models.CharField(max_length=200, help_text="نام بکاپ")
+    backup_file = models.FileField(
+        upload_to='backups/', 
+        blank=True, 
+        null=True,
+        help_text="فایل بکاپ SQLite"
+    )
+    backup_size = models.PositiveIntegerField(default=0, help_text="حجم فایل (بایت)")
+    
+    status = models.CharField(
+        max_length=20, 
+        choices=BackupStatus.choices, 
+        default=BackupStatus.PROCESSING
+    )
+    error_message = models.TextField(blank=True, null=True)
+    
+    description = models.TextField(blank=True, null=True)
+    is_automatic = models.BooleanField(default=False)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    restored_at = models.DateTimeField(blank=True, null=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "💾 SQLite Backup"
+        verbose_name_plural = "💾 SQLite Backups"
+    
+    def __str__(self):
+        return f"{self.name} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+    
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = f"Backup_{timezone.now().strftime('%Y%m%d_%H%M%S')}"
+        if self.backup_file and hasattr(self.backup_file, 'size'):
+            self.backup_size = self.backup_file.size
+        super().save(*args, **kwargs)
+    
+    def get_human_size(self):
+        """نمایش حجم فایل به صورت خوانا"""
+        if self.backup_size < 1024:
+            return f"{self.backup_size} B"
+        elif self.backup_size < 1024 * 1024:
+            return f"{self.backup_size / 1024:.2f} KB"
+        elif self.backup_size < 1024 * 1024 * 1024:
+            return f"{self.backup_size / (1024 * 1024):.2f} MB"
+        else:
+            return f"{self.backup_size / (1024 * 1024 * 1024):.2f} GB"
+    
+    @classmethod
+    def create_backup(cls, description=None, is_automatic=False):
+        """
+        ایجاد بکاپ از فایل db.sqlite3
+        """
+        db_path = settings.DATABASES['default']['NAME']
+        
+        # بررسی وجود فایل دیتابیس
+        if not os.path.exists(db_path):
+            raise ValueError("Database file not found!")
+        
+        try:
+            # ایجاد نام فایل بکاپ
+            timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+            backup_filename = f"backup_{timestamp}.sqlite3"
+            
+            # ایجاد آبجکت بکاپ
+            backup = cls.objects.create(
+                name=f"Backup_{timestamp}",
+                status=cls.BackupStatus.PROCESSING,
+                description=description,
+                is_automatic=is_automatic
+            )
+            
+            # خواندن فایل دیتابیس
+            with open(db_path, 'rb') as db_file:
+                db_content = db_file.read()
+            
+            # ذخیره در فایل بکاپ
+            from django.core.files.base import ContentFile
+            backup_file = ContentFile(db_content, name=backup_filename)
+            backup.backup_file.save(backup_filename, backup_file, save=False)
+            
+            # به‌روزرسانی وضعیت
+            backup.status = cls.BackupStatus.SUCCESS
+            backup.save()
+            
+            return backup
+            
+        except Exception as e:
+            backup.status = cls.BackupStatus.FAILED
+            backup.error_message = str(e)
+            backup.save()
+            raise e
+    
+    def restore_backup(self):
+        """
+        ریستور کردن فایل دیتابیس از بکاپ
+        """
+        if not self.backup_file:
+            raise ValueError("No backup file found!")
+        
+        if self.status != self.BackupStatus.SUCCESS:
+            raise ValueError("Backup is not valid!")
+        
+        db_path = settings.DATABASES['default']['NAME']
+        
+        try:
+            # بستن اتصال به دیتابیس
+            from django.db import connection
+            connection.close()
+            
+            # ایجاد بکاپ از دیتابیس فعلی (قبل از ریستور)
+            timestamp = timezone.now().strftime('%Y%m%d_%H%M%S')
+            pre_restore_backup = f"{db_path}.pre_restore_{timestamp}"
+            if os.path.exists(db_path):
+                shutil.copy2(db_path, pre_restore_backup)
+            
+            # خواندن فایل بکاپ
+            backup_content = self.backup_file.read()
+            
+            # نوشتن روی دیتابیس اصلی
+            with open(db_path, 'wb') as db_file:
+                db_file.write(backup_content)
+            
+            # به‌روزرسانی زمان ریستور
+            self.restored_at = timezone.now()
+            self.save()
+            
+            # حذف فایل بکاپ موقت
+            if os.path.exists(pre_restore_backup):
+                os.remove(pre_restore_backup)
+            
+            return True
+            
+        except Exception as e:
+            self.error_message = str(e)
+            self.status = self.BackupStatus.FAILED
+            self.save()
+            raise e
+    
+    @classmethod
+    def cleanup_old_backups(cls, keep_count=10):
+        """پاک کردن بکاپ‌های قدیمی"""
+        backups = cls.objects.filter(status=cls.BackupStatus.SUCCESS).order_by('-created_at')
+        if backups.count() > keep_count:
+            old_backups = backups[keep_count:]
+            for backup in old_backups:
+                if backup.backup_file:
+                    backup.backup_file.delete()
+                backup.delete()
+    
+    def delete(self, *args, **kwargs):
+        """حذف فایل فیزیکی هنگام حذف رکورد"""
+        if self.backup_file:
+            self.backup_file.delete()
+        super().delete(*args, **kwargs)
