@@ -231,7 +231,6 @@ body::after {
     bottom: 2px;
     border-radius: 50%;
     background: #58d68d;
-    border: 2.5px solid #0b0d11;
     box-shadow: 0 0 0 2px rgba(88, 214, 141, 0.15);
     animation: statusPulse 3s ease-in-out infinite;
     z-index: 10;
