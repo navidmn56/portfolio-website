@@ -1655,3 +1655,36 @@ PRINT
     overflow: visible !important;
     isolation: auto;
 }
+
+
+/* ============================================================
+   FINAL STACKING FIX - فقط همین یک بخش
+   ============================================================ */
+.profile-header {
+    position: relative !important;
+    z-index: 999 !important;
+    isolation: isolate !important;
+}
+
+.profile-info {
+    position: relative !important;
+    z-index: 999 !important;
+}
+
+.profile-image-wrapper {
+    z-index: 9999 !important;
+    isolation: isolate !important;
+}
+
+.status-dot {
+    z-index: 99999 !important;
+}
+
+.summary, .grid-2col, .card-style, .projects-hint, .flex-wrap, .footer-note {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.view, .profile-header, .profile-info, .profile-image-wrapper {
+    overflow: visible !important;
+}
