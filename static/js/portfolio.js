@@ -26,6 +26,8 @@ function switchTab(tab) {
         expContent.classList.remove('active');
         eduTab.classList.add('active');
         expTab.classList.remove('active');
+        eduTab.setAttribute('aria-pressed', 'true');
+        expTab.setAttribute('aria-pressed', 'false');
         
         // Update icon
         if (tabIcon) {
@@ -43,6 +45,8 @@ function switchTab(tab) {
         eduContent.classList.remove('active');
         expTab.classList.add('active');
         eduTab.classList.remove('active');
+        expTab.setAttribute('aria-pressed', 'true');
+        eduTab.setAttribute('aria-pressed', 'false');
         
         // Update icon
         if (tabIcon) {
@@ -111,13 +115,21 @@ function initProfileTilt() {
     const profileWrapper = document.querySelector('.profile-image-wrapper');
     const profileImage = document.querySelector('.profile-image');
     
-    if (!profileWrapper || !profileImage) return;
+    if (!profileWrapper || !profileImage) {
+        console.warn('Profile tilt: elements not found');
+        return;
+    }
     
     // Don't apply on touch devices
-    if ('ontouchstart' in window) return;
+    if ('ontouchstart' in window) {
+        console.log('Profile tilt: disabled on touch device');
+        return;
+    }
     
     // Maximum rotation in degrees (subtle effect)
     const maxTilt = 8;
+    
+    console.log('Profile tilt: initialized with maxTilt =', maxTilt);
     
     profileWrapper.addEventListener('mousemove', function(e) {
         const rect = profileWrapper.getBoundingClientRect();
@@ -157,19 +169,28 @@ function initProfileTilt() {
     
     // Reset on window blur (when user switches tabs)
     window.addEventListener('blur', function() {
-        profileImage.style.transform = 'rotateY(0deg) rotateX(0deg)';
-        profileImage.style.boxShadow = `
-            0 8px 25px rgba(0, 0, 0, 0.35),
-            0 0 0 5px rgba(255, 255, 255, 0.02)
-        `;
+        if (profileImage) {
+            profileImage.style.transform = 'rotateY(0deg) rotateX(0deg)';
+            profileImage.style.boxShadow = `
+                0 8px 25px rgba(0, 0, 0, 0.35),
+                0 0 0 5px rgba(255, 255, 255, 0.02)
+            `;
+        }
     });
 }
 
 /**
- * Add ripple effect to icon-only contact buttons
+ * Add ripple effect to contact buttons
  */
 function initContactRipple() {
-    const contactButtons = document.querySelectorAll('.contact-item-icon-only');
+    const contactButtons = document.querySelectorAll('.contact-inline-icon');
+    
+    if (contactButtons.length === 0) {
+        console.warn('Contact ripple: no .contact-inline-icon elements found');
+        return;
+    }
+    
+    console.log('Contact ripple: initialized on', contactButtons.length, 'buttons');
     
     contactButtons.forEach(button => {
         button.addEventListener('click', function(e) {
@@ -193,6 +214,8 @@ function initContactRipple() {
                 pointer-events: none;
             `;
             
+            button.style.position = 'relative';
+            button.style.overflow = 'hidden';
             button.appendChild(ripple);
             
             // Remove ripple after animation
@@ -208,62 +231,77 @@ function initContactRipple() {
  */
 function initContactTooltips() {
     // Only add tooltips on non-touch devices
-    if (!('ontouchstart' in window)) {
-        const contactButtons = document.querySelectorAll('.contact-item-icon-only');
-        
-        contactButtons.forEach(button => {
-            const tooltipText = button.getAttribute('title');
-            if (!tooltipText) return;
-            
-            button.addEventListener('mouseenter', function() {
-                // Remove existing tooltip
-                const existingTooltip = document.querySelector('.contact-tooltip-dynamic');
-                if (existingTooltip) existingTooltip.remove();
-                
-                const tooltip = document.createElement('div');
-                tooltip.className = 'contact-tooltip-dynamic';
-                tooltip.textContent = tooltipText;
-                tooltip.style.cssText = `
-                    position: absolute;
-                    bottom: -30px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: rgba(15, 18, 28, 0.95);
-                    color: #e8edf3;
-                    padding: 4px 10px;
-                    border-radius: 6px;
-                    font-size: 0.65rem;
-                    white-space: nowrap;
-                    border: 1px solid rgba(110, 211, 235, 0.2);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    z-index: 999;
-                    pointer-events: none;
-                    animation: fadeInTooltip 0.2s ease;
-                `;
-                
-                button.style.position = button.style.position || 'relative';
-                button.appendChild(tooltip);
-            });
-            
-            button.addEventListener('mouseleave', function() {
-                const tooltip = button.querySelector('.contact-tooltip-dynamic');
-                if (tooltip) {
-                    tooltip.style.opacity = '0';
-                    setTimeout(() => tooltip.remove(), 200);
-                }
-            });
-        });
+    if ('ontouchstart' in window) {
+        console.log('Contact tooltips: disabled on touch device');
+        return;
     }
+    
+    const contactButtons = document.querySelectorAll('.contact-inline-icon');
+    
+    if (contactButtons.length === 0) {
+        console.warn('Contact tooltips: no .contact-inline-icon elements found');
+        return;
+    }
+    
+    console.log('Contact tooltips: initialized on', contactButtons.length, 'buttons');
+    
+    contactButtons.forEach(button => {
+        const tooltipText = button.getAttribute('title');
+        if (!tooltipText) return;
+        
+        button.addEventListener('mouseenter', function() {
+            // Remove existing tooltip
+            const existingTooltip = document.querySelector('.contact-tooltip-dynamic');
+            if (existingTooltip) existingTooltip.remove();
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'contact-tooltip-dynamic';
+            tooltip.textContent = tooltipText;
+            tooltip.style.cssText = `
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(15, 18, 28, 0.95);
+                color: #e8edf3;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 0.65rem;
+                white-space: nowrap;
+                border: 1px solid rgba(110, 211, 235, 0.2);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                z-index: 999;
+                pointer-events: none;
+                animation: fadeInTooltip 0.2s ease;
+            `;
+            
+            button.style.position = 'relative';
+            button.appendChild(tooltip);
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            const tooltip = button.querySelector('.contact-tooltip-dynamic');
+            if (tooltip) {
+                tooltip.style.opacity = '0';
+                setTimeout(() => tooltip.remove(), 200);
+            }
+        });
+    });
 }
 
 /**
  * Add copy-to-clipboard for email on long press (mobile)
  */
 function initLongPressCopy() {
-    const emailButton = document.querySelector('.contact-item-icon-only[aria-label="Email"]');
+    const emailButton = document.querySelector('.contact-inline-icon[aria-label="Email"]');
     
-    if (!emailButton) return;
+    if (!emailButton) {
+        console.warn('Long press copy: email button not found');
+        return;
+    }
+    
+    console.log('Long press copy: initialized');
     
     let pressTimer;
     const emailAddress = emailButton.getAttribute('href')?.replace('mailto:', '') || '';
@@ -330,6 +368,8 @@ function initLongPressCopy() {
  * Initialize all functionality when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', function() {
+    
+    console.log('%c🚀 Portfolio Initializing...', 'color: #79d8ed; font-size: 14px; font-weight: bold;');
     
     // Remove all tooltip elements (old tooltips)
     document.querySelectorAll('.tooltip').forEach(function(el) {
@@ -413,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'color: #6b7280;',
         'color: #8ddced;'
     );
-    console.log('%c🖱️  Profile image tilts towards mouse cursor',
+    console.log('%c🖱️  Profile image tilts towards mouse cursor (hover over profile picture)',
         'color: #79d8ed;',
         'color: #aeb8c6;'
     );
@@ -464,15 +504,6 @@ dynamicStyles.textContent = `
             opacity: 0;
             transform: translateX(-50%) translateY(-10px);
         }
-    }
-    
-    .contact-item-icon-only {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .contact-tooltip-dynamic {
-        transition: opacity 0.2s ease;
     }
 `;
 document.head.appendChild(dynamicStyles);
