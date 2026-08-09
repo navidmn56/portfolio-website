@@ -1284,3 +1284,75 @@ body::after {
         break-inside: avoid;
     }
 }
+
+
+/* ============================================================
+   PROFILE IMAGE - PREMIUM 3D TILT
+   ============================================================ */
+
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+
+    .profile-image-wrapper {
+        position: relative;
+        transform-style: preserve-3d;
+        will-change: transform;
+        transition:
+            transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .profile-image {
+        transform: translateZ(12px);
+        transition:
+            transform 0.18s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .profile-image-wrapper::after {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+        background:
+            radial-gradient(
+                circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(130, 225, 245, 0.25),
+                transparent 55%
+            );
+        transition: opacity 0.2s ease;
+        z-index: 2;
+    }
+
+    .profile-image-wrapper:hover::after {
+        opacity: 1;
+    }
+
+    .profile-image-wrapper:hover .profile-image {
+        box-shadow:
+            0 15px 35px rgba(0, 0, 0, 0.45),
+            0 0 30px rgba(110, 211, 235, 0.16);
+    }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .profile-image-wrapper {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .profile-image {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .profile-image-wrapper::after {
+        display: none;
+    }
+}
