@@ -297,16 +297,14 @@ class Language(models.Model):
 import os
 import shutil
 
-from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 from django.core.files.base import ContentFile
 
 
 class Backup(models.Model):
-    """
-    SQLite database backup.
-    """
+    """Simple SQLite database backup system."""
 
     class BackupStatus(models.TextChoices):
         SUCCESS = "success", "Success"
@@ -315,7 +313,6 @@ class Backup(models.Model):
 
     name = models.CharField(
         max_length=200,
-        blank=True,
         help_text="Backup name"
     )
 
@@ -366,33 +363,22 @@ class Backup(models.Model):
         verbose_name_plural = "SQLite Backups"
 
     def __str__(self):
-        return self.name or f"Backup {self.pk}"
+        return f"{self.name} - {self.get_status_display()}"
 
     def save(self, *args, **kwargs):
-        """
-        Automatically set backup name and file size.
-        """
-
         if not self.name:
-            self.name = (
-                f"Backup_"
-                f"{timezone.now().strftime('%Y%m%d_%H%M%S')}"
-            )
+            self.name = f"Backup_{timezone.now().strftime('%Y%m%d_%H%M%S')}"
 
         if self.backup_file:
             try:
                 self.backup_size = self.backup_file.size
-            except (OSError, ValueError):
+            except Exception:
                 pass
 
         super().save(*args, **kwargs)
 
     def get_human_size(self):
-        """
-        Return backup size in a readable format.
-        """
-
-        size = self.backup_size
+        size = self.backup_size or 0
 
         if size < 1024:
             return f"{size} B"
@@ -406,11 +392,7 @@ class Backup(models.Model):
         return f"{size / (1024 * 1024 * 1024):.2f} GB"
 
     @classmethod
-    def create_backup(
-        cls,
-        description=None,
-        is_automatic=False
-    ):
+    def create_backup(cls, description=None, is_automatic=False):
         """
         Create a backup of the current SQLite database.
         """
@@ -418,13 +400,11 @@ class Backup(models.Model):
         db_path = settings.DATABASES["default"]["NAME"]
 
         if not os.path.exists(db_path):
-            raise FileNotFoundError(
+            raise ValueError(
                 f"Database file not found: {db_path}"
             )
 
-        timestamp = timezone.now().strftime(
-            "%Y%m%d_%H%M%S"
-        )
+        timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
 
         backup_filename = (
             f"backup_{timestamp}.sqlite3"
@@ -434,15 +414,21 @@ class Backup(models.Model):
             name=f"Backup_{timestamp}",
             status=cls.BackupStatus.PROCESSING,
             description=description,
-            is_automatic=is_automatic,
+            is_automatic=is_automatic
         )
 
         try:
-            with open(db_path, "rb") as db_file:
-                db_content = db_file.read()
+            # Read the current SQLite database.
+            with open(db_path, "rb") as source:
+                database_content = source.read()
+
+            if not database_content:
+                raise ValueError(
+                    "The SQLite database file is empty."
+                )
 
             backup_file = ContentFile(
-                db_content,
+                database_content,
                 name=backup_filename
             )
 
@@ -471,19 +457,17 @@ class Backup(models.Model):
         """
 
         if not self.backup_file:
-            raise ValueError(
-                "No backup file found."
-            )
+            raise ValueError("No backup file exists.")
 
         if self.status != self.BackupStatus.SUCCESS:
             raise ValueError(
-                "This backup is not valid."
+                "Only successful backups can be restored."
             )
 
         db_path = settings.DATABASES["default"]["NAME"]
 
         if not os.path.exists(db_path):
-            raise FileNotFoundError(
+            raise ValueError(
                 f"Database file not found: {db_path}"
             )
 
@@ -491,22 +475,22 @@ class Backup(models.Model):
             "%Y%m%d_%H%M%S"
         )
 
-        safety_backup = (
+        temporary_backup = (
             f"{db_path}.before_restore_{timestamp}"
         )
 
         try:
-            # Close Django database connection
+            # Close Django's SQLite connection.
             from django.db import connection
             connection.close()
 
-            # Create temporary safety copy
+            # Safety backup before restore.
             shutil.copy2(
                 db_path,
-                safety_backup
+                temporary_backup
             )
 
-            # Read selected backup
+            # Read selected backup.
             self.backup_file.open("rb")
 
             try:
@@ -519,65 +503,51 @@ class Backup(models.Model):
                     "Backup file is empty."
                 )
 
-            # Replace current database
-            temp_database = (
-                f"{db_path}.restore_tmp"
-            )
-
-            with open(temp_database, "wb") as db_file:
-                db_file.write(backup_content)
-
-            # Replace database atomically
-            os.replace(
-                temp_database,
-                db_path
-            )
+            # Restore database.
+            with open(db_path, "wb") as database:
+                database.write(backup_content)
 
             self.restored_at = timezone.now()
             self.save(
                 update_fields=["restored_at"]
             )
 
-            # Safety copy is no longer needed
-            if os.path.exists(safety_backup):
-                os.remove(safety_backup)
+            # Remove temporary safety backup.
+            if os.path.exists(temporary_backup):
+                os.remove(temporary_backup)
 
             return True
 
         except Exception as exc:
 
-            # Remove incomplete temporary database
-            temp_database = (
-                f"{db_path}.restore_tmp"
-            )
+            # Try to restore the pre-restore database.
+            if os.path.exists(temporary_backup):
+                try:
+                    shutil.copy2(
+                        temporary_backup,
+                        db_path
+                    )
+                    os.remove(temporary_backup)
+                except Exception:
+                    pass
 
-            if os.path.exists(temp_database):
-                os.remove(temp_database)
-
-            # Restore safety copy if available
-            if os.path.exists(safety_backup):
-                shutil.copy2(
-                    safety_backup,
-                    db_path
-                )
-                os.remove(safety_backup)
-
-            self.status = self.BackupStatus.FAILED
             self.error_message = str(exc)
             self.save(
-                update_fields=[
-                    "status",
-                    "error_message"
-                ]
+                update_fields=["error_message"]
             )
 
             raise
 
+    def delete(self, *args, **kwargs):
+        if self.backup_file:
+            self.backup_file.delete(
+                save=False
+            )
+
+        super().delete(*args, **kwargs)
+
     @classmethod
     def cleanup_old_backups(cls, keep_count=10):
-        """
-        Keep only the newest successful backups.
-        """
 
         backups = cls.objects.filter(
             status=cls.BackupStatus.SUCCESS
@@ -587,14 +557,3 @@ class Backup(models.Model):
 
         for backup in old_backups:
             backup.delete()
-
-    def delete(self, *args, **kwargs):
-        """
-        Delete the physical backup file as well.
-        """
-
-        if self.backup_file:
-            self.backup_file.delete(save=False)
-
-        super().delete(*args, **kwargs)
-

@@ -1,0 +1,79 @@
+{% extends "admin/base_site.html" %}
+
+{% load i18n %}
+
+{% block content %}
+
+<div id="content-main">
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <fieldset class="module aligned">
+
+            <h2>Create SQLite Backup</h2>
+
+            <div class="form-row">
+
+                {{ form.description.errors }}
+
+                <div>
+
+                    <label for="{{ form.description.id_for_label }}">
+                        Description:
+                    </label>
+
+                    {{ form.description }}
+
+                    {% if form.description.help_text %}
+                        <p class="help">
+                            {{ form.description.help_text }}
+                        </p>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div
+                style="
+                    margin-top:20px;
+                    padding:16px;
+                    border:1px solid var(--hairline-color);
+                    border-radius:6px;
+                "
+            >
+
+                <strong>Database:</strong>
+
+                A complete copy of the current
+                <code>db.sqlite3</code>
+                database will be created.
+
+            </div>
+
+        </fieldset>
+
+        <div class="submit-row">
+
+            <input
+                type="submit"
+                value="Create Backup"
+                class="default"
+            >
+
+            <a
+                href="{% url 'admin:resume_app_backup_changelist' %}"
+                class="button"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
