@@ -1,7 +1,8 @@
 /* ============================================================
    PORTFOLIO WEBSITE - PREMIUM LUXURY DARK THEME
-   Complete Clean Version - No Duplicates
+   Complete Final Version - No Duplicates
    3D Profile Image - Only Image Rotates
+   Social Icons - Perfect Circles All Devices
    ============================================================ */
 
 /* ============================================================
@@ -136,7 +137,8 @@ body::after {
     flex: 0 0 60px;
     border-radius: 50%;
     overflow: visible;
-    perspective: 800px;
+    perspective: 1000px;
+    transform-style: preserve-3d;
 }
 
 /* ============================================================
@@ -158,14 +160,15 @@ body::after {
     background: #11151b;
     transform: translateZ(8px);
     transform-origin: center center;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     will-change: transform;
     box-shadow:
         0 0 0 1px rgba(125, 211, 232, 0.18),
         0 0 30px rgba(0, 180, 216, 0.10),
         0 10px 30px rgba(0, 0, 0, 0.40);
-    transition:
-        transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
-        box-shadow 0.18s ease;
+    transition: box-shadow 0.25s ease;
 }
 
 /* ============================================================
@@ -188,15 +191,15 @@ body::after {
 }
 
 /* ============================================================
-   MOUSE GLOW - 2D Fixed, Follows Mouse via CSS Variables
+   MOUSE GLOW - 2D Fixed
    ============================================================ */
 .profile-image-wrapper::after {
     content: "";
     position: absolute;
-    top: -12px;
-    left: -12px;
-    right: -12px;
-    bottom: -12px;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
     border-radius: 50%;
     pointer-events: none;
     z-index: 4;
@@ -204,15 +207,30 @@ body::after {
     background:
         radial-gradient(
             circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-            rgba(140, 230, 250, 0.28),
-            rgba(110, 211, 235, 0.08) 25%,
-            transparent 60%
+            rgba(180, 245, 255, 0.30) 0%,
+            rgba(110, 211, 235, 0.13) 20%,
+            rgba(110, 211, 235, 0.04) 42%,
+            transparent 68%
         );
-    transition: opacity 0.2s ease;
+    filter: blur(1px);
+    transition: opacity 0.25s ease;
+}
+
+/* Desktop Hover */
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+    .profile-image-wrapper:hover::after {
+        opacity: 1;
+    }
+    .profile-image-wrapper:hover .profile-image {
+        box-shadow:
+            0 0 0 1px rgba(125, 211, 232, 0.28),
+            0 15px 35px rgba(0, 0, 0, 0.48),
+            0 0 35px rgba(0, 180, 216, 0.16);
+    }
 }
 
 /* ============================================================
-   STATUS DOT - Completely 2D, No Transform
+   STATUS DOT - Completely 2D
    ============================================================ */
 .status-dot {
     position: absolute;
@@ -277,30 +295,55 @@ body::after {
 }
 
 /* ============================================================
-   SOCIAL LINKS
+   SOCIAL ICONS - PERFECT CIRCLES ALL DEVICES
    ============================================================ */
 .social-links-row {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 5px;
     margin-top: 3px;
+    min-width: 0;
 }
 
 .social-icon-circle {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    max-width: 32px;
+    min-height: 32px;
+    max-height: 32px;
+    flex: 0 0 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex: 0 0 30px;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    margin: 0;
     border-radius: 50%;
+    box-sizing: border-box;
     background: rgba(255, 255, 255, 0.035);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #aeb8c6;
     text-decoration: none;
-    font-size: 0.7rem;
-    transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+    font-size: 0.72rem;
+    line-height: 1;
+    flex-shrink: 0;
+    transition:
+        transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.social-icon-circle i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
 }
 
 .contact-inline-icon {
@@ -309,13 +352,8 @@ body::after {
     color: #79d8ed;
 }
 
-.contact-links {
-    display: none;
-}
-
-.tooltip {
-    display: none !important;
-}
+.contact-links { display: none; }
+.tooltip { display: none !important; }
 
 /* ============================================================
    SUMMARY
@@ -335,10 +373,7 @@ body::after {
     z-index: 1;
 }
 
-.summary i {
-    margin-right: 8px;
-    color: #78d9ed;
-}
+.summary i { margin-right: 8px; color: #78d9ed; }
 
 /* ============================================================
    TWO COLUMN GRID
@@ -382,21 +417,12 @@ body::after {
     line-height: 1.4;
 }
 
-.card-style h2 i {
-    color: #74d5e9;
-    font-size: 0.88rem;
-    flex-shrink: 0;
-}
+.card-style h2 i { color: #74d5e9; font-size: 0.88rem; flex-shrink: 0; }
 
 /* ============================================================
    SKILLS
    ============================================================ */
-.skills-list {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 7px;
-}
+.skills-list { display: flex; flex-wrap: wrap; flex-direction: row; gap: 7px; }
 
 .skill-tag {
     display: inline-flex;
@@ -412,11 +438,7 @@ body::after {
     white-space: nowrap;
 }
 
-.skill-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
-}
+.skill-name { overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
 
 .level-badge {
     flex-shrink: 0;
@@ -428,23 +450,9 @@ body::after {
     text-transform: uppercase;
 }
 
-.level-advanced {
-    color: #69dc99;
-    background: rgba(72, 214, 135, 0.09);
-    border: 1px solid rgba(72, 214, 135, 0.2);
-}
-
-.level-intermediate {
-    color: #73b7ee;
-    background: rgba(87, 164, 224, 0.09);
-    border: 1px solid rgba(87, 164, 224, 0.2);
-}
-
-.level-beginner {
-    color: #e4bd68;
-    background: rgba(228, 189, 104, 0.09);
-    border: 1px solid rgba(228, 189, 104, 0.2);
-}
+.level-advanced { color: #69dc99; background: rgba(72, 214, 135, 0.09); border: 1px solid rgba(72, 214, 135, 0.2); }
+.level-intermediate { color: #73b7ee; background: rgba(87, 164, 224, 0.09); border: 1px solid rgba(87, 164, 224, 0.2); }
+.level-beginner { color: #e4bd68; background: rgba(228, 189, 104, 0.09); border: 1px solid rgba(228, 189, 104, 0.2); }
 
 /* ============================================================
    LEGEND
@@ -459,19 +467,8 @@ body::after {
     font-size: 0.63rem;
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-}
-
-.legend-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
+.legend-item { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
 /* ============================================================
    TABS
@@ -508,10 +505,7 @@ body::after {
     white-space: nowrap;
 }
 
-.tab-btn i {
-    font-size: 0.7rem;
-    flex-shrink: 0;
-}
+.tab-btn i { font-size: 0.7rem; flex-shrink: 0; }
 
 .tab-btn.active {
     background: rgba(104, 211, 234, 0.1);
@@ -519,14 +513,8 @@ body::after {
     box-shadow: inset 0 0 0 1px rgba(104, 211, 234, 0.1);
 }
 
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-    animation: fadeIn 0.15s ease;
-}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.15s ease; }
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(3px); }
@@ -565,12 +553,7 @@ body::after {
 }
 
 .education-item > div,
-.experience-item > div {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-    order: 1;
-}
+.experience-item > div { flex: 1; min-width: 0; text-align: left; order: 1; }
 
 .education-item h3,
 .experience-item h3 {
@@ -593,18 +576,9 @@ body::after {
     text-align: left;
 }
 
-.education-item p {
-    color: #aab4c1;
-    font-size: 0.7rem;
-    line-height: 1.65;
-}
+.education-item p { color: #aab4c1; font-size: 0.7rem; line-height: 1.65; }
 
-.experience-item ul {
-    list-style: none;
-    padding: 0;
-    margin: 6px 0 0;
-    text-align: left;
-}
+.experience-item ul { list-style: none; padding: 0; margin: 6px 0 0; text-align: left; }
 
 .experience-item ul li {
     display: flex;
@@ -617,12 +591,7 @@ body::after {
     text-align: left;
 }
 
-.experience-item ul li::before {
-    content: "•";
-    flex-shrink: 0;
-    color: #75d5e8;
-    font-weight: 700;
-}
+.experience-item ul li::before { content: "•"; flex-shrink: 0; color: #75d5e8; font-weight: 700; }
 
 /* ============================================================
    CAREER GOAL
@@ -636,27 +605,13 @@ body::after {
     border-radius: 11px;
 }
 
-.career-goal p {
-    color: #cbd5df;
-    font-size: 0.75rem;
-    line-height: 1.7;
-}
-
-.career-goal i {
-    color: #7bd8eb;
-    margin-right: 5px;
-}
+.career-goal p { color: #cbd5df; font-size: 0.75rem; line-height: 1.7; }
+.career-goal i { color: #7bd8eb; margin-right: 5px; }
 
 /* ============================================================
    PROJECTS
    ============================================================ */
-.project-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-}
+.project-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 
 .project-count {
     display: inline-flex;
@@ -671,13 +626,7 @@ body::after {
     white-space: nowrap;
 }
 
-.project-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 4px;
-    margin-bottom: 8px;
-}
+.project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 4px; margin-bottom: 8px; }
 
 .project-card {
     position: relative;
@@ -694,21 +643,8 @@ body::after {
     transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
-.card-icon {
-    width: fit-content;
-    margin-bottom: 9px;
-    color: #73d4e8;
-    font-size: 1.05rem;
-}
-
-.external-icon {
-    position: absolute;
-    top: 13px;
-    right: 13px;
-    color: #6f7b8b;
-    font-size: 0.65rem;
-    opacity: 0.7;
-}
+.card-icon { width: fit-content; margin-bottom: 9px; color: #73d4e8; font-size: 1.05rem; }
+.external-icon { position: absolute; top: 13px; right: 13px; color: #6f7b8b; font-size: 0.65rem; opacity: 0.7; }
 
 .project-card h4 {
     max-width: calc(100% - 18px);
@@ -720,21 +656,9 @@ body::after {
     overflow-wrap: anywhere;
 }
 
-.project-card p {
-    color: #929dab;
-    font-size: 0.7rem;
-    line-height: 1.65;
-    overflow-wrap: anywhere;
-}
+.project-card p { color: #929dab; font-size: 0.7rem; line-height: 1.65; overflow-wrap: anywhere; }
 
-.project-tags {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    gap: 5px;
-    margin-top: auto;
-    padding-top: 12px;
-}
+.project-tags { display: flex; flex-wrap: wrap; flex-direction: row; gap: 5px; margin-top: auto; padding-top: 12px; }
 
 .project-tag {
     padding: 3px 7px;
@@ -781,12 +705,7 @@ body::after {
     z-index: 1;
 }
 
-.divider {
-    height: 1px;
-    margin: 14px 0;
-    border: 0;
-    background: rgba(255, 255, 255, 0.06);
-}
+.divider { height: 1px; margin: 14px 0; border: 0; background: rgba(255, 255, 255, 0.06); }
 
 .footer-note {
     display: flex;
@@ -802,9 +721,7 @@ body::after {
     z-index: 1;
 }
 
-.footer-note i {
-    color: #76d5e8;
-}
+.footer-note i { color: #76d5e8; }
 
 /* ============================================================
    UTILITY CLASSES
@@ -818,117 +735,65 @@ body::after {
 /* ============================================================
    EMPTY STATE
    ============================================================ */
-.empty-state {
-    padding: 22px 10px;
-    color: #737e8d;
-    text-align: center;
-}
-
-.empty-state i {
-    display: block;
-    margin-bottom: 7px;
-    color: #67cfe3;
-    font-size: 1.4rem;
-    opacity: 0.6;
-}
-
-.empty-state p {
-    font-size: 0.7rem;
-    line-height: 1.6;
-}
+.empty-state { padding: 22px 10px; color: #737e8d; text-align: center; }
+.empty-state i { display: block; margin-bottom: 7px; color: #67cfe3; font-size: 1.4rem; opacity: 0.6; }
+.empty-state p { font-size: 0.7rem; line-height: 1.6; }
 
 /* ============================================================
-   DESKTOP PROFILE
+   DESKTOP
    ============================================================ */
 @media (min-width: 900px) {
+    body { align-items: center; padding: 30px; }
+    .view { padding: 30px; border-radius: 28px; }
     .profile-info { gap: 15px; }
 
     .profile-image-wrapper {
-        width: 85px;
-        height: 85px;
-        min-width: 85px;
-        max-width: 85px;
+        width: 85px; height: 85px;
+        min-width: 85px; max-width: 85px;
         flex: 0 0 85px;
         perspective: 1000px;
     }
 
     .profile-image {
-        width: 85px;
-        height: 85px;
-        min-width: 85px;
-        min-height: 85px;
-        max-width: 85px;
-        max-height: 85px;
+        width: 85px; height: 85px;
+        min-width: 85px; min-height: 85px;
+        max-width: 85px; max-height: 85px;
     }
 
-    .name-section h1 { font-size: clamp(1.5rem, 3vw, 1.8rem); }
+    .name-section h1 { font-size: clamp(1.5rem, 3vw, 1.8rem); white-space: nowrap; }
     .title-badge { font-size: 0.7rem; padding: 5px 11px; }
-    .social-links-row { gap: 5px; }
+
+    .social-links-row { gap: 6px; }
 
     .social-icon-circle {
-        width: 36px;
-        height: 36px;
+        width: 36px; height: 36px;
+        min-width: 36px; max-width: 36px;
+        min-height: 36px; max-height: 36px;
         flex: 0 0 36px;
         font-size: 0.82rem;
     }
 
-    .profile-image-wrapper:hover::after { opacity: 1; }
-
     .social-icon-circle:hover {
+        transform: translateY(-3px) scale(1.06);
         background: rgba(110, 211, 235, 0.09);
-        border-color: rgba(110, 211, 235, 0.3);
+        border-color: rgba(110, 211, 235, 0.32);
         color: #8de2f5;
-        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 180, 216, 0.12), 0 0 0 1px rgba(110, 211, 235, 0.05);
     }
 
     .contact-inline-icon:hover {
-        background: rgba(110, 211, 235, 0.15);
+        background: rgba(110, 211, 235, 0.14);
         border-color: rgba(110, 211, 235, 0.4);
         color: #a0e8f5;
     }
-}
 
-/* ============================================================
-   DESKTOP GENERAL
-   ============================================================ */
-@media (min-width: 900px) {
-    body {
-        align-items: center;
-        padding: 30px;
-    }
-
-    .view {
-        padding: 30px;
-        border-radius: 28px;
-    }
-
-    .summary {
-        font-size: 0.9rem;
-        line-height: 1.8;
-    }
-
-    .grid-2col {
-        grid-template-columns: 0.85fr 1.15fr;
-        gap: 18px;
-    }
-
-    .card-style {
-        padding: 20px;
-        border-radius: 16px;
-    }
-
+    .summary { font-size: 0.9rem; line-height: 1.8; }
+    .grid-2col { grid-template-columns: 0.85fr 1.15fr; gap: 18px; }
+    .card-style { padding: 20px; border-radius: 16px; }
     .card-style h2 { font-size: 1.05rem; }
     .skill-tag { font-size: 0.76rem; }
-
-    .project-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-    }
-
-    .project-card {
-        min-height: 180px;
-        padding: 18px;
-    }
+    .project-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .project-card { min-height: 180px; padding: 18px; }
 
     .project-card:hover {
         transform: translateY(-4px);
@@ -939,12 +804,7 @@ body::after {
 
     .project-card h4 { font-size: 0.92rem; }
     .project-card p { font-size: 0.74rem; }
-
-    .projects-hint {
-        font-size: 0.68rem;
-        margin-top: 10px;
-        opacity: 0.5;
-    }
+    .projects-hint { font-size: 0.68rem; margin-top: 10px; opacity: 0.5; }
 }
 
 /* ============================================================
@@ -969,33 +829,31 @@ body::after {
     .profile-info { gap: 10px; }
 
     .profile-image-wrapper {
-        width: 52px;
-        height: 52px;
-        min-width: 52px;
-        max-width: 52px;
+        width: 52px; height: 52px;
+        min-width: 52px; max-width: 52px;
         flex: 0 0 52px;
         perspective: 600px;
     }
 
     .profile-image {
-        width: 52px;
-        height: 52px;
-        min-width: 52px;
-        min-height: 52px;
-        max-width: 52px;
-        max-height: 52px;
+        width: 52px; height: 52px;
+        min-width: 52px; min-height: 52px;
+        max-width: 52px; max-height: 52px;
     }
 
     .profile-image-wrapper::after { display: none; }
     .status-dot { width: 11px; height: 11px; right: -1px; bottom: -1px; }
     .name-section h1 { font-size: clamp(0.95rem, 3.8vw, 1.15rem); }
     .title-badge { font-size: 0.56rem; padding: 3px 7px; }
-    .social-links-row { gap: 3px; }
+
+    .social-links-row { gap: 4px; }
 
     .social-icon-circle {
-        width: 28px;
-        height: 28px;
+        width: 28px; height: 28px;
+        min-width: 28px; max-width: 28px;
+        min-height: 28px; max-height: 28px;
         flex: 0 0 28px;
+        aspect-ratio: 1 / 1;
         font-size: 0.62rem;
     }
 
@@ -1020,31 +878,29 @@ body::after {
     .profile-info { gap: 8px; }
 
     .profile-image-wrapper {
-        width: 46px;
-        height: 46px;
-        min-width: 46px;
-        max-width: 46px;
+        width: 46px; height: 46px;
+        min-width: 46px; max-width: 46px;
         flex: 0 0 46px;
     }
 
     .profile-image {
-        width: 46px;
-        height: 46px;
-        min-width: 46px;
-        min-height: 46px;
-        max-width: 46px;
-        max-height: 46px;
+        width: 46px; height: 46px;
+        min-width: 46px; min-height: 46px;
+        max-width: 46px; max-height: 46px;
     }
 
     .status-dot { width: 10px; height: 10px; }
     .name-section h1 { font-size: 0.9rem; }
     .title-badge { font-size: clamp(0.45rem, 1.3vw, 0.52rem); padding: 2px 6px; }
-    .social-links-row { gap: 2px; }
+
+    .social-links-row { gap: 3px; }
 
     .social-icon-circle {
-        width: 26px;
-        height: 26px;
+        width: 26px; height: 26px;
+        min-width: 26px; max-width: 26px;
+        min-height: 26px; max-height: 26px;
         flex: 0 0 26px;
+        aspect-ratio: 1 / 1;
         font-size: 0.58rem;
     }
 
@@ -1066,31 +922,29 @@ body::after {
     .view { padding: 22px; border-radius: 24px; }
 
     .profile-image-wrapper {
-        width: 70px;
-        height: 70px;
-        min-width: 70px;
-        max-width: 70px;
+        width: 70px; height: 70px;
+        min-width: 70px; max-width: 70px;
         flex: 0 0 70px;
         perspective: 700px;
     }
 
     .profile-image {
-        width: 70px;
-        height: 70px;
-        min-width: 70px;
-        min-height: 70px;
-        max-width: 70px;
-        max-height: 70px;
+        width: 70px; height: 70px;
+        min-width: 70px; min-height: 70px;
+        max-width: 70px; max-height: 70px;
     }
 
     .name-section h1 { font-size: clamp(1.1rem, 3vw, 1.5rem); }
     .title-badge { font-size: 0.66rem; padding: 4px 9px; }
-    .social-links-row { gap: 4px; }
+
+    .social-links-row { gap: 5px; }
 
     .social-icon-circle {
-        width: 32px;
-        height: 32px;
+        width: 32px; height: 32px;
+        min-width: 32px; max-width: 32px;
+        min-height: 32px; max-height: 32px;
         flex: 0 0 32px;
+        aspect-ratio: 1 / 1;
         font-size: 0.72rem;
     }
 
@@ -1107,24 +961,32 @@ body::after {
 }
 
 /* ============================================================
-   TOUCH DEVICES
+   TOUCH DEVICES - NO OVAL ICONS
    ============================================================ */
 @media (hover: none) and (pointer: coarse) {
     .tab-btn { min-height: 44px; }
 
     .social-icon-circle {
-        width: 36px;
-        height: 36px;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        min-height: 36px !important;
+        max-height: 36px !important;
+        flex: 0 0 36px !important;
+        aspect-ratio: 1 / 1 !important;
+        padding: 0 !important;
+        transform: none !important;
     }
+
+    .social-icon-circle:hover { transform: none !important; }
 
     .profile-image {
         transform: none !important;
         transition: none !important;
     }
 
-    .profile-image-wrapper::after {
-        display: none;
-    }
+    .profile-image-wrapper::after { display: none; }
 
     .project-card:hover {
         transform: none;
@@ -1147,18 +1009,14 @@ body::after {
     }
 
     body::before,
-    body::after {
-        animation: none;
-    }
+    body::after { animation: none; }
 
     .profile-image {
         transform: none !important;
         transition: none !important;
     }
 
-    .profile-image-wrapper::after {
-        display: none;
-    }
+    .profile-image-wrapper::after { display: none; }
 }
 
 /* ============================================================
@@ -1167,17 +1025,9 @@ body::after {
 @media (prefers-contrast: high) {
     .view,
     .card-style,
-    .project-card {
-        border-color: rgba(255, 255, 255, 0.25);
-    }
-
-    .skill-tag {
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .profile-image-wrapper::before {
-        border-color: rgba(255, 255, 255, 0.6);
-    }
+    .project-card { border-color: rgba(255, 255, 255, 0.25); }
+    .skill-tag { border-color: rgba(255, 255, 255, 0.3); }
+    .profile-image-wrapper::before { border-color: rgba(255, 255, 255, 0.6); }
 }
 
 /* ============================================================
@@ -1192,9 +1042,7 @@ body::after {
     }
 
     body::before,
-    body::after {
-        display: none;
-    }
+    body::after { display: none; }
 
     .app-container { max-width: none; }
 
@@ -1219,7 +1067,5 @@ body::after {
         box-shadow: none;
     }
 
-    .profile-image-wrapper::after {
-        display: none;
-    }
+    .profile-image-wrapper::after { display: none; }
 }
