@@ -402,45 +402,74 @@ function initLongPressCopy() {
    ============================================================ */
 
 function initProfileTilt() {
-    const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    const supportsHover =
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
     if (!supportsHover) return;
 
     const wrapper = document.querySelector('.profile-image-wrapper');
     const image = document.querySelector('.profile-image');
+
     if (!wrapper || !image) return;
 
     const MAX_TILT = 10;
 
-    wrapper.addEventListener('mousemove', function(e) {
+    /* ========================================================
+       MOUSE MOVE - فقط rotate، بدون translateZ
+       ======================================================== */
+
+    wrapper.addEventListener('mousemove', function (e) {
+
         const rect = wrapper.getBoundingClientRect();
+
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
+
         const rotateY = x * (MAX_TILT * 2);
         const rotateX = -y * (MAX_TILT * 2);
 
+        // فقط rotate، بدون translateZ
         image.style.transform = `
-            translateZ(8px)
-            rotateX(${rotateX}deg)
-            rotateY(${rotateY}deg)
+        translateZ(8px)
+        rotateX(${rotateX}deg)
+        rotateY(${rotateY}deg)
         `;
 
+        // سایه پویا
+        const shadowX = -x * 10;
+        const shadowY = y * 10;
         image.style.boxShadow = `
-            ${-x * 10}px ${y * 10}px 30px rgba(0, 0, 0, 0.45),
+            ${shadowX}px ${shadowY}px 30px rgba(0, 0, 0, 0.45),
             0 0 0 1px rgba(125, 211, 232, 0.22),
             0 0 35px rgba(0, 180, 216, 0.12)
         `;
 
-        wrapper.style.setProperty('--mouse-x', ((e.clientX - rect.left) / rect.width) * 100 + '%');
-        wrapper.style.setProperty('--mouse-y', ((e.clientY - rect.top) / rect.height) * 100 + '%');
+        // نور reflection
+        const mx = ((e.clientX - rect.left) / rect.width) * 100;
+        const my = ((e.clientY - rect.top) / rect.height) * 100;
+        wrapper.style.setProperty('--mouse-x', mx + '%');
+        wrapper.style.setProperty('--mouse-y', my + '%');
     });
 
-    wrapper.addEventListener('mouseleave', function() {
-        image.style.transform = 'translateZ(8px) rotateX(0deg) rotateY(0deg)';
+    /* ========================================================
+       MOUSE LEAVE - برگشت به حالت عادی
+       ======================================================== */
+
+    wrapper.addEventListener('mouseleave', function () {
+
+        image.style.transform = `
+        translateZ(8px)
+        rotateX(0deg)
+        rotateY(0deg)
+        `;
+
         image.style.boxShadow = `
             0 10px 30px rgba(0, 0, 0, 0.40),
             0 0 0 1px rgba(125, 211, 232, 0.18),
             0 0 30px rgba(0, 180, 216, 0.10)
         `;
+
         wrapper.style.setProperty('--mouse-x', '50%');
         wrapper.style.setProperty('--mouse-y', '50%');
     });
