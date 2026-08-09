@@ -1,6 +1,6 @@
 /* ============================================================
    PORTFOLIO WEBSITE - PREMIUM LUXURY DARK THEME
-   FINAL VERSION - ALL ISSUES FIXED
+   FINAL VERSION - ALL MOBILE ISSUES FIXED
    ============================================================ */
 
 *,
@@ -95,12 +95,13 @@ body::after {
 }
 
 /* ============================================================
-   PROFILE HEADER
+   PROFILE HEADER - با ساختار کاملاً پایدار
    ============================================================ */
 .profile-header {
     width: 100%;
     position: relative;
     margin-bottom: 18px;
+    overflow: visible;
 }
 
 .profile-info {
@@ -109,13 +110,17 @@ body::after {
     align-items: center;
     gap: 13px;
     padding: 10px 5px;
+    overflow: visible;
 }
 
 /* ============================================================
-   PROFILE IMAGE WRAPPER (3D TILT)
+   PROFILE IMAGE WRAPPER - با حالت 3D و بوردر ثابت
    ============================================================ */
 .profile-image-wrapper {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 60px;
     height: 60px;
     min-width: 60px;
@@ -134,7 +139,7 @@ body::after {
     height: 60px;
     object-fit: cover;
     border-radius: 50%;
-    border: 0;
+    border: 2px solid rgba(125, 211, 232, 0.3);
     outline: none;
     background: #11151b;
     transform: translateZ(8px) rotateX(0deg) rotateY(0deg);
@@ -148,24 +153,27 @@ body::after {
     transition: box-shadow 0.15s ease;
     -webkit-backface-visibility: visible;
     backface-visibility: visible;
+    z-index: 2;
 }
 
+/* حلقه تزئینی اطراف عکس - همیشه نمایش داده می‌شود */
 .profile-image-wrapper::before {
     content: "";
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
     border-radius: 50%;
-    border: 1px solid rgba(125, 211, 232, 0.35);
+    border: 2px solid rgba(125, 211, 232, 0.25);
     pointer-events: none;
-    z-index: 5;
+    z-index: 3;
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.025),
-        0 0 20px rgba(80, 200, 225, 0.08);
+        0 0 20px rgba(80, 200, 225, 0.08),
+        inset 0 0 20px rgba(80, 200, 225, 0.05);
 }
 
+/* نور تبعیت‌کننده از موس - فقط در دسکتاپ */
 .profile-image-wrapper::after {
     content: "";
     position: absolute;
@@ -175,7 +183,7 @@ body::after {
     bottom: -15px;
     border-radius: 50%;
     pointer-events: none;
-    z-index: 4;
+    z-index: 1;
     opacity: 0;
     background:
         radial-gradient(
@@ -200,9 +208,8 @@ body::after {
     border: 2px solid #11151b;
     box-shadow: 0 0 0 2px rgba(88, 214, 141, 0.08);
     animation: statusPulse 3s ease-in-out infinite;
-    z-index: 50;
+    z-index: 10;
     pointer-events: none;
-    transform: none;
 }
 
 @keyframes statusPulse {
@@ -252,13 +259,13 @@ body::after {
 }
 
 /* ============================================================
-   SOCIAL ICONS - PERFECT CIRCLES
+   SOCIAL ICONS - دایره‌های کامل در همه دستگاه‌ها
    ============================================================ */
 .social-links-row {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
     margin-top: 3px;
     min-width: 0;
 }
@@ -636,7 +643,7 @@ body::after {
 .empty-state p { font-size: 0.7rem; line-height: 1.6; }
 
 /* ============================================================
-   RESPONSIVE DESIGN - FIXED
+   RESPONSIVE DESIGN - کاملاً اصلاح شده
    ============================================================ */
 
 /* ----- دسکتاپ بزرگ (1200+) ----- */
@@ -715,54 +722,77 @@ body::after {
 }
 
 /* ============================================================
-   موبایل - با رفع کامل مشکلات
+   موبایل - با رفع کامل همه مشکلات
    ============================================================ */
 @media (max-width: 599px) {
     body { padding: 8px; }
     .view { padding: 12px; border-radius: 18px; }
 
-    /* ===== رفع مشکل عکس پروفایل ===== */
+    /* ===== حفظ ساختار پروفایل ===== */
+    .profile-info {
+        gap: 10px;
+        padding: 8px 3px;
+    }
+
+    /* ===== عکس پروفایل با بوردر و اندازه ثابت ===== */
     .profile-image-wrapper { 
         perspective: none;
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+        flex: 0 0 56px !important;
         overflow: visible;
-        width: 60px;
-        height: 60px;
-        min-width: 60px;
-        max-width: 60px;
-        flex: 0 0 60px;
     }
     
     .profile-image { 
+        width: 56px !important;
+        height: 56px !important;
         transform: none !important;
+        border: 2px solid rgba(125, 211, 232, 0.35) !important;
+        box-shadow: 0 0 0 1px rgba(125, 211, 232, 0.18), 0 0 30px rgba(0, 180, 216, 0.10), 0 10px 30px rgba(0, 0, 0, 0.40) !important;
         position: relative;
         z-index: 2;
-        width: 60px;
-        height: 60px;
-        box-shadow: 0 0 0 1px rgba(125, 211, 232, 0.18), 0 0 30px rgba(0, 180, 216, 0.10), 0 10px 30px rgba(0, 0, 0, 0.40);
     }
     
+    /* حلقه تزئینی - همیشه نمایش داده می‌شود */
     .profile-image-wrapper::before {
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        border: 2px solid rgba(125, 211, 232, 0.2);
+        box-shadow: 0 0 20px rgba(80, 200, 225, 0.06);
     }
     
     .profile-image-wrapper::after { 
         display: none; 
     }
 
-    .status-dot { width: 11px; height: 11px; right: -1px; bottom: -1px; }
+    .status-dot { 
+        width: 11px; 
+        height: 11px; 
+        right: -1px; 
+        bottom: -1px;
+        border-width: 2px;
+    }
     
-    /* ===== رفع مشکل بیضی شدن دایره‌های سوشال ===== */
+    /* ===== دایره‌های سوشال - کاملاً گرد در موبایل ===== */
     .social-icon-circle {
-        width: 36px !important;
-        height: 36px !important;
-        min-width: 36px !important;
-        max-width: 36px !important;
-        flex: 0 0 36px !important;
-        font-size: 0.78rem !important;
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        max-width: 34px !important;
+        flex: 0 0 34px !important;
+        font-size: 0.75rem !important;
         border-radius: 50% !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+    }
+    
+    .contact-inline-icon {
+        background: rgba(110, 211, 235, 0.08) !important;
+        border-color: rgba(110, 211, 235, 0.18) !important;
     }
     
     .grid-2col { grid-template-columns: 1fr; gap: 10px; }
@@ -771,6 +801,10 @@ body::after {
     
     /* دکمه‌های تب بزرگتر برای لمس */
     .tab-btn { min-height: 44px; }
+    
+    /* نام و تایتل */
+    .name-section h1 { font-size: 1rem; }
+    .title-badge { font-size: 0.55rem; padding: 2px 6px; }
 }
 
 /* ----- موبایل خیلی کوچک (کمتر از 360) ----- */
@@ -780,21 +814,23 @@ body::after {
     
     .profile-image-wrapper,
     .profile-image { 
-        width: 46px; 
-        height: 46px;
-        min-width: 46px;
-        max-width: 46px;
-        flex: 0 0 46px;
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        max-width: 46px !important;
+        flex: 0 0 46px !important;
     }
     
     .social-icon-circle {
-        width: 32px !important;
-        height: 32px !important;
-        min-width: 32px !important;
-        max-width: 32px !important;
-        flex: 0 0 32px !important;
-        font-size: 0.7rem !important;
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        flex: 0 0 30px !important;
+        font-size: 0.65rem !important;
     }
+    
+    .profile-info { gap: 8px; }
 }
 
 /* ============================================================

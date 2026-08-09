@@ -51,29 +51,27 @@
     }
 
     // ============================================================
-    // 3. PROFILE 3D TILT - OPTIMIZED FOR ALL DEVICES
+    // 3. PROFILE 3D TILT - فقط در دسکتاپ
     // ============================================================
     function initProfileTilt() {
         const wrapper = document.querySelector(".profile-image-wrapper");
         const image = document.querySelector(".profile-image");
         if (!wrapper || !image) return;
 
-        // === NON-MOBILE CHECK: فقط در دستگاه‌های غیر لمسی اجرا شود ===
+        // تشخیص دستگاه لمسی یا موبایل
         const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
         const isMobile = window.innerWidth < 600;
         
         if (isTouchDevice || isMobile) {
-            // غیرفعال کردن کامل تیلت در موبایل
-            if (image) {
-                image.style.transform = 'none';
-                image.style.boxShadow = '0 0 0 1px rgba(125, 211, 232, 0.18), 0 0 30px rgba(0, 180, 216, 0.10), 0 10px 30px rgba(0, 0, 0, 0.40)';
-            }
+            // غیرفعال کردن تیلت در موبایل - اما حفظ بوردر و ظاهر
+            image.style.transform = 'none';
+            image.style.border = '2px solid rgba(125, 211, 232, 0.35)';
             wrapper.style.perspective = 'none';
             return;
         }
 
-        const MAX_TILT = 14;
-        const MAX_TRANSLATE = 8;
+        const MAX_TILT = 12;
+        const MAX_TRANSLATE = 6;
         let targetX = 0, targetY = 0, targetRotX = 0, targetRotY = 0;
         let currentX = 0, currentY = 0, currentRotX = 0, currentRotY = 0;
         let rafId = null;
@@ -119,7 +117,6 @@
             wrapper.style.setProperty("--mouse-y", "50%");
         });
 
-        // شروع اولیه حلقه
         if (!rafId) rafId = requestAnimationFrame(animate);
     }
 
@@ -127,7 +124,6 @@
     // 4. CONTACT RIPPLE EFFECT
     // ============================================================
     function initContactRipple() {
-        // تزریق keyframes در صورت نبود
         if (!document.getElementById("ripple-keyframes")) {
             const style = document.createElement("style");
             style.id = "ripple-keyframes";
@@ -152,7 +148,7 @@
                     left: ${e.clientX - rect.left - size/2}px;
                     top: ${e.clientY - rect.top - size/2}px;
                     border-radius: 50%;
-                    background: rgba(110, 211, 235, 0.2);
+                    background: rgba(110, 211, 235, 0.25);
                     transform: scale(0);
                     animation: contactRipple 0.6s ease-out;
                     pointer-events: none;
@@ -178,8 +174,8 @@
         btn.addEventListener("contextmenu", function(e) {
             e.preventDefault();
             navigator.clipboard.writeText(email).then(() => {
-                btn.style.background = "rgba(88,214,141,0.15)";
-                btn.style.borderColor = "rgba(88,214,141,0.3)";
+                btn.style.background = "rgba(88,214,141,0.2)";
+                btn.style.borderColor = "rgba(88,214,141,0.4)";
                 setTimeout(() => { 
                     btn.style.background = ""; 
                     btn.style.borderColor = ""; 
@@ -218,14 +214,13 @@
     }
 
     // ============================================================
-    // 8. WINDOW RESIZE HANDLER - FIX MOBILE ISSUES
+    // 8. RESIZE HANDLER - جلوگیری از مشکلات موبایل
     // ============================================================
     function initResizeHandler() {
         let resizeTimer;
         window.addEventListener("resize", function() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function() {
-                // Re-check mobile status and reset 3D tilt if needed
                 const wrapper = document.querySelector(".profile-image-wrapper");
                 const image = document.querySelector(".profile-image");
                 const isMobile = window.innerWidth < 600;
@@ -233,10 +228,10 @@
                 
                 if ((isMobile || isTouch) && wrapper && image) {
                     image.style.transform = 'none';
-                    image.style.boxShadow = '0 0 0 1px rgba(125, 211, 232, 0.18), 0 0 30px rgba(0, 180, 216, 0.10), 0 10px 30px rgba(0, 0, 0, 0.40)';
+                    image.style.border = '2px solid rgba(125, 211, 232, 0.35)';
                     wrapper.style.perspective = 'none';
                 }
-            }, 250);
+            }, 300);
         });
     }
 
@@ -252,7 +247,7 @@
         initKeyboardNav();
         initResizeHandler();
 
-        console.log("%c✅ Portfolio Ready %c| %cAll Issues Fixed", 
+        console.log("%c✅ Portfolio Ready %c| %cMobile Issues Fixed", 
             "color:#79d8ed;font-weight:bold;", 
             "color:#6b7280;", 
             "color:#8ddced;"
