@@ -1,991 +1,877 @@
 /* ============================================================
-PORTFOLIO JAVASCRIPT
-Stable • Lightweight • Responsive
-3D Profile Image Tilt
-============================================================ */
+   PORTFOLIO JAVASCRIPT
+   Optimized • Fast • Smooth Performance
+   Profile Image 3D Mouse Tilt
+   ============================================================ */
 
-"use strict";
 
 /* ============================================================
-TAB SWITCHING
-============================================================ */
+   TAB SWITCHING SYSTEM
+   ============================================================ */
 
 function switchTab(tab) {
 
+    const eduContent = document.getElementById('education-content');
+    const expContent = document.getElementById('experience-content');
 
-const eduContent =
-    document.getElementById("education-content");
+    const eduTab = document.getElementById('edu-tab');
+    const expTab = document.getElementById('exp-tab');
 
-const expContent =
-    document.getElementById("experience-content");
+    const tabIcon = document.getElementById('tab-icon');
+    const tabTitle = document.getElementById('tab-title');
 
-const eduTab =
-    document.getElementById("edu-tab");
-
-const expTab =
-    document.getElementById("exp-tab");
-
-const tabIcon =
-    document.getElementById("tab-icon");
-
-const tabTitle =
-    document.getElementById("tab-title");
-
-if (
-    !eduContent ||
-    !expContent ||
-    !eduTab ||
-    !expTab
-) {
-    return;
-}
-
-if (tab === "education") {
-
-    eduContent.classList.add("active");
-    expContent.classList.remove("active");
-
-    eduTab.classList.add("active");
-    expTab.classList.remove("active");
-
-    if (tabIcon) {
-        tabIcon.className =
-            "fas fa-graduation-cap";
+    // Validate elements
+    if (!eduContent || !expContent || !eduTab || !expTab) {
+        return;
     }
 
-    if (tabTitle) {
-        tabTitle.textContent =
-            "Education";
+    /* ---------------- Education ---------------- */
+
+    if (tab === 'education') {
+
+        eduContent.classList.add('active');
+        expContent.classList.remove('active');
+
+        eduTab.classList.add('active');
+        expTab.classList.remove('active');
+
+        if (tabIcon) {
+            tabIcon.className = 'fas fa-graduation-cap';
+        }
+
+        if (tabTitle) {
+            tabTitle.textContent = 'Education';
+        }
     }
 
-} else {
+    /* ---------------- Experience ---------------- */
 
-    expContent.classList.add("active");
-    eduContent.classList.remove("active");
+    else {
 
-    expTab.classList.add("active");
-    eduTab.classList.remove("active");
+        expContent.classList.add('active');
+        eduContent.classList.remove('active');
 
-    if (tabIcon) {
-        tabIcon.className =
-            "fas fa-briefcase";
-    }
+        expTab.classList.add('active');
+        eduTab.classList.remove('active');
 
-    if (tabTitle) {
-        tabTitle.textContent =
-            "Experience";
+        if (tabIcon) {
+            tabIcon.className = 'fas fa-briefcase';
+        }
+
+        if (tabTitle) {
+            tabTitle.textContent = 'Experience';
+        }
     }
 }
 
-
-}
 
 /* ============================================================
-PROJECT COUNTER
-============================================================ */
+   PROJECT COUNTER ANIMATION
+   ============================================================ */
 
 function animateProjectCounter() {
 
+    const counter = document.querySelector('.project-count');
 
-const counter =
-    document.querySelector(".project-count");
-
-if (!counter) {
-    return;
-}
-
-if (counter.dataset.animated === "true") {
-    return;
-}
-
-const text =
-    counter.textContent.trim();
-
-const match =
-    text.match(/\d+/);
-
-if (!match) {
-    return;
-}
-
-counter.dataset.animated = "true";
-
-const target =
-    parseInt(match[0], 10);
-
-const suffix =
-    text.replace(match[0], "");
-
-if (!Number.isFinite(target)) {
-    return;
-}
-
-let current = 0;
-
-const duration = 450;
-
-const startTime = performance.now();
-
-function update(now) {
-
-    const progress =
-        Math.min(
-            (now - startTime) / duration,
-            1
-        );
-
-    const eased =
-        1 - Math.pow(1 - progress, 3);
-
-    current =
-        Math.floor(target * eased);
-
-    counter.textContent =
-        `${current}${suffix}`;
-
-    if (progress < 1) {
-        requestAnimationFrame(update);
-    } else {
-        counter.textContent =
-            `${target}${suffix}`;
+    if (!counter) {
+        return;
     }
+
+    const text = counter.textContent.trim();
+    const match = text.match(/\d+/);
+
+    if (!match || counter.dataset.animated === 'true') {
+        return;
+    }
+
+    counter.dataset.animated = 'true';
+
+    const targetNumber = parseInt(match[0], 10);
+    const suffix = text.replace(match[0], '');
+
+    let currentNumber = 0;
+
+    const steps = 10;
+    const increment = Math.ceil(targetNumber / steps);
+    const stepTime = 50;
+
+    const timer = setInterval(() => {
+
+        currentNumber += increment;
+
+        if (currentNumber >= targetNumber) {
+            currentNumber = targetNumber;
+            clearInterval(timer);
+        }
+
+        counter.textContent = `${currentNumber}${suffix}`;
+
+    }, stepTime);
 }
 
-requestAnimationFrame(update);
-
-
-}
 
 /* ============================================================
-CONTACT RIPPLE
-============================================================ */
+   CONTACT RIPPLE EFFECT
+   ============================================================ */
 
 function initContactRipple() {
 
+    const contactButtons =
+        document.querySelectorAll('.contact-item-icon-only');
 
-const buttons =
-    document.querySelectorAll(
-        ".contact-item-icon-only"
-    );
+    if (!contactButtons.length) {
+        return;
+    }
 
-if (!buttons.length) {
-    return;
-}
+    contactButtons.forEach(button => {
 
-buttons.forEach(button => {
+        button.addEventListener('click', function (e) {
 
-    button.addEventListener(
-        "click",
-        function (event) {
+            const ripple = document.createElement('span');
 
-            const rect =
-                button.getBoundingClientRect();
+            const rect = button.getBoundingClientRect();
 
-            const size =
-                Math.max(
-                    rect.width,
-                    rect.height
-                );
+            const size = Math.max(
+                rect.width,
+                rect.height
+            );
 
             const x =
-                event.clientX -
+                e.clientX -
                 rect.left -
                 size / 2;
 
             const y =
-                event.clientY -
+                e.clientY -
                 rect.top -
                 size / 2;
 
-            const ripple =
-                document.createElement("span");
-
-            ripple.className =
-                "contact-ripple";
-
-            ripple.style.width =
-                `${size}px`;
-
-            ripple.style.height =
-                `${size}px`;
-
-            ripple.style.left =
-                `${x}px`;
-
-            ripple.style.top =
-                `${y}px`;
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                left: ${x}px;
+                top: ${y}px;
+                border-radius: 50%;
+                background: rgba(110, 211, 235, 0.2);
+                transform: scale(0);
+                animation: contactRipple 0.6s ease-out;
+                pointer-events: none;
+            `;
 
             button.appendChild(ripple);
 
-            window.setTimeout(
-                () => ripple.remove(),
-                600
-            );
-        }
-    );
-});
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
 
+        });
 
+    });
 }
 
+
 /* ============================================================
-CONTACT TOOLTIPS
-============================================================ */
+   CONTACT TOOLTIPS
+   Desktop Only
+   ============================================================ */
 
 function initContactTooltips() {
 
-
-const supportsTouch =
-    window.matchMedia(
-        "(hover: none)"
-    ).matches;
-
-if (supportsTouch) {
-    return;
-}
-
-const buttons =
-    document.querySelectorAll(
-        ".contact-item-icon-only"
-    );
-
-if (!buttons.length) {
-    return;
-}
-
-buttons.forEach(button => {
-
-    const text =
-        button.getAttribute("title");
-
-    if (!text) {
+    if ('ontouchstart' in window) {
         return;
     }
 
-    button.addEventListener(
-        "mouseenter",
-        () => {
+    const contactButtons =
+        document.querySelectorAll('.contact-item-icon-only');
 
-            const old =
-                button.querySelector(
-                    ".contact-tooltip-dynamic"
-                );
+    if (!contactButtons.length) {
+        return;
+    }
 
-            if (old) {
-                old.remove();
+    contactButtons.forEach(button => {
+
+        const tooltipText =
+            button.getAttribute('title');
+
+        if (!tooltipText) {
+            return;
+        }
+
+        button.addEventListener('mouseenter', function () {
+
+            const existingTooltip =
+                document.querySelector('.contact-tooltip-dynamic');
+
+            if (existingTooltip) {
+                existingTooltip.remove();
             }
 
             const tooltip =
-                document.createElement("span");
+                document.createElement('div');
 
             tooltip.className =
-                "contact-tooltip-dynamic";
+                'contact-tooltip-dynamic';
 
-            tooltip.textContent = text;
+            tooltip.textContent =
+                tooltipText;
+
+            tooltip.style.cssText = `
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(15, 18, 28, 0.95);
+                color: #e8edf3;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 0.65rem;
+                white-space: nowrap;
+                border: 1px solid rgba(110, 211, 235, 0.2);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                z-index: 999;
+                pointer-events: none;
+                animation: fadeInTooltip 0.2s ease;
+            `;
+
+            button.style.position =
+                button.style.position || 'relative';
 
             button.appendChild(tooltip);
-        }
-    );
 
-    button.addEventListener(
-        "mouseleave",
-        () => {
+        });
+
+        button.addEventListener('mouseleave', function () {
 
             const tooltip =
-                button.querySelector(
-                    ".contact-tooltip-dynamic"
-                );
+                button.querySelector('.contact-tooltip-dynamic');
 
             if (tooltip) {
-                tooltip.remove();
+
+                tooltip.style.opacity = '0';
+
+                setTimeout(() => {
+
+                    if (tooltip.parentNode) {
+                        tooltip.remove();
+                    }
+
+                }, 200);
             }
-        }
-    );
-});
 
+        });
 
+    });
 }
 
+
 /* ============================================================
-EMAIL COPY
-Mobile long press
-Desktop right click
-============================================================ */
+   EMAIL LONG-PRESS COPY
+   ============================================================ */
 
 function initLongPressCopy() {
 
+    const emailButton =
+        document.querySelector(
+            '.contact-item-icon-only[aria-label="Email"]'
+        );
 
-const emailButton =
-    document.querySelector(
-        '.contact-item-icon-only[aria-label="Email"]'
-    );
-
-if (!emailButton) {
-    return;
-}
-
-const href =
-    emailButton.getAttribute("href");
-
-if (!href) {
-    return;
-}
-
-const email =
-    href.replace(/^mailto:/i, "");
-
-if (!email) {
-    return;
-}
-
-let timer = null;
-
-function copyEmail() {
-
-    if (
-        !navigator.clipboard ||
-        !navigator.clipboard.writeText
-    ) {
+    if (!emailButton) {
         return;
     }
 
-    navigator.clipboard
-        .writeText(email)
-        .then(showCopyFeedback)
-        .catch(() => {});
-}
+    let pressTimer;
 
-emailButton.addEventListener(
-    "touchstart",
-    () => {
+    const emailAddress =
+        emailButton
+            .getAttribute('href')
+            ?.replace('mailto:', '') || '';
 
-        timer =
-            window.setTimeout(
-                copyEmail,
-                800
-            );
-    },
-    {
+    if (!emailAddress) {
+        return;
+    }
+
+
+    /* ---------------- Mobile Long Press ---------------- */
+
+    emailButton.addEventListener('touchstart', function () {
+
+        pressTimer = setTimeout(() => {
+
+            if (!navigator.clipboard) {
+                return;
+            }
+
+            navigator.clipboard
+                .writeText(emailAddress)
+                .then(() => {
+
+                    const feedback =
+                        document.createElement('div');
+
+                    feedback.textContent =
+                        'Email copied!';
+
+                    feedback.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: rgba(88, 214, 141, 0.95);
+                        color: #111;
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        z-index: 9999;
+                        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+                        animation:
+                            slideUpFadeIn 0.3s ease,
+                            slideUpFadeOut 0.3s ease 1.5s forwards;
+                    `;
+
+                    document.body.appendChild(feedback);
+
+                    setTimeout(() => {
+                        feedback.remove();
+                    }, 2000);
+
+                })
+                .catch(() => {
+                    // Clipboard unavailable
+                });
+
+        }, 800);
+
+    }, {
         passive: true
-    }
-);
-
-emailButton.addEventListener(
-    "touchend",
-    () => {
-        clearTimeout(timer);
-    }
-);
-
-emailButton.addEventListener(
-    "touchmove",
-    () => {
-        clearTimeout(timer);
-    }
-);
-
-emailButton.addEventListener(
-    "contextmenu",
-    event => {
-
-        event.preventDefault();
-
-        copyEmail();
-    }
-);
+    });
 
 
+    emailButton.addEventListener('touchend', function () {
+        clearTimeout(pressTimer);
+    });
+
+    emailButton.addEventListener('touchmove', function () {
+        clearTimeout(pressTimer);
+    });
+
+
+    /* ---------------- Desktop Right Click ---------------- */
+
+    emailButton.addEventListener('contextmenu', function (e) {
+
+        e.preventDefault();
+
+        if (!navigator.clipboard) {
+            return;
+        }
+
+        navigator.clipboard
+            .writeText(emailAddress)
+            .then(() => {
+
+                emailButton.style.background =
+                    'rgba(88, 214, 141, 0.15)';
+
+                emailButton.style.borderColor =
+                    'rgba(88, 214, 141, 0.3)';
+
+                setTimeout(() => {
+
+                    emailButton.style.background = '';
+                    emailButton.style.borderColor = '';
+
+                }, 800);
+
+            })
+            .catch(() => {
+                // Clipboard unavailable
+            });
+
+    });
 }
 
-function showCopyFeedback() {
 
 
-const old =
-    document.querySelector(
-        ".copy-feedback"
-    );
-
-if (old) {
-    old.remove();
-}
-
-const feedback =
-    document.createElement("div");
-
-feedback.className =
-    "copy-feedback";
-
-feedback.textContent =
-    "Email copied!";
-
-document.body.appendChild(feedback);
-
-window.setTimeout(
-    () => feedback.remove(),
-    2000
-);
-
-
-}
 
 /* ============================================================
-PROFILE IMAGE 3D TILT
-============================================================ */
+   PROFILE IMAGE 3D MOUSE TILT
+   (Rotates the image inside, not the wrapper)
+   ============================================================ */
 
 function initProfileTilt() {
+    const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!supportsHover) return;
 
+    const wrapper = document.querySelector('.profile-image-wrapper');
+    const image = document.querySelector('.profile-image');
+    if (!wrapper || !image) return;
 
-const wrapper =
-    document.querySelector(
-        ".profile-image-wrapper"
-    );
+    const MAX_TILT = 10;
 
-const image =
-    document.querySelector(
-        ".profile-image"
-    );
+    wrapper.addEventListener('mousemove', function(e) {
+        const rect = wrapper.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        const rotateY = x * (MAX_TILT * 2);
+        const rotateX = -y * (MAX_TILT * 2);
 
-if (!wrapper || !image) {
-    return;
-}
-
-const media =
-    window.matchMedia(
-        "(hover: hover) and (pointer: fine)"
-    );
-
-if (!media.matches) {
-    return;
-}
-
-const MAX_TILT = 10;
-
-let frame = null;
-
-let mouseX = 0;
-let mouseY = 0;
-
-function updateTilt() {
-
-    frame = null;
-
-    const rect =
-        wrapper.getBoundingClientRect();
-
-    if (
-        rect.width === 0 ||
-        rect.height === 0
-    ) {
-        return;
-    }
-
-    const x =
-        (mouseX - rect.left) /
-        rect.width -
-        0.5;
-
-    const y =
-        (mouseY - rect.top) /
-        rect.height -
-        0.5;
-
-    const rotateY =
-        x * MAX_TILT * 2;
-
-    const rotateX =
-        -y * MAX_TILT * 2;
-
-    image.style.transform =
-        `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-    const shadowX =
-        -x * 8;
-
-    const shadowY =
-        y * 8;
-
-    image.style.boxShadow =
-        `
-        ${shadowX}px ${shadowY}px 28px rgba(0,0,0,0.42),
-        0 0 0 1px rgba(125,211,232,0.22),
-        0 0 30px rgba(0,180,216,0.12)
+        image.style.transform = `
+            translateZ(8px)
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
         `;
 
-    wrapper.style.setProperty(
-        "--mouse-x",
-        `${(x + 0.5) * 100}%`
-    );
+        image.style.boxShadow = `
+            ${-x * 10}px ${y * 10}px 30px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(125, 211, 232, 0.22),
+            0 0 35px rgba(0, 180, 216, 0.12)
+        `;
 
-    wrapper.style.setProperty(
-        "--mouse-y",
-        `${(y + 0.5) * 100}%`
-    );
+        wrapper.style.setProperty('--mouse-x', ((e.clientX - rect.left) / rect.width) * 100 + '%');
+        wrapper.style.setProperty('--mouse-y', ((e.clientY - rect.top) / rect.height) * 100 + '%');
+    });
+
+    wrapper.addEventListener('mouseleave', function() {
+        image.style.transform = 'translateZ(8px) rotateX(0deg) rotateY(0deg)';
+        image.style.boxShadow = `
+            0 10px 30px rgba(0, 0, 0, 0.40),
+            0 0 0 1px rgba(125, 211, 232, 0.18),
+            0 0 30px rgba(0, 180, 216, 0.10)
+        `;
+        wrapper.style.setProperty('--mouse-x', '50%');
+        wrapper.style.setProperty('--mouse-y', '50%');
+    });
 }
 
-wrapper.addEventListener(
-    "mousemove",
-    event => {
-
-        mouseX = event.clientX;
-        mouseY = event.clientY;
-
-        if (!frame) {
-            frame =
-                requestAnimationFrame(
-                    updateTilt
-                );
-        }
-    }
-);
-
-wrapper.addEventListener(
-    "mouseenter",
-    () => {
-
-        image.style.transition =
-            "transform 0.08s ease-out, box-shadow 0.08s ease";
-
-        wrapper.style.setProperty(
-            "--mouse-x",
-            "50%"
-        );
-
-        wrapper.style.setProperty(
-            "--mouse-y",
-            "50%"
-        );
-    }
-);
-
-wrapper.addEventListener(
-    "mouseleave",
-    () => {
-
-        if (frame) {
-            cancelAnimationFrame(frame);
-            frame = null;
-        }
-
-        image.style.transform =
-            "rotateX(0deg) rotateY(0deg)";
-
-        image.style.boxShadow =
-            `
-            0 0 0 1px rgba(125,211,232,0.18),
-            0 0 30px rgba(0,180,216,0.10),
-            0 10px 30px rgba(0,0,0,0.40)
-            `;
-
-        image.style.transition =
-            "transform 0.22s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.22s ease";
-
-        wrapper.style.setProperty(
-            "--mouse-x",
-            "50%"
-        );
-
-        wrapper.style.setProperty(
-            "--mouse-y",
-            "50%"
-        );
-    }
-);
-
-
-}
 
 /* ============================================================
-KEYBOARD SHORTCUTS
-============================================================ */
+   KEYBOARD TAB SHORTCUTS
+   ============================================================ */
 
 function initKeyboardShortcuts() {
 
+    document.addEventListener('keydown', function (e) {
 
-document.addEventListener(
-    "keydown",
-    event => {
-
-        const target =
-            event.target;
+        /*
+         * Ignore inputs
+         */
 
         if (
-            target &&
-            (
-                target.tagName === "INPUT" ||
-                target.tagName === "TEXTAREA" ||
-                target.isContentEditable
-            )
+            e.target.tagName === 'INPUT' ||
+            e.target.tagName === 'TEXTAREA' ||
+            e.target.isContentEditable
         ) {
             return;
         }
 
-        const key =
-            event.key.toLowerCase();
 
-        if (
-            key === "1" ||
-            key === "e"
-        ) {
+        switch (e.key.toLowerCase()) {
 
-            event.preventDefault();
+            case '1':
+            case 'e':
 
-            switchTab("education");
+                e.preventDefault();
 
-        } else if (
-            key === "2" ||
-            key === "x"
-        ) {
+                switchTab('education');
 
-            event.preventDefault();
+                break;
 
-            switchTab("experience");
+
+            case '2':
+            case 'x':
+
+                e.preventDefault();
+
+                switchTab('experience');
+
+                break;
         }
-    }
-);
 
-
+    });
 }
 
+
 /* ============================================================
-SMOOTH ANCHOR SCROLL
-============================================================ */
+   SMOOTH ANCHOR SCROLL
+   ============================================================ */
 
 function initSmoothScroll() {
 
+    document
+        .querySelectorAll('a[href^="#"]')
+        .forEach(function (anchor) {
 
-document
-    .querySelectorAll(
-        'a[href^="#"]'
-    )
-    .forEach(anchor => {
+            anchor.addEventListener(
+                'click',
+                function (e) {
 
-        anchor.addEventListener(
-            "click",
-            event => {
+                    e.preventDefault();
 
-                const id =
-                    anchor.getAttribute(
-                        "href"
-                    );
+                    const targetId =
+                        this.getAttribute('href');
 
-                if (
-                    !id ||
-                    id === "#"
-                ) {
-                    return;
+                    if (!targetId || targetId === '#') {
+                        return;
+                    }
+
+                    const target =
+                        document.querySelector(targetId);
+
+                    if (!target) {
+                        return;
+                    }
+
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+
                 }
+            );
 
-                const target =
-                    document.querySelector(
-                        id
-                    );
-
-                if (!target) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                target.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest"
-                });
-            }
-        );
-    });
-
-
+        });
 }
 
+
 /* ============================================================
-IMAGE FALLBACK
-============================================================ */
+   IMAGE ERROR FALLBACK
+   ============================================================ */
 
 function initImageFallback() {
 
+    window.addEventListener(
+        'error',
+        function (e) {
 
-window.addEventListener(
-    "error",
-    event => {
-
-        const image =
-            event.target;
-
-        if (
-            !image ||
-            image.tagName !== "IMG"
-        ) {
-            return;
-        }
-
-        if (
-            image.dataset
-                .fallbackApplied === "true"
-        ) {
-            return;
-        }
-
-        image.dataset
-            .fallbackApplied =
-            "true";
-
-        const name =
-            image.alt ||
-            "User";
-
-        image.src =
-            "https://ui-avatars.com/api/?" +
-            "name=" +
-            encodeURIComponent(name) +
-            "&background=00b4d8" +
-            "&color=fff" +
-            "&size=256" +
-            "&format=png";
-    },
-    true
-);
+            if (
+                !e.target ||
+                e.target.tagName !== 'IMG'
+            ) {
+                return;
+            }
 
 
+            /*
+             * Prevent infinite error loop
+             */
+
+            if (
+                e.target.dataset.fallbackApplied === 'true'
+            ) {
+                return;
+            }
+
+            e.target.dataset.fallbackApplied =
+                'true';
+
+
+            const name =
+                e.target.alt || 'User';
+
+
+            e.target.src =
+                'https://ui-avatars.com/api/?name=' +
+                encodeURIComponent(name) +
+                '&background=00b4d8&color=fff&size=200';
+
+        },
+        true
+    );
 }
 
+
 /* ============================================================
-REMOVE OLD TOOLTIP ELEMENTS
-============================================================ */
+   REMOVE OLD TOOLTIPS
+   ============================================================ */
 
 function removeOldTooltips() {
 
+    document
+        .querySelectorAll('.tooltip')
+        .forEach(function (element) {
 
-document
-    .querySelectorAll(".tooltip")
-    .forEach(element => {
-        element.remove();
-    });
+            element.remove();
 
-
+        });
 }
 
+
 /* ============================================================
-DYNAMIC CONTACT STYLES
-============================================================ */
+   DYNAMIC CSS
+   ============================================================ */
 
 function injectDynamicStyles() {
 
+    /*
+     * Prevent duplicate style injection
+     */
 
-if (
-    document.getElementById(
-        "portfolio-dynamic-styles"
-    )
-) {
-    return;
+    if (document.getElementById('portfolio-dynamic-styles')) {
+        return;
+    }
+
+
+    const dynamicStyles =
+        document.createElement('style');
+
+    dynamicStyles.id =
+        'portfolio-dynamic-styles';
+
+
+    dynamicStyles.textContent = `
+
+        /* ================================================
+           CONTACT RIPPLE
+           ================================================ */
+
+        @keyframes contactRipple {
+
+            from {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+
+        }
+
+
+        /* ================================================
+           CONTACT TOOLTIP
+           ================================================ */
+
+        @keyframes fadeInTooltip {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateX(-50%)
+                    translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateX(-50%)
+                    translateY(0);
+            }
+
+        }
+
+
+        /* ================================================
+           EMAIL COPY FEEDBACK
+           ================================================ */
+
+        @keyframes slideUpFadeIn {
+
+            from {
+                opacity: 0;
+                transform:
+                    translateX(-50%)
+                    translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateX(-50%)
+                    translateY(0);
+            }
+
+        }
+
+
+        @keyframes slideUpFadeOut {
+
+            from {
+                opacity: 1;
+                transform:
+                    translateX(-50%)
+                    translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform:
+                    translateX(-50%)
+                    translateY(-10px);
+            }
+
+        }
+
+
+        /* ================================================
+           CONTACT BUTTON
+           ================================================ */
+
+        .contact-item-icon-only {
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .contact-tooltip-dynamic {
+            transition:
+                opacity 0.2s ease;
+        }
+
+
+        /* ================================================
+           PROFILE IMAGE 3D
+           ================================================ */
+
+        .profile-image-wrapper {
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+
+        .profile-image-wrapper .profile-image {
+            transform: translateZ(8px);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+
+        /* ================================================
+           REDUCED MOTION
+           ================================================ */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .profile-image-wrapper {
+                transform: none !important;
+                transition: none !important;
+            }
+
+            .profile-image-wrapper .profile-image {
+                transform: none !important;
+            }
+
+        }
+
+    `;
+
+
+    document.head.appendChild(dynamicStyles);
 }
 
-const style =
-    document.createElement("style");
-
-style.id =
-    "portfolio-dynamic-styles";
-
-style.textContent = `
-
-    .contact-item-icon-only {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .contact-ripple {
-        position: absolute;
-
-        border-radius: 50%;
-
-        background:
-            rgba(110,211,235,0.2);
-
-        transform: scale(0);
-
-        pointer-events: none;
-
-        animation:
-            contactRipple 0.6s ease-out;
-    }
-
-    @keyframes contactRipple {
-
-        from {
-            transform: scale(0);
-            opacity: 1;
-        }
-
-        to {
-            transform: scale(2.5);
-            opacity: 0;
-        }
-    }
-
-    .contact-tooltip-dynamic {
-        position: absolute;
-
-        bottom: -32px;
-        left: 50%;
-
-        transform:
-            translateX(-50%);
-
-        padding:
-            4px 10px;
-
-        border-radius: 6px;
-
-        background:
-            rgba(15,18,28,0.96);
-
-        color: #e8edf3;
-
-        font-size: 0.65rem;
-
-        white-space: nowrap;
-
-        border:
-            1px solid rgba(110,211,235,0.2);
-
-        z-index: 9999;
-
-        pointer-events: none;
-
-        animation:
-            tooltipIn 0.18s ease;
-    }
-
-    @keyframes tooltipIn {
-
-        from {
-            opacity: 0;
-
-            transform:
-                translateX(-50%)
-                translateY(4px);
-        }
-
-        to {
-            opacity: 1;
-
-            transform:
-                translateX(-50%)
-                translateY(0);
-        }
-    }
-
-    .copy-feedback {
-        position: fixed;
-
-        left: 50%;
-        bottom: 20px;
-
-        transform:
-            translateX(-50%);
-
-        z-index: 99999;
-
-        padding:
-            8px 16px;
-
-        border-radius: 20px;
-
-        background:
-            rgba(88,214,141,0.95);
-
-        color: #111;
-
-        font-size: 0.75rem;
-
-        font-weight: 600;
-
-        box-shadow:
-            0 8px 25px rgba(0,0,0,0.3);
-
-        animation:
-            copyFeedback 2s ease forwards;
-    }
-
-    @keyframes copyFeedback {
-
-        0% {
-            opacity: 0;
-
-            transform:
-                translateX(-50%)
-                translateY(10px);
-        }
-
-        15% {
-            opacity: 1;
-
-            transform:
-                translateX(-50%)
-                translateY(0);
-        }
-
-        75% {
-            opacity: 1;
-        }
-
-        100% {
-            opacity: 0;
-
-            transform:
-                translateX(-50%)
-                translateY(-10px);
-        }
-    }
-
-`;
-
-document.head.appendChild(style);
-
-
-}
 
 /* ============================================================
-INITIALIZE
-============================================================ */
+   INITIALIZE EVERYTHING
+   ============================================================ */
 
 document.addEventListener(
-"DOMContentLoaded",
-() => {
+    'DOMContentLoaded',
+    function () {
+
+        /*
+         * Remove old tooltip elements
+         */
+
+        removeOldTooltips();
 
 
-    removeOldTooltips();
+        /*
+         * Inject dynamic styles
+         */
 
-    injectDynamicStyles();
-
-    setTimeout(
-        animateProjectCounter,
-        250
-    );
-
-    initContactRipple();
-
-    initContactTooltips();
-
-    initLongPressCopy();
-
-    initProfileTilt();
-
-    initKeyboardShortcuts();
-
-    initSmoothScroll();
-
-    initImageFallback();
-
-    console.log(
-        "%cPortfolio Loaded Successfully",
-        "color:#79d8ed;font-weight:bold;"
-    );
-
-    console.log(
-        "%c3D Profile Tilt: Enabled",
-        "color:#8ddced;"
-    );
-}
+        injectDynamicStyles();
 
 
+        /*
+         * Project counter
+         */
+
+        setTimeout(
+            animateProjectCounter,
+            300
+        );
+
+
+        /*
+         * Contact functionality
+         */
+
+        initContactRipple();
+
+        initContactTooltips();
+
+        initLongPressCopy();
+
+
+        /*
+         * Profile 3D Mouse Tilt
+         */
+
+        initProfileTilt();
+
+
+        /*
+         * Keyboard shortcuts
+         */
+
+        initKeyboardShortcuts();
+
+
+        /*
+         * Smooth scrolling
+         */
+
+        initSmoothScroll();
+
+
+        /*
+         * Image fallback
+         */
+
+        initImageFallback();
+
+
+        /* ================================================
+           Console Information
+           ================================================ */
+
+        console.log(
+            '%cPortfolio Loaded Successfully %c| %cNavid · AI Engineer',
+            'color: #79d8ed; font-size: 14px; font-weight: bold;',
+            'color: #6b7280;',
+            'color: #8ddced; font-weight: 500;'
+        );
+
+
+        console.log(
+            '%cKeyboard Shortcuts:%c Press %c1/E %cfor Education, %c2/X %cfor Experience',
+            'color: #79d8ed;',
+            'color: #aeb8c6;',
+            'color: #fff; font-weight: bold;',
+            'color: #aeb8c6;',
+            'color: #fff; font-weight: bold;',
+            'color: #aeb8c6;'
+        );
+
+
+        console.log(
+            '%cEmail:%c Right-click on desktop or long-press on mobile to copy',
+            'color: #79d8ed;',
+            'color: #aeb8c6;'
+        );
+
+
+        console.log(
+            '%c3D Profile Tilt:%c Enabled',
+            'color: #79d8ed;',
+            'color: #8ddced;'
+        );
+
+    }
 );
