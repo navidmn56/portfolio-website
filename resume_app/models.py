@@ -85,9 +85,9 @@ class SocialMedia(models.Model):
 class Skill(models.Model):
     """مهارت‌ها"""
     class Level(models.TextChoices):
-        ADVANCED = 'advanced', '🟢 Advanced'
-        INTERMEDIATE = 'intermediate', '🔵 Intermediate'
-        BEGINNER = 'beginner', '🟡 Beginner'
+        ADVANCED = 'advanced', 'Advanced'
+        INTERMEDIATE = 'intermediate', 'Intermediate'
+        BEGINNER = 'beginner', 'Beginner'
     
     name = models.CharField(max_length=50)
     level = models.CharField(max_length=20, choices=Level.choices, default=Level.INTERMEDIATE)
