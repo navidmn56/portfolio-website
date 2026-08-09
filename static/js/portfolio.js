@@ -394,16 +394,14 @@ function initLongPressCopy() {
 }
 
 
+
+
 /* ============================================================
    PROFILE IMAGE 3D MOUSE TILT
+   (Rotates the image inside, not the wrapper)
    ============================================================ */
 
 function initProfileTilt() {
-
-    /*
-     * Only desktop mouse devices
-     * No tilt on mobile / touch screens
-     */
 
     const supportsHover =
         window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -412,212 +410,97 @@ function initProfileTilt() {
         return;
     }
 
+    const wrapper = document.querySelector('.profile-image-wrapper');
+    const image = document.querySelector('.profile-image');
 
-    const profileWrapper =
-        document.querySelector('.profile-image-wrapper');
-
-    if (!profileWrapper) {
+    if (!wrapper || !image) {
         return;
     }
-
 
     /* ========================================================
        CONFIGURATION
        ======================================================== */
 
-    const MAX_TILT = 10;
-
-    const PERSPECTIVE = 700;
-
-    const SCALE = 1.025;
-
-    const Z_TRANSLATE = 6;
-
-
-    /* ========================================================
-       INITIAL CSS
-       ======================================================== */
-
-    profileWrapper.style.transformStyle = 'preserve-3d';
-
-    profileWrapper.style.perspective =
-        `${PERSPECTIVE}px`;
-
-    profileWrapper.style.willChange =
-        'transform';
-
-    profileWrapper.style.transition =
-        'transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1)';
-
-
-    /* ========================================================
-       INTERNAL STATE
-       ======================================================== */
-
-    let frameId = null;
-
-    let currentX = 0;
-    let currentY = 0;
-
-    let targetX = 0;
-    let targetY = 0;
-
-
-    /* ========================================================
-       APPLY TRANSFORM
-       ======================================================== */
-
-    function updateTilt() {
-
-        currentX +=
-            (targetX - currentX) * 0.16;
-
-        currentY +=
-            (targetY - currentY) * 0.16;
-
-
-        profileWrapper.style.transform = `
-            perspective(${PERSPECTIVE}px)
-            rotateX(${currentX}deg)
-            rotateY(${currentY}deg)
-            translateZ(${Z_TRANSLATE}px)
-            scale(${SCALE})
-        `;
-
-
-        if (
-            Math.abs(targetX - currentX) > 0.01 ||
-            Math.abs(targetY - currentY) > 0.01
-        ) {
-
-            frameId =
-                requestAnimationFrame(updateTilt);
-
-        } else {
-
-            frameId = null;
-        }
-    }
+    const MAX_TILT = 8;           // Degrees
+    const SHADOW_STRENGTH = 12;   // Shadow movement
 
 
     /* ========================================================
        MOUSE MOVE
        ======================================================== */
 
-    profileWrapper.addEventListener(
-        'mousemove',
-        function (e) {
+    wrapper.addEventListener('mousemove', function (e) {
 
-            const rect =
-                profileWrapper.getBoundingClientRect();
+        const rect = wrapper.getBoundingClientRect();
 
-            /*
-             * Mouse position
-             * -1 = left/top
-             *  0 = center
-             * +1 = right/bottom
-             */
+        // Mouse position: -0.5 to +0.5
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-            const x =
-                (e.clientX - rect.left) /
-                rect.width;
+        // Rotate image (not the wrapper)
+        const rotateY = x * (MAX_TILT * 2);
+        const rotateX = -y * (MAX_TILT * 2);
 
-            const y =
-                (e.clientY - rect.top) /
-                rect.height;
+        image.style.transform = `
+            translateZ(16px)
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            scale(1.02)
+        `;
 
+        // Move shadow with mouse
+        const shadowX = -x * SHADOW_STRENGTH;
+        const shadowY = y * SHADOW_STRENGTH;
 
-            /*
-             * Rotate around X
-             *
-             * Mouse up    -> positive
-             * Mouse down  -> negative
-             */
+        image.style.boxShadow = `
+            ${shadowX}px ${shadowY}px 30px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(125, 211, 232, 0.22),
+            0 0 35px rgba(0, 180, 216, 0.12)
+        `;
 
-            targetX =
-                (0.5 - y) * MAX_TILT;
+        // Move light reflection
+        const mouseXPercent = ((e.clientX - rect.left) / rect.width) * 100;
+        const mouseYPercent = ((e.clientY - rect.top) / rect.height) * 100;
 
-
-            /*
-             * Rotate around Y
-             *
-             * Mouse left  -> negative
-             * Mouse right -> positive
-             */
-
-            targetY =
-                (x - 0.5) * MAX_TILT;
-
-
-            if (!frameId) {
-                frameId =
-                    requestAnimationFrame(updateTilt);
-            }
-
-        },
-        {
-            passive: true
-        }
-    );
-
-
-    /* ========================================================
-       MOUSE ENTER
-       ======================================================== */
-
-    profileWrapper.addEventListener(
-        'mouseenter',
-        function () {
-
-            profileWrapper.style.transition =
-                'transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1)';
-
-        }
-    );
+        wrapper.style.setProperty('--mouse-x', mouseXPercent + '%');
+        wrapper.style.setProperty('--mouse-y', mouseYPercent + '%');
+    });
 
 
     /* ========================================================
        MOUSE LEAVE
        ======================================================== */
 
-    profileWrapper.addEventListener(
-        'mouseleave',
-        function () {
+    wrapper.addEventListener('mouseleave', function () {
 
-            targetX = 0;
-            targetY = 0;
+        image.style.transform = 'translateZ(16px) rotateX(0deg) rotateY(0deg) scale(1)';
 
-            profileWrapper.style.transition =
-                'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)';
+        image.style.boxShadow = `
+            0 10px 30px rgba(0, 0, 0, 0.40),
+            0 0 0 1px rgba(125, 211, 232, 0.18),
+            0 0 30px rgba(0, 180, 216, 0.10)
+        `;
 
-
-            if (!frameId) {
-                frameId =
-                    requestAnimationFrame(updateTilt);
-            }
-
-        }
-    );
+        // Reset light
+        wrapper.style.setProperty('--mouse-x', '50%');
+        wrapper.style.setProperty('--mouse-y', '50%');
+    });
 
 
     /* ========================================================
-       CLEANUP
+       CLEANUP ON BLUR
        ======================================================== */
 
-    window.addEventListener(
-        'blur',
-        function () {
+    window.addEventListener('blur', function () {
 
-            targetX = 0;
-            targetY = 0;
+        image.style.transform = 'translateZ(16px) rotateX(0deg) rotateY(0deg) scale(1)';
 
-            if (!frameId) {
-                frameId =
-                    requestAnimationFrame(updateTilt);
-            }
-
-        }
-    );
+        image.style.boxShadow = `
+            0 10px 30px rgba(0, 0, 0, 0.40),
+            0 0 0 1px rgba(125, 211, 232, 0.18),
+            0 0 30px rgba(0, 180, 216, 0.10)
+        `;
+    });
 }
 
 
