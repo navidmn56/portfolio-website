@@ -1,86 +1,43 @@
-# Developer Resume & Portfolio Website
+# Developer Resume Website
 
-A modern, responsive personal resume and portfolio website built with **Django**, designed for developers and programmers.
+A personal resume and portfolio website built with **Django**, designed for developers and programmers.
 
-The website provides a clean and professional way to showcase personal information, technical skills, projects, career experience, education, social links, and contact information.
+The website provides a simple way to present personal information, skills, projects, profile information, and contact details. The available content can be managed through the **Django Admin Panel**.
 
-All portfolio content can be managed through the **Django Admin Panel**, allowing the website to be updated without directly editing the HTML templates.
-
-> Current version: English
-> Project status: Under Development
-
----
-
-## Repository
-
-<div align="center">
-
-<a href="https://github.com/navidmn56/portfolio-website">
-  <img src="https://img.shields.io/badge/GitHub-Portfolio%20Website-181717?style=for-the-badge&logo=github" alt="GitHub Repository">
-</a>
-
-<img src="https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12">
-
-</div>
-
----
+> Currently available in English.
 
 ## Screenshot
 
-<p align="center">
-  <img src="screenshots/home.png" alt="Developer Portfolio Website" width="360">
-</p>
-
----
+![Homepage](screenshots/home.png)
 
 ## Features
 
-* Developer-focused resume and portfolio website
-* Fully responsive design
-* Mobile-friendly interface
-* Personal profile section
-* Profile image support
-* Technical skills and technologies
-* Projects showcase
-* Career experience
+* Developer-focused resume website
+* Responsive design
+* Profile information
+* Profile image
+* Skills and technologies
+* Projects
+* Career information
 * Education information
-* Social media links
-* Contact information
-* Dynamic content management through Django Admin
+* Social and contact information
+* Content management through Django Admin
 * Image upload support
-* Custom HTML, CSS and JavaScript frontend
 * Docker support
 * Production deployment with Gunicorn and Caddy
 * Automatic HTTPS with Caddy
-* Automated Linux server installation
-* Static file management
-* Database migrations
-* Production Docker Compose configuration
+* Automated server installation script
 
----
+## Built With
 
-## Tech Stack
-
-### Backend
-
-* Python 3.12
+* Python
 * Django
-* Gunicorn
-
-### Frontend
-
-* HTML5
-* CSS3
+* HTML
+* CSS
 * JavaScript
-
-### Deployment
-
 * Docker
-* Docker Compose
+* Gunicorn
 * Caddy
-* Linux
-
----
 
 ## Project Structure
 
@@ -113,7 +70,11 @@ portfolio-website/
 │   └── wsgi.py
 │
 ├── screenshots/
-│   └── home.png
+│   ├── home.png
+│   ├── download (3).png
+│   ├── download (4).png
+│   ├── download (6).png
+│   └── download (7).png
 │
 ├── static/
 │   ├── css/
@@ -131,11 +92,9 @@ portfolio-website/
 └── README.md
 ```
 
----
-
 ## Admin Panel
 
-The website uses **Django Admin** to manage portfolio content.
+The website uses Django Admin to manage the available resume content.
 
 After deployment, the admin panel is available at:
 
@@ -143,82 +102,64 @@ After deployment, the admin panel is available at:
 https://your-domain.com/admin/
 ```
 
-The following content can be managed through the admin panel:
+From the admin panel, you can manage the content provided by the application without directly editing the HTML templates.
 
-* Profile information
-* Profile image
-* Technical skills
-* Projects
-* Career experience
-* Education
-* Social links
-* Contact information
+## Server Deployment
 
-This makes it possible to update the portfolio without modifying the HTML templates directly.
-
----
-
-## Deployment
-
-The project includes an automated production deployment system for Linux servers using Docker, Gunicorn and Caddy.
+The project includes an automated installer for deploying the website on a Linux server.
 
 ### Requirements
 
 * Linux server
-* Python 3.12
-* Domain or subdomain
+* A domain or subdomain
 * DNS pointing to the server
 * Ports `80` and `443` available
-* Docker
-* Docker Compose
 
-Docker and Docker Compose can be installed automatically by the deployment script if they are not already available.
+Docker and Docker Compose can be installed automatically by the installer if they are not already available.
 
-### Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/navidmn56/portfolio-website.git
 cd portfolio-website
 ```
 
-### Run the Installer
+### 2. Run the Installer
 
 ```bash
 chmod +x deploy/install.sh
 sudo ./deploy/install.sh
 ```
 
-The installer handles the main production deployment steps:
+The installer asks for the domain and automatically handles the main deployment steps, including:
 
 * Detecting the server IP
-* Checking DNS configuration
+* Checking DNS
 * Creating the production environment
 * Building the Docker image
 * Starting Django
-* Running database migrations
+* Running migrations
 * Collecting static files
 * Starting Gunicorn
-* Configuring Caddy
+* Starting Caddy
 * Obtaining the SSL certificate
 * Enabling HTTPS
 
-After installation:
+After installation, the website will be available at:
 
 ```text
 https://your-domain.com
 ```
 
-Admin panel:
+And the admin panel:
 
 ```text
 https://your-domain.com/admin/
 ```
 
----
-
 ## Creating an Admin Account
 
-After deployment, create a Django superuser:
+After the installation is complete, create a Django superuser:
 
 ```bash
 docker compose \
@@ -229,18 +170,16 @@ docker compose \
 
 Follow the prompts to create the administrator account.
 
----
-
 ## Updating the Website
 
-After making changes and pushing them to GitHub:
+After making changes and pushing them to GitHub, update the server:
 
 ```bash
 cd ~/portfolio-website
 git pull
 ```
 
-Rebuild and restart the application:
+Rebuild the Docker container:
 
 ```bash
 docker compose \
@@ -249,7 +188,7 @@ docker compose \
   up -d --build
 ```
 
-If model changes were made, create migrations:
+Apply new migrations if required:
 
 ```bash
 docker compose \
@@ -257,8 +196,6 @@ docker compose \
   -f deploy/docker-compose.prod.yml \
   exec web python manage.py makemigrations
 ```
-
-Apply migrations:
 
 ```bash
 docker compose \
@@ -276,11 +213,9 @@ docker compose \
   exec web python manage.py collectstatic --noinput
 ```
 
----
-
 ## Useful Commands
 
-### Check containers
+Check the running containers:
 
 ```bash
 docker compose \
@@ -289,7 +224,7 @@ docker compose \
   ps
 ```
 
-### View logs
+View logs:
 
 ```bash
 docker compose \
@@ -298,7 +233,7 @@ docker compose \
   logs -f
 ```
 
-### Restart the application
+Restart the application:
 
 ```bash
 docker compose \
@@ -307,7 +242,7 @@ docker compose \
   restart
 ```
 
-### Stop the application
+Stop the application:
 
 ```bash
 docker compose \
@@ -316,63 +251,20 @@ docker compose \
   down
 ```
 
----
-
 ## Environment Variables
 
-Production environment variables are configured on the server.
+Production configuration is generated on the server.
 
-Sensitive information such as the Django secret key, database credentials and other private configuration values should never be committed to GitHub.
+Sensitive values such as the Django secret key should not be committed to GitHub.
 
-The production `.env` file should remain on the server and be excluded through `.gitignore`.
-
----
-
-## Production Architecture
-
-```text
-                    Internet
-                       |
-                       v
-                +-------------+
-                |    Caddy    |
-                | HTTPS / SSL |
-                +------+------+
-                       |
-                       v
-                +-------------+
-                |  Gunicorn   |
-                |    Django   |
-                +------+------+
-                       |
-                       v
-                +-------------+
-                | Application |
-                |    Data     |
-                +-------------+
-```
-
-Caddy handles HTTPS and reverse proxying, while Gunicorn serves the Django application.
-
----
+The `.env` file should remain on the server and should be excluded from Git using `.gitignore`.
 
 ## Project Status
 
 The project is currently under development.
 
-The current version focuses on an English-language developer resume and portfolio experience with dynamic content management through Django Admin.
-
-Future improvements may include additional language support, further customization options, enhanced portfolio sections and additional performance improvements.
-
----
+The current version focuses on an English-language developer resume and portfolio experience. Additional customization options and features may be added in future versions.
 
 ## License
 
-This project is licensed under the **MIT License**.
-
----
-
-
-<p align="center">
-  Built with Django, Python and modern web technologies.
-</p>
+This project is licensed under the MIT License.
