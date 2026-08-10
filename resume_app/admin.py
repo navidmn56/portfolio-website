@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe  # مهم
-from django.urls import path
+from django.urls import path, reverse
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.http import FileResponse, Http404
@@ -391,26 +391,31 @@ class BackupAdmin(admin.ModelAdmin):
 
     @admin.display(description="Actions")
     def actions_buttons(self, obj):
-        buttons = []
+        if obj.status != Backup.BackupStatus.SUCCESS or not obj.backup_file:
+            return "-"
 
-        if obj.status == Backup.BackupStatus.SUCCESS and obj.backup_file:
-            # دکمه Download
-            download_btn = format_html(
-                '<a href="../{}/download/" class="button" style="background:#417690; color:#fff; padding:4px 12px; border-radius:4px; text-decoration:none; margin-right:4px;">📥 Download</a>',
-                obj.id,
-            )
-            
-            # دکمه Restore
-            restore_btn = format_html(
-                '<a href="../{}/restore/" class="button" style="background:#ba2121; color:#fff; padding:4px 12px; border-radius:4px; text-decoration:none;">🔄 Restore</a>',
-                obj.id,
-            )
-            
-            buttons.append(download_btn)
-            buttons.append(restore_btn)
+        download_url = reverse(
+            "admin:resume_app_backup_backup-download",
+            args=[obj.pk],
+        )
 
-        # استفاده از mark_safe برای رندر صحیح HTML
-        return mark_safe(' '.join(buttons))
+        restore_url = reverse(
+            "admin:resume_app_backup_backup-restore",
+            args=[obj.pk],
+        )
+
+        return format_html(
+            '<a href="{}" class="button" '
+            'style="background:#417690;color:#fff;padding:4px 12px;'
+            'border-radius:4px;text-decoration:none;margin-right:4px;">'
+            'Download</a>'
+            '<a href="{}" class="button" '
+            'style="background:#ba2121;color:#fff;padding:4px 12px;'
+            'border-radius:4px;text-decoration:none;">'
+            'Restore</a>',
+            download_url,
+            restore_url,
+        )
 
     # ============================================================
     # CREATE BACKUP
