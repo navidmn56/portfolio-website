@@ -227,6 +227,8 @@ class BackupForm(forms.Form):
     )
 
 
+# resume_app/admin.py - فقط بخش BackupAdmin (اصلاح شده)
+
 @admin.register(Backup)
 class BackupAdmin(admin.ModelAdmin):
     change_list_template = "admin/resume_app/change_list.html"
@@ -240,15 +242,8 @@ class BackupAdmin(admin.ModelAdmin):
         "actions_buttons",
     )
 
-    list_filter = (
-        "status",
-        "is_automatic",
-    )
-
-    search_fields = (
-        "name",
-        "description",
-    )
+    list_filter = ("status", "is_automatic")
+    search_fields = ("name", "description")
 
     readonly_fields = (
         "backup_file",
@@ -261,58 +256,12 @@ class BackupAdmin(admin.ModelAdmin):
     )
 
     fieldsets = (
-        (
-            "Backup Information",
-            {
-                "fields": (
-                    "name",
-                    "description",
-                )
-            },
-        ),
-        (
-            "Statistics",
-            {
-                "fields": (
-                    "backup_size",
-                    "get_human_size",
-                )
-            },
-        ),
-        (
-            "File",
-            {
-                "fields": (
-                    "backup_file",
-                )
-            },
-        ),
-        (
-            "Status",
-            {
-                "fields": (
-                    "status",
-                    "error_message",
-                )
-            },
-        ),
-        (
-            "Timeline",
-            {
-                "fields": (
-                    "created_at",
-                    "restored_at",
-                )
-            },
-        ),
-        (
-            "Automation",
-            {
-                "fields": (
-                    "is_automatic",
-                )
-            },
-        ),
+        ("Backup Information", {"fields": ("name", "description")}),
+        ("Statistics", {"fields": ("backup_size", "get_human_size")}),
+        ("File", {"fields": ("backup_file",)}),
+        ("Status", {"fields": ("status", "error_message")}),
+        ("Timeline", {"fields": ("created_at", "restored_at")}),
+        ("Automation", {"fields": ("is_automatic",)}),
     )
 
     def has_add_permission(self, request):
@@ -327,7 +276,6 @@ class BackupAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-
         custom_urls = [
             path(
                 "create-backup/",
@@ -345,7 +293,6 @@ class BackupAdmin(admin.ModelAdmin):
                 name="backup-download",
             ),
         ]
-
         return custom_urls + urls
 
     # ============================================================
@@ -359,19 +306,9 @@ class BackupAdmin(admin.ModelAdmin):
             Backup.BackupStatus.FAILED: "#ef4444",
             Backup.BackupStatus.PROCESSING: "#f59e0b",
         }
-
         color = colors.get(obj.status, "#6b7280")
-
         return format_html(
-            '<span style="'
-            'background:{}20;'
-            'color:{};'
-            'padding:4px 10px;'
-            'border-radius:8px;'
-            'font-weight:600;'
-            '">'
-            '{}'
-            '</span>',
+            '<span style="background:{}20; color:{}; padding:4px 10px; border-radius:8px; font-weight:600;">{}</span>',
             color,
             color,
             obj.get_status_display(),
@@ -386,7 +323,7 @@ class BackupAdmin(admin.ModelAdmin):
         return obj.get_human_size()
 
     # ============================================================
-    # ACTIONS BUTTONS - اصلاح شده با mark_safe ✅
+    # ACTIONS BUTTONS - ✅ اصلاح شده با اسم صحیح
     # ============================================================
 
     @admin.display(description="Actions")
@@ -394,25 +331,19 @@ class BackupAdmin(admin.ModelAdmin):
         if obj.status != Backup.BackupStatus.SUCCESS or not obj.backup_file:
             return "-"
 
-        download_url = reverse(
-            "admin:resume_app_backup_backup-download",
-            args=[obj.pk],
-        )
-
-        restore_url = reverse(
-            "admin:resume_app_backup_backup-restore",
-            args=[obj.pk],
-        )
+        # استفاده از اسم صحیح (بدون prefix اضافی)
+        download_url = reverse("admin:backup-download", args=[obj.pk])
+        restore_url = reverse("admin:backup-restore", args=[obj.pk])
 
         return format_html(
             '<a href="{}" class="button" '
             'style="background:#417690;color:#fff;padding:4px 12px;'
             'border-radius:4px;text-decoration:none;margin-right:4px;">'
-            'Download</a>'
+            '📥 Download</a>'
             '<a href="{}" class="button" '
             'style="background:#ba2121;color:#fff;padding:4px 12px;'
             'border-radius:4px;text-decoration:none;">'
-            'Restore</a>',
+            '🔄 Restore</a>',
             download_url,
             restore_url,
         )
@@ -424,29 +355,24 @@ class BackupAdmin(admin.ModelAdmin):
     def create_backup_view(self, request):
         if request.method == "POST":
             form = BackupForm(request.POST)
-
             if form.is_valid():
                 try:
                     backup = Backup.create_backup(
                         description=form.cleaned_data["description"],
                         is_automatic=False,
                     )
-
                     self.message_user(
                         request,
                         f'✅ Backup "{backup.name}" created successfully. ({backup.get_human_size()})',
                         messages.SUCCESS,
                     )
-
                 except Exception as exc:
                     self.message_user(
                         request,
                         f'❌ Backup failed: {exc}',
                         messages.ERROR,
                     )
-
                 return redirect("admin:resume_app_backup_changelist")
-
         else:
             form = BackupForm()
 
@@ -456,22 +382,16 @@ class BackupAdmin(admin.ModelAdmin):
             "form": form,
             "opts": self.model._meta,
         }
-
-        return render(
-            request,
-            "admin/resume_app/backup_create.html",
-            context,
-        )
+        return render(request, "admin/resume_app/backup_create.html", context)
 
     # ============================================================
     # RESTORE BACKUP
     # ============================================================
 
     def restore_backup_view(self, request, backup_id):
-        backup = self.get_object(request, backup_id)
-
-        if not backup:
-            raise Http404("Backup not found.")
+        from django.shortcuts import get_object_or_404
+        
+        backup = get_object_or_404(Backup, id=backup_id)
 
         if backup.status != Backup.BackupStatus.SUCCESS:
             self.message_user(
@@ -484,20 +404,17 @@ class BackupAdmin(admin.ModelAdmin):
         if request.method == "POST":
             try:
                 backup.restore_backup()
-
                 self.message_user(
                     request,
                     f'✅ Database successfully restored from "{backup.name}".',
                     messages.SUCCESS,
                 )
-
             except Exception as exc:
                 self.message_user(
                     request,
                     f'❌ Restore failed: {exc}',
                     messages.ERROR,
                 )
-
             return redirect("admin:resume_app_backup_changelist")
 
         context = {
@@ -506,30 +423,25 @@ class BackupAdmin(admin.ModelAdmin):
             "backup": backup,
             "opts": self.model._meta,
         }
-
-        return render(
-            request,
-            "admin/resume_app/backup_restore.html",
-            context,
-        )
+        return render(request, "admin/resume_app/backup_restore.html", context)
 
     # ============================================================
     # DOWNLOAD BACKUP
     # ============================================================
 
     def download_backup_view(self, request, backup_id):
-        backup = self.get_object(request, backup_id)
+        from django.shortcuts import get_object_or_404
+        
+        backup = get_object_or_404(Backup, id=backup_id)
 
-        if not backup or not backup.backup_file:
+        if not backup.backup_file:
             raise Http404("Backup file not found.")
 
         response = FileResponse(
             backup.backup_file.open("rb"),
             content_type="application/x-sqlite3",
         )
-
         response["Content-Disposition"] = f'attachment; filename="{backup.backup_file.name}"'
-
         return response
 
     # ============================================================
