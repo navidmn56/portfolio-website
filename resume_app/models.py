@@ -292,40 +292,41 @@ class Language(models.Model):
 # resume_app/models.py - بخش Backup
 
 
-# resume_app/models.py
+# resume_app/models.py - بخش Backup
 
 import os
 import shutil
-
+import re
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.core.exceptions import ValidationError
 
 
 class Backup(models.Model):
-    """Simple SQLite database backup system."""
+    """سیستم بکاپ SQLite با شماره‌گذاری خودکار"""
 
     class BackupStatus(models.TextChoices):
-        SUCCESS = "success", "Success"
-        FAILED = "failed", "Failed"
-        PROCESSING = "processing", "Processing"
+        SUCCESS = "success", "✅ Success"
+        FAILED = "failed", "❌ Failed"
+        PROCESSING = "processing", "⏳ Processing"
 
     name = models.CharField(
         max_length=200,
-        help_text="Backup name"
+        help_text="نام بکاپ (خودکار تولید میشود)"
     )
 
     backup_file = models.FileField(
         upload_to="backups/",
         blank=True,
         null=True,
-        help_text="SQLite database backup file"
+        help_text="فایل بکاپ SQLite"
     )
 
     backup_size = models.PositiveIntegerField(
         default=0,
-        help_text="Backup size in bytes"
+        help_text="حجم فایل (بایت)"
     )
 
     status = models.CharField(
@@ -367,7 +368,22 @@ class Backup(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.name:
-            self.name = f"Backup_{timezone.now().strftime('%Y%m%d_%H%M%S')}"
+            # پیدا کردن آخرین شماره بکاپ
+            last_backup = Backup.objects.filter(
+                name__startswith="portfolio_"
+            ).order_by("-created_at").first()
+            
+            if last_backup:
+                # استخراج شماره از اسم قبلی
+                match = re.search(r'portfolio_(\d+)', last_backup.name)
+                if match:
+                    next_number = int(match.group(1)) + 1
+                else:
+                    next_number = 1
+            else:
+                next_number = 1
+            
+            self.name = f"portfolio_{next_number}.db"
 
         if self.backup_file:
             try:
@@ -382,61 +398,52 @@ class Backup(models.Model):
 
         if size < 1024:
             return f"{size} B"
-
         if size < 1024 * 1024:
             return f"{size / 1024:.2f} KB"
-
         if size < 1024 * 1024 * 1024:
             return f"{size / (1024 * 1024):.2f} MB"
-
         return f"{size / (1024 * 1024 * 1024):.2f} GB"
 
     @classmethod
     def create_backup(cls, description=None, is_automatic=False):
-        """
-        Create a backup of the current SQLite database.
-        """
-
+        """ایجاد بکاپ از دیتابیس فعلی"""
         db_path = settings.DATABASES["default"]["NAME"]
 
         if not os.path.exists(db_path):
-            raise ValueError(
-                f"Database file not found: {db_path}"
-            )
+            raise ValueError(f"Database file not found: {db_path}")
 
-        timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
+        # پیدا کردن آخرین شماره
+        last_backup = Backup.objects.filter(
+            name__startswith="portfolio_"
+        ).order_by("-created_at").first()
+        
+        if last_backup:
+            match = re.search(r'portfolio_(\d+)', last_backup.name)
+            if match:
+                next_number = int(match.group(1)) + 1
+            else:
+                next_number = 1
+        else:
+            next_number = 1
 
-        backup_filename = (
-            f"backup_{timestamp}.sqlite3"
-        )
+        backup_filename = f"portfolio_{next_number}.db"
 
         backup = cls.objects.create(
-            name=f"Backup_{timestamp}",
+            name=backup_filename,
             status=cls.BackupStatus.PROCESSING,
             description=description,
             is_automatic=is_automatic
         )
 
         try:
-            # Read the current SQLite database.
             with open(db_path, "rb") as source:
                 database_content = source.read()
 
             if not database_content:
-                raise ValueError(
-                    "The SQLite database file is empty."
-                )
+                raise ValueError("The SQLite database file is empty.")
 
-            backup_file = ContentFile(
-                database_content,
-                name=backup_filename
-            )
-
-            backup.backup_file.save(
-                backup_filename,
-                backup_file,
-                save=False
-            )
+            backup_file = ContentFile(database_content, name=backup_filename)
+            backup.backup_file.save(backup_filename, backup_file, save=False)
 
             backup.status = cls.BackupStatus.SUCCESS
             backup.error_message = None
@@ -448,107 +455,133 @@ class Backup(models.Model):
             backup.status = cls.BackupStatus.FAILED
             backup.error_message = str(exc)
             backup.save()
-
             raise
 
     def restore_backup(self):
-        """
-        Restore this backup over the current SQLite database.
-        """
-
+        """ریستور از بکاپ موجود در سیستم"""
         if not self.backup_file:
             raise ValueError("No backup file exists.")
 
         if self.status != self.BackupStatus.SUCCESS:
-            raise ValueError(
-                "Only successful backups can be restored."
-            )
+            raise ValueError("Only successful backups can be restored.")
 
         db_path = settings.DATABASES["default"]["NAME"]
 
         if not os.path.exists(db_path):
-            raise ValueError(
-                f"Database file not found: {db_path}"
-            )
+            raise ValueError(f"Database file not found: {db_path}")
 
-        timestamp = timezone.now().strftime(
-            "%Y%m%d_%H%M%S"
-        )
-
-        temporary_backup = (
-            f"{db_path}.before_restore_{timestamp}"
-        )
+        timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
+        temporary_backup = f"{db_path}.before_restore_{timestamp}"
 
         try:
-            # Close Django's SQLite connection.
             from django.db import connection
             connection.close()
 
-            # Safety backup before restore.
-            shutil.copy2(
-                db_path,
-                temporary_backup
-            )
+            shutil.copy2(db_path, temporary_backup)
 
-            # Read selected backup.
             self.backup_file.open("rb")
-
             try:
                 backup_content = self.backup_file.read()
             finally:
                 self.backup_file.close()
 
             if not backup_content:
-                raise ValueError(
-                    "Backup file is empty."
-                )
+                raise ValueError("Backup file is empty.")
 
-            # Restore database.
             with open(db_path, "wb") as database:
                 database.write(backup_content)
 
             self.restored_at = timezone.now()
-            self.save(
-                update_fields=["restored_at"]
-            )
+            self.save(update_fields=["restored_at"])
 
-            # Remove temporary safety backup.
             if os.path.exists(temporary_backup):
                 os.remove(temporary_backup)
 
             return True
 
         except Exception as exc:
-
-            # Try to restore the pre-restore database.
             if os.path.exists(temporary_backup):
                 try:
-                    shutil.copy2(
-                        temporary_backup,
-                        db_path
-                    )
+                    shutil.copy2(temporary_backup, db_path)
                     os.remove(temporary_backup)
                 except Exception:
                     pass
 
             self.error_message = str(exc)
-            self.save(
-                update_fields=["error_message"]
+            self.save(update_fields=["error_message"])
+            raise
+
+    @classmethod
+    def restore_from_upload(cls, uploaded_file):
+        """ریستور از فایل آپلود شده توسط کاربر"""
+        if not uploaded_file:
+            raise ValueError("No file uploaded.")
+
+        db_path = settings.DATABASES["default"]["NAME"]
+
+        if not os.path.exists(db_path):
+            raise ValueError(f"Database file not found: {db_path}")
+
+        timestamp = timezone.now().strftime("%Y%m%d_%H%M%S")
+        temporary_backup = f"{db_path}.before_restore_{timestamp}"
+
+        try:
+            from django.db import connection
+            connection.close()
+
+            # بکاپ از دیتابیس فعلی
+            shutil.copy2(db_path, temporary_backup)
+
+            # خوندن فایل آپلود شده
+            uploaded_file.seek(0)
+            backup_content = uploaded_file.read()
+
+            if not backup_content:
+                raise ValueError("Uploaded file is empty.")
+
+            # بررسی اینکه فایل SQLite معتبر هست
+            if not backup_content.startswith(b'SQLite format 3'):
+                raise ValueError("Invalid SQLite database file!")
+
+            # ریستور
+            with open(db_path, "wb") as database:
+                database.write(backup_content)
+
+            # ایجاد رکورد در دیتابیس
+            backup = cls.objects.create(
+                name=f"restored_from_upload_{timestamp}",
+                status=cls.BackupStatus.SUCCESS,
+                description="Restored from uploaded file",
+                restored_at=timezone.now()
             )
 
+            # ذخیره فایل آپلود شده به عنوان بکاپ
+            backup_file = ContentFile(backup_content, name=f"uploaded_backup_{timestamp}.db")
+            backup.backup_file.save(f"uploaded_backup_{timestamp}.db", backup_file, save=False)
+            backup.save()
+
+            # حذف فایل موقت
+            if os.path.exists(temporary_backup):
+                os.remove(temporary_backup)
+
+            return backup
+
+        except Exception as exc:
+            if os.path.exists(temporary_backup):
+                try:
+                    shutil.copy2(temporary_backup, db_path)
+                    os.remove(temporary_backup)
+                except Exception:
+                    pass
             raise
 
     def delete(self, *args, **kwargs):
         if self.backup_file:
-            self.backup_file.delete(
-                save=False
-            )
-
+            self.backup_file.delete(save=False)
         super().delete(*args, **kwargs)
 
     @classmethod
     def cleanup_old_backups(cls, keep_count=10):
-
         backups = cls.objects.filter(
             status=cls.BackupStatus.SUCCESS
         ).order_by("-created_at")

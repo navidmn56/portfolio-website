@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.http import FileResponse, Http404
 from django import forms
 
+
 from .models import (
     Profile, SocialMedia, Skill, Education, CareerGoal,
     Experience, ExperienceBullet, Project, ProjectTag, Language, Backup
@@ -214,20 +215,47 @@ class LanguageAdmin(admin.ModelAdmin):
 # BACKUP ADMIN - نسخه نهایی با دکمه‌های درست
 # ============================================================
 
+# resume_app/admin.py - بخش BackupAdmin (با آپلود فایل)
+
+from django.contrib import admin
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+from django.urls import path, reverse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.contrib import messages
+
+
+from django.core.exceptions import ValidationError
+
+
+
+
 class BackupForm(forms.Form):
     description = forms.CharField(
         required=False,
         label="Description",
-        widget=forms.Textarea(
-            attrs={
-                "rows": 4,
-                "placeholder": "Optional backup description..."
-            }
-        )
+        widget=forms.Textarea(attrs={
+            "rows": 3,
+            "placeholder": "Optional backup description..."
+        })
     )
 
 
-# resume_app/admin.py - فقط بخش BackupAdmin (اصلاح شده)
+class RestoreFromUploadForm(forms.Form):
+    backup_file = forms.FileField(
+        label="Select Backup File",
+        help_text="Select a .db or .sqlite3 file to restore",
+        widget=forms.FileInput(attrs={
+            'accept': '.db,.sqlite3,.sqlite',
+            'class': 'form-control'
+        })
+    )
+    confirm = forms.BooleanField(
+        required=True,
+        label="I understand this will overwrite the current database",
+        help_text="⚠️ This action cannot be undone!"
+    )
+
 
 @admin.register(Backup)
 class BackupAdmin(admin.ModelAdmin):
@@ -270,10 +298,6 @@ class BackupAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    # ============================================================
-    # CUSTOM URLS
-    # ============================================================
-
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -281,6 +305,11 @@ class BackupAdmin(admin.ModelAdmin):
                 "create-backup/",
                 self.admin_site.admin_view(self.create_backup_view),
                 name="backup-create",
+            ),
+            path(
+                "restore-upload/",
+                self.admin_site.admin_view(self.restore_from_upload_view),
+                name="backup-restore-upload",
             ),
             path(
                 "<int:backup_id>/restore/",
@@ -295,10 +324,6 @@ class BackupAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
-    # ============================================================
-    # STATUS BADGE
-    # ============================================================
-
     @admin.display(description="Status")
     def status_badge(self, obj):
         colors = {
@@ -309,29 +334,18 @@ class BackupAdmin(admin.ModelAdmin):
         color = colors.get(obj.status, "#6b7280")
         return format_html(
             '<span style="background:{}20; color:{}; padding:4px 10px; border-radius:8px; font-weight:600;">{}</span>',
-            color,
-            color,
-            obj.get_status_display(),
+            color, color, obj.get_status_display()
         )
-
-    # ============================================================
-    # SIZE
-    # ============================================================
 
     @admin.display(description="Size")
     def get_human_size_display(self, obj):
         return obj.get_human_size()
-
-    # ============================================================
-    # ACTIONS BUTTONS - ✅ اصلاح شده با اسم صحیح
-    # ============================================================
 
     @admin.display(description="Actions")
     def actions_buttons(self, obj):
         if obj.status != Backup.BackupStatus.SUCCESS or not obj.backup_file:
             return "-"
 
-        # استفاده از اسم صحیح (بدون prefix اضافی)
         download_url = reverse("admin:backup-download", args=[obj.pk])
         restore_url = reverse("admin:backup-restore", args=[obj.pk])
 
@@ -347,10 +361,6 @@ class BackupAdmin(admin.ModelAdmin):
             download_url,
             restore_url,
         )
-
-    # ============================================================
-    # CREATE BACKUP
-    # ============================================================
 
     def create_backup_view(self, request):
         if request.method == "POST":
@@ -384,13 +394,39 @@ class BackupAdmin(admin.ModelAdmin):
         }
         return render(request, "admin/resume_app/backup_create.html", context)
 
-    # ============================================================
-    # RESTORE BACKUP
-    # ============================================================
+    def restore_from_upload_view(self, request):
+        """ریستور از فایل آپلود شده توسط کاربر"""
+        if request.method == "POST":
+            form = RestoreFromUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                uploaded_file = request.FILES["backup_file"]
+                
+                try:
+                    backup = Backup.restore_from_upload(uploaded_file)
+                    self.message_user(
+                        request,
+                        f'✅ Database restored successfully from uploaded file! ({backup.name})',
+                        messages.SUCCESS,
+                    )
+                except Exception as exc:
+                    self.message_user(
+                        request,
+                        f'❌ Restore failed: {exc}',
+                        messages.ERROR,
+                    )
+                return redirect("admin:resume_app_backup_changelist")
+        else:
+            form = RestoreFromUploadForm()
+
+        context = {
+            **self.admin_site.each_context(request),
+            "title": "Restore from Uploaded File",
+            "form": form,
+            "opts": self.model._meta,
+        }
+        return render(request, "admin/resume_app/backup_restore_upload.html", context)
 
     def restore_backup_view(self, request, backup_id):
-        from django.shortcuts import get_object_or_404
-        
         backup = get_object_or_404(Backup, id=backup_id)
 
         if backup.status != Backup.BackupStatus.SUCCESS:
@@ -419,19 +455,13 @@ class BackupAdmin(admin.ModelAdmin):
 
         context = {
             **self.admin_site.each_context(request),
-            "title": "Restore SQLite Backup",
+            "title": f"Restore Backup: {backup.name}",
             "backup": backup,
             "opts": self.model._meta,
         }
         return render(request, "admin/resume_app/backup_restore.html", context)
 
-    # ============================================================
-    # DOWNLOAD BACKUP
-    # ============================================================
-
     def download_backup_view(self, request, backup_id):
-        from django.shortcuts import get_object_or_404
-        
         backup = get_object_or_404(Backup, id=backup_id)
 
         if not backup.backup_file:
@@ -444,11 +474,8 @@ class BackupAdmin(admin.ModelAdmin):
         response["Content-Disposition"] = f'attachment; filename="{backup.backup_file.name}"'
         return response
 
-    # ============================================================
-    # CHANGELIST VIEW
-    # ============================================================
-
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
         extra_context["create_backup_url"] = "create-backup/"
+        extra_context["restore_upload_url"] = "restore-upload/"
         return super().changelist_view(request, extra_context=extra_context)

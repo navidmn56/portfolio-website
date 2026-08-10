@@ -4,8 +4,15 @@
     <ul class="object-tools">
         {% if create_backup_url %}
             <li>
-                <a href="{{ create_backup_url }}" class="addlink">
+                <a href="{{ create_backup_url }}" class="addlink" style="background: #417690; color: #fff; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600;">
                     💾 Create Backup
+                </a>
+            </li>
+        {% endif %}
+        {% if restore_upload_url %}
+            <li>
+                <a href="{{ restore_upload_url }}" class="addlink" style="background: #ba2121; color: #fff; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600;">
+                    📤 Restore from Upload
                 </a>
             </li>
         {% endif %}
