@@ -2,13 +2,13 @@
 
 from django.contrib import admin
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe  # مهم
+from django.utils.safestring import mark_safe
 from django.urls import path, reverse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.http import FileResponse, Http404
 from django import forms
-
+from django.core.exceptions import ValidationError
 
 from .models import (
     Profile, SocialMedia, Skill, Education, CareerGoal,
@@ -214,21 +214,6 @@ class LanguageAdmin(admin.ModelAdmin):
 # ============================================================
 # BACKUP ADMIN - نسخه نهایی با دکمه‌های درست
 # ============================================================
-
-# resume_app/admin.py - بخش BackupAdmin (با آپلود فایل)
-
-from django.contrib import admin
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-from django.urls import path, reverse
-from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib import messages
-
-
-from django.core.exceptions import ValidationError
-
-
-
 
 class BackupForm(forms.Form):
     description = forms.CharField(
